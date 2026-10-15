@@ -11,7 +11,6 @@ from aiopenapi3 import RequestError
 # Django
 from django.db import models
 from django.utils import timezone
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 # Alliance Auth
@@ -131,6 +130,7 @@ class UpdateStatus(models.TextChoices):
     OK = "ok", _("OK")
     INCOMPLETE = "incomplete", _("Incomplete")
     IN_PROGRESS = "in_progress", _("In Progress")
+
 
 class UpdateSection(models.TextChoices):
     BLUEPRINTS = "blueprints", _("Blueprints")

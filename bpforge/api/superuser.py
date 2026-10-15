@@ -114,6 +114,7 @@ class ApiEndpoints:
                     "error": _("Superuser permission required.")
                 }
 
+            # pylint: disable=duplicate-code
             owners = (
                 Owner.objects.all()
                 .select_related(
@@ -164,6 +165,7 @@ class ApiEndpoints:
                     "error": _("Superuser permission required.")
                 }
 
+            # pylint: disable=duplicate-code
             owner = get_object_or_404(
                 Owner.objects.select_related(
                     "character__character",
@@ -248,6 +250,7 @@ class ApiEndpoints:
                 .order_by("eve_type__name")
             )
 
+            # pylint: disable=duplicate-code
             result: list[schema.BlueprintItemSchema] = []
             for bp in blueprints:
                 owner_name = (
@@ -307,6 +310,7 @@ class ApiEndpoints:
             force_refresh = payload.force_refresh if payload else False
             update_owner.delay(owner_pk=owner.pk, force_refresh=force_refresh)
 
+            # pylint: disable=duplicate-code
             owner_name = (
                 owner.corporation.corporation_name
                 if owner.corporation
@@ -323,4 +327,3 @@ class ApiEndpoints:
                     f"Update task queued for {owner_name} (force_refresh={force_refresh})."
                 ),
             )
-

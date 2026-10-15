@@ -148,16 +148,16 @@ def _build_owner_setting_schema(owner: Owner) -> schema.OwnerSettingSchema:
         is_public=owner.is_public,
         public_type=getattr(owner, "public_type", "all"),
         selective_bpo_enabled=getattr(owner, "selective_bpo_enabled", False),
-        notify_order_created_group_ids=list(
-            owner.notify_order_created_groups.values_list("id", flat=True)
-        )
-        if hasattr(owner, "notify_order_created_groups")
-        else [],
-        notify_order_status_group_ids=list(
-            owner.notify_order_status_groups.values_list("id", flat=True)
-        )
-        if hasattr(owner, "notify_order_status_groups")
-        else [],
+        notify_order_created_group_ids=(
+            list(owner.notify_order_created_groups.values_list("id", flat=True))
+            if hasattr(owner, "notify_order_created_groups")
+            else []
+        ),
+        notify_order_status_group_ids=(
+            list(owner.notify_order_status_groups.values_list("id", flat=True))
+            if hasattr(owner, "notify_order_status_groups")
+            else []
+        ),
         blueprint_count=getattr(owner, "blueprint_count", 0),
         bpo_count=getattr(owner, "bpo_count", 0),
         bpc_count=getattr(owner, "bpc_count", 0),
@@ -474,9 +474,7 @@ class ApiEndpoints:
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             bpos = (
-                owner.bpforge_blueprints.filter(
-                    Q(runs__isnull=True) | Q(runs=0)
-                )
+                owner.bpforge_blueprints.filter(Q(runs__isnull=True) | Q(runs=0))
                 .select_related("eve_type__group", "location")
                 .order_by("eve_type__name")
             )
@@ -521,12 +519,18 @@ class ApiEndpoints:
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             offered_set = set(payload.offered_item_ids)
-            bpos = owner.bpforge_blueprints.filter(
-                Q(runs__isnull=True) | Q(runs=0)
-            )
+            bpos = owner.bpforge_blueprints.filter(Q(runs__isnull=True) | Q(runs=0))
 
-            to_enable_ids = [bp.item_id for bp in bpos if bp.item_id in offered_set and not bp.is_offered]
-            to_disable_ids = [bp.item_id for bp in bpos if bp.item_id not in offered_set and bp.is_offered]
+            to_enable_ids = [
+                bp.item_id
+                for bp in bpos
+                if bp.item_id in offered_set and not bp.is_offered
+            ]
+            to_disable_ids = [
+                bp.item_id
+                for bp in bpos
+                if bp.item_id not in offered_set and bp.is_offered
+            ]
 
             if to_enable_ids:
                 bpos.filter(item_id__in=to_enable_ids).update(is_offered=True)

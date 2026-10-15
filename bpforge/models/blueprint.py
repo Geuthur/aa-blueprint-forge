@@ -7,8 +7,8 @@ from django.utils.translation import gettext_lazy as _
 
 # Alliance Auth
 from allianceauth.authentication.models import CharacterOwnership, User
-from allianceauth.groupmanagement.models import Group
 from allianceauth.eveonline.models import EveCorporationInfo
+from allianceauth.groupmanagement.models import Group
 from allianceauth.services.hooks import get_extension_logger
 from esi.errors import TokenError
 from esi.models import Token
@@ -123,18 +123,14 @@ class Owner(UpdateManagerMixin, models.Model):
         Group,
         blank=True,
         related_name="bpforge_owner_order_created_notifications",
-        help_text=_(
-            "Groups to notify when a new order is created for this owner."
-        ),
+        help_text=_("Groups to notify when a new order is created for this owner."),
     )
 
     notify_order_status_groups = models.ManyToManyField(
         Group,
         blank=True,
         related_name="bpforge_owner_order_status_notifications",
-        help_text=_(
-            "Groups to notify when an order status changes for this owner."
-        ),
+        help_text=_("Groups to notify when an order status changes for this owner."),
     )
 
     @property

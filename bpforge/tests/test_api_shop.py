@@ -103,9 +103,7 @@ class TestApiShop(AuthTestCase):
         self.client.force_login(self.user)
 
         # Test Action
-        response = self.client.get(
-            f"/bpforge/api/blueprints/{self.public_owner.id}/"
-        )
+        response = self.client.get(f"/bpforge/api/blueprints/{self.public_owner.id}/")
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -120,9 +118,7 @@ class TestApiShop(AuthTestCase):
         self.client.force_login(self.user)
 
         # Test Action
-        response = self.client.get(
-            f"/bpforge/api/blueprints/{self.private_owner.id}/"
-        )
+        response = self.client.get(f"/bpforge/api/blueprints/{self.private_owner.id}/")
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
@@ -140,9 +136,7 @@ class TestApiShop(AuthTestCase):
         self.public_owner.save()
 
         # Test Action
-        resp_bpc = self.client.get(
-            f"/bpforge/api/blueprints/{self.public_owner.id}/"
-        )
+        resp_bpc = self.client.get(f"/bpforge/api/blueprints/{self.public_owner.id}/")
 
         # Expected Result: 0 blueprints because only BPC is offered
         self.assertEqual(resp_bpc.status_code, HTTPStatus.OK)

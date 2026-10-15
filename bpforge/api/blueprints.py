@@ -19,6 +19,7 @@ from bpforge.models.blueprint import Blueprint, Owner
 class ApiEndpoints:
     tags = ["Shop"]
 
+    # pylint: disable=too-many-statements
     def __init__(self, api: NinjaAPI):
         @api.get(
             "blueprints/",
@@ -142,32 +143,27 @@ class ApiEndpoints:
             is_owner = owner.user == request.user
             is_admin = request.user.has_perm("bpforge.full_access")
             if not (owner.is_public or is_owner or is_admin):
-                return HTTPStatus.FORBIDDEN, {"error": _("This blueprint catalog is private.")}
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("This blueprint catalog is private.")
+                }
 
             blueprint_qs = Blueprint.objects.filter(owner=owner)
 
             # In the blueprint catalog, always filter by public_type & selective BPOs as configured by the owner
             if owner.public_type == "bpo":
-                blueprint_qs = blueprint_qs.filter(
-                    Q(runs__isnull=True) | Q(runs=0)
-                )
+                blueprint_qs = blueprint_qs.filter(Q(runs__isnull=True) | Q(runs=0))
             elif owner.public_type == "bpc":
                 blueprint_qs = blueprint_qs.filter(runs__gt=0)
 
             if owner.selective_bpo_enabled:
-                blueprint_qs = blueprint_qs.filter(
-                    Q(runs__gt=0) | Q(is_offered=True)
-                )
+                blueprint_qs = blueprint_qs.filter(Q(runs__gt=0) | Q(is_offered=True))
 
-            blueprints = (
-                blueprint_qs.select_related(
-                    "eve_type__group",
-                    "location",
-                    "owner__character__character",
-                    "owner__corporation",
-                )
-                .order_by("eve_type__name")
-            )
+            blueprints = blueprint_qs.select_related(
+                "eve_type__group",
+                "location",
+                "owner__character__character",
+                "owner__corporation",
+            ).order_by("eve_type__name")
 
             # pylint: disable=duplicate-code
             owner_name = (

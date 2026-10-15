@@ -36,6 +36,7 @@ class ApiEndpoints:
             tags=self.tags,
             summary="Create a new batch order with multiple blueprints",
         )
+        # pylint: disable=too-many-return-statements
         def create_order(request, payload: schema.OrderCreateRequest):
             if not request.user.has_perm("bpforge.basic_access"):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
@@ -70,20 +71,30 @@ class ApiEndpoints:
                     )
                 }
 
-            if not (owner.user == request.user or request.user.has_perm("bpforge.full_access")):
-                if owner.public_type == "bpo" and any(bp.runs and bp.runs > 0 for bp in blueprints):
+            if not (
+                owner.user == request.user
+                or request.user.has_perm("bpforge.full_access")
+            ):
+                if owner.public_type == "bpo" and any(
+                    bp.runs and bp.runs > 0 for bp in blueprints
+                ):
                     return HTTPStatus.BAD_REQUEST, {
                         "error": _("This shop only offers blueprint originals (BPO).")
                     }
-                if owner.public_type == "bpc" and any(not bp.runs or bp.runs == 0 for bp in blueprints):
+                if owner.public_type == "bpc" and any(
+                    not bp.runs or bp.runs == 0 for bp in blueprints
+                ):
                     return HTTPStatus.BAD_REQUEST, {
                         "error": _("This shop only offers blueprint copies (BPC).")
                     }
                 if owner.selective_bpo_enabled and any(
-                    (not bp.runs or bp.runs == 0) and not bp.is_offered for bp in blueprints
+                    (not bp.runs or bp.runs == 0) and not bp.is_offered
+                    for bp in blueprints
                 ):
                     return HTTPStatus.BAD_REQUEST, {
-                        "error": _("One or more selected BPOs are not offered by this shop.")
+                        "error": _(
+                            "One or more selected BPOs are not offered by this shop."
+                        )
                     }
 
             with transaction.atomic():
@@ -240,6 +251,7 @@ class ApiEndpoints:
             return HTTPStatus.OK, _serialize_order(order)
 
 
+# pylint: disable=duplicate-code
 def _serialize_order(order: Order) -> schema.OrderSchema:
     owner = order.owner
     owner_name = (

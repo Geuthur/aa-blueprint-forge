@@ -295,4 +295,3 @@ class TaskTriggerResponseSchema(Schema):
 
     success: bool = True
     message: str = ""
-

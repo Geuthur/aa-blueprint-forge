@@ -164,6 +164,7 @@ def send_user_notification(
 def notify_order_created(order) -> None:
     """Notify the shop owner and configured groups that a new order has been created."""
     # pylint: disable=import-outside-toplevel
+    # AA Blueprint Forge
     from bpforge.models.general import GeneralNotificationSettings
 
     owner = order.owner
@@ -215,9 +216,12 @@ def notify_order_created(order) -> None:
         )
 
 
-def notify_order_status_updated(order, old_status: str, new_status: str, actor: User) -> None:
+def notify_order_status_updated(
+    order, old_status: str, new_status: str, actor: User
+) -> None:
     """Notify buyer, owner, and configured groups about an order status change."""
     # pylint: disable=import-outside-toplevel
+    # AA Blueprint Forge
     from bpforge.models.general import GeneralNotificationSettings
 
     owner = order.owner

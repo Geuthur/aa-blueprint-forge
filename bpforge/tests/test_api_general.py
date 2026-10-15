@@ -123,10 +123,12 @@ class TestApiGeneral(AuthTestCase):
         # Test Action
         response = self.client.patch(
             f"/bpforge/api/settings/owners/{owner.id}/",
-            data=json.dumps({
-                "public_type": "bpo",
-                "selective_bpo_enabled": True,
-            }),
+            data=json.dumps(
+                {
+                    "public_type": "bpo",
+                    "selective_bpo_enabled": True,
+                }
+            ),
             content_type="application/json",
         )
 
@@ -145,6 +147,7 @@ class TestApiGeneral(AuthTestCase):
             is_public=True,
         )
         # Eve SDE
+        # Alliance Auth (External Libs)
         from eve_sde.models import ItemGroup, ItemType
 
         # AA Blueprint Forge

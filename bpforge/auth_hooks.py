@@ -42,6 +42,7 @@ def register_urls():
 
     return UrlHook(urls, "bpforge", r"^bpforge/")
 
+
 @hooks.register("charlink")
 def register_charlink_hook():
     return "bpforge.thirdparty.charlink_hook"

@@ -6,7 +6,7 @@ from ninja.security import django_auth
 from django.conf import settings
 
 # AA Blueprint Forge
-from bpforge.api import general, my_blueprints, orders, blueprints, superuser
+from bpforge.api import blueprints, general, my_blueprints, orders, superuser
 
 api = NinjaAPI(
     title="AA Blueprint Forge API",

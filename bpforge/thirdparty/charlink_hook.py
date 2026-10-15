@@ -1,20 +1,20 @@
 # Third Party
-from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404
 from charlink.app_imports.utils import AppImport, LoginImport
+
+# Django
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Exists, OuterRef
+from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
+
+# Alliance Auth
+from allianceauth.authentication.models import CharacterOwnership, Permission, User
+from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
 # AA Blueprint Forge
 from bpforge.app_settings import BPFORGE_APP_NAME
 from bpforge.models.blueprint import Owner
 from bpforge.tasks import update_owner
-
-# Django
-from django.db.models import Exists, OuterRef
-from django.utils.translation import gettext_lazy as _
-
-# Alliance Auth
-from allianceauth.authentication.models import Permission, User, CharacterOwnership
-from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
 _corp_perms = [
     "bpforge.manage_access",
@@ -27,9 +27,8 @@ def _add_character(request, token):
     characterowner = Owner.objects.update_or_create(
         user=request.user,
         character=CharacterOwnership.objects.get(
-            user=request.user, 
-            character=character
-        )
+            user=request.user, character=character
+        ),
     )[0]
     update_owner.apply_async(
         kwargs={"owner_pk": characterowner.pk, "force_refresh": True}, priority=6
@@ -52,9 +51,8 @@ def _add_character_corp(request, token):
         user=request.user,
         corporation=corporation,
         character=CharacterOwnership.objects.get(
-            user=request.user, 
-            character=character
-        )
+            user=request.user, character=character
+        ),
     )[0]
     update_owner.apply_async(
         kwargs={"owner_pk": characterowner.pk, "force_refresh": True}, priority=6
@@ -150,7 +148,9 @@ app_import = AppImport(
             check_permissions=lambda user: user.has_perm("bpforge.basic_access"),
             is_character_added=_is_character_added,
             is_character_added_annotation=Exists(
-                Owner.objects.filter(character__character__eve_character_id=OuterRef("pk"))
+                Owner.objects.filter(
+                    character__character__eve_character_id=OuterRef("pk")
+                )
             ),
             get_users_with_perms=_users_with_perms_char,
         ),
@@ -164,7 +164,9 @@ app_import = AppImport(
             is_character_added=_is_character_added_corp,
             is_character_added_annotation=Exists(
                 Owner.objects.filter(
-                    corporation__eve_corporation__corporation_id=OuterRef("corporation_id")
+                    corporation__eve_corporation__corporation_id=OuterRef(
+                        "corporation_id"
+                    )
                 )
             ),
             get_users_with_perms=_users_with_perms_corp,

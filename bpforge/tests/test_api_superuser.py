@@ -1,8 +1,8 @@
 """Tests for Superuser API endpoints and menu."""
 
 # Standard Library
-from http import HTTPStatus
 import json
+from http import HTTPStatus
 from unittest.mock import patch
 
 # Django
@@ -173,12 +173,8 @@ class TestApiSuperuser(AuthTestCase):
         self.assertFalse(post_data["is_public"])
         self.assertEqual(post_data["public_type"], "bpo")
         self.assertTrue(post_data["selective_bpo_enabled"])
-        self.assertEqual(
-            post_data["notify_order_created_group_ids"], [self.group1.id]
-        )
-        self.assertEqual(
-            post_data["notify_order_status_group_ids"], [self.group2.id]
-        )
+        self.assertEqual(post_data["notify_order_created_group_ids"], [self.group1.id])
+        self.assertEqual(post_data["notify_order_status_group_ids"], [self.group2.id])
 
         self.owner.refresh_from_db()
         self.assertFalse(self.owner.is_public)
@@ -196,6 +192,7 @@ class TestApiSuperuser(AuthTestCase):
         self.client.force_login(self.user)
 
         # Eve SDE
+        # Alliance Auth (External Libs)
         from eve_sde.models import ItemGroup, ItemType
 
         # AA Blueprint Forge
@@ -274,9 +271,7 @@ class TestApiSuperuser(AuthTestCase):
         )
 
     @patch("bpforge.api.superuser.update_owner.delay")
-    def test_trigger_owner_update_should_support_force_refresh(
-        self, mock_update_owner
-    ):
+    def test_trigger_owner_update_should_support_force_refresh(self, mock_update_owner):
         # Test Data
         self.user.is_superuser = True
         self.user.save()
