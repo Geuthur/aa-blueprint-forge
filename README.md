@@ -1,8 +1,5 @@
 # AA Blueprint Forge<a name="aa-blueprint-forge"></a>
 
-> [!WARNING]
-> Before you create Models, etc remove the 0001_initial.py from migrations folder if you dont have created own one.
-
 A Blueprint Forge App for Alliance Auth
 
 ______________________________________________________________________
@@ -11,6 +8,7 @@ ______________________________________________________________________
 
 - [AA Blueprint Forge](#aa-blueprint-forge)
   - [Features](#features)
+  - [Highlights](#highlights)
   - [Installation](#installation)
     - [Step 1 - Install the Package](#step-1---install-the-package)
     - [Step 2 - Configure Alliance Auth](#step-2---configure-alliance-auth)
@@ -30,6 +28,13 @@ ______________________________________________________________________
 <!-- mdformat-toc end -->
 
 ## Features<a name="features"></a>
+
+## Highlights<a name="highlights"></a>
+
+![Image: overview]
+![Image: superuser]
+![Image: orders]
+![Image: blueprints]
 
 ## Installation<a name="installation"></a>
 
@@ -203,3 +208,7 @@ Please ensure you read the [Contribution Guidelines]
 <!-- MD Links -->
 
 [contribution guidelines]: https://github.com/Geuthur/aa-blueprint-forge/blob/master/CONTRIBUTING.md "Contribution Guidelines"
+[image: blueprints]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/blueprints.png "Blueprint Forge Blueprints"
+[image: orders]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/orders.png "Blueprint Forge Orders"
+[image: overview]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/overview.png "Blueprint Forge Overview"
+[image: superuser]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/superuser.png "Blueprint Forge Superuser"
