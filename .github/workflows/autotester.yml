@@ -1,0 +1,179 @@
+name: Checks
+
+env:
+  COVERAGE_DATABASE_VERSION: mariadb:10.11
+  COVERAGE_PYTHON_VERSION: 3.12
+  NODE_VERSION: 24 # [LTS] End of Life: 30 Apr 2028 (https://endoflife.date/nodejs)
+  REDIS_VERSION: latest
+
+on:
+  push:
+    branches:
+      - '**'
+
+    tags-ignore:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  # Run pre-commit Checks
+  pre-commit:
+    name: Pre Commit Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Set up Python
+      #- name: Set up Python
+      #  uses: actions/setup-python@v7
+      #  with:
+      #    python-version-file: 'pyproject.toml' # Read the Python version from the pyproject.toml file
+
+      # Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+      - run: npm install
+
+      - name: Run Pre Commit Checks
+        uses: pre-commit/action@v3.0.1
+
+  # Run Frontend Checks
+  frontend:
+    name: React (Lint, Tests & Build)
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Install Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: React Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: React Unit Tests
+        working-directory: frontend
+        run: npm test
+
+      - name: React Build Check
+        working-directory: frontend
+        run: npm run build
+
+  # Run Test Coverage
+  test-coverage:
+    needs: [pre-commit, frontend]
+    name: AA Latest (Python ${{ matrix.python-version }} with ${{ matrix.database }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Set Python versions to test against
+      matrix:
+        python-version:
+        # https://endoflife.date/python
+          - '3.10' # [LTS] Maintained until: October 2026
+          - '3.11' # [LTS] Maintained until: October 2027
+          - '3.12' # [LTS] Maintained until: October 2028
+          - '3.13' # [LTS] Maintained until: October 2029
+          - '3.14' # [LTS] Maintained until: October 2030
+        # MySQL versions to test against
+        database:
+          # https://endoflife.date/mysql
+          - mysql:8.4     # [LTS] Maintained until: April 2032
+          # https://endoflife.date/mariadb and https://mariadb.com/kb/en/mariadb-server-release-dates/
+          - mariadb:10.11 # [LTS] Maintained until: February 2028
+          - mariadb:11.4 # [LTS] Maintained until: May 2029
+
+    # continue-on-error: ${{ matrix.python-version == '3.13' }}
+
+    # Set up services
+    services:
+      database:
+        image: ${{ matrix.database }}
+        env:
+          MYSQL_ROOT_PASSWORD: temp_password_aa_tox_tests
+          MYSQL_DATABASE: temp_allianceauth
+        ports:
+          - 3306:3306
+        options: --tmpfs /var/lib/mysql
+
+    steps:
+      # Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Redis
+        uses: shogo82148/actions-setup-redis@v1.58.0
+        with:
+          redis-version: ${{ env.REDIS_VERSION }}
+
+      - name: Verify Redis is running
+        run: |
+          redis-cli ping
+          redis-cli info
+
+      # Set up Python
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # AAv5 development branch requires libbz2-dev for some reason, so we need to install it before running Tox
+      - name: Install libbz2-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libbz2-dev
+
+      # Install Tox and any other packages
+      - name: Install Tox and any other packages
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade tox tox-gh-actions
+
+      # Run Tox with the specified environment
+      - name: Run Tox
+        env:
+          TOX_ENV: allianceauth-latest
+        run: tox -v -e ${{ env.TOX_ENV }}
+
+      # Upload coverage to Codecov
+      - name: Upload Coverage
+        if: ${{
+              (
+                github.event_name == 'pull_request'
+                || (
+                  github.event_name == 'push'
+                  && github.ref == 'refs/heads/master'
+                )
+              )
+              && (
+                matrix.python-version == env.COVERAGE_PYTHON_VERSION
+                && matrix.database == env.COVERAGE_DATABASE_VERSION
+              )
+            }}
+        uses: codecov/codecov-action@v7
+        with:
+          files: coverage.xml
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

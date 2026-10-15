@@ -1,0 +1,326 @@
+"""API endpoints for superuser management and global notification settings."""
+
+# Standard Library
+from http import HTTPStatus
+
+# Third Party
+from ninja import NinjaAPI
+
+# Django
+from django.contrib.auth.models import Group
+from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
+
+# AA Blueprint Forge
+from bpforge.api import schema
+from bpforge.api.general import _build_owner_setting_schema
+from bpforge.models.blueprint import Blueprint, Owner
+from bpforge.models.general import GeneralNotificationSettings
+from bpforge.tasks import update_owner
+
+
+class ApiEndpoints:
+    tags = ["Superuser"]
+
+    def __init__(self, api: NinjaAPI):
+        @api.get(
+            "superuser/groups/",
+            response={
+                HTTPStatus.OK: list[schema.GroupSchema],
+                HTTPStatus.FORBIDDEN: dict,
+            },
+            tags=self.tags,
+            summary="List all Alliance Auth groups for notification configuration",
+        )
+        def list_groups(request):
+            if not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
+
+            groups = Group.objects.all().order_by("name")
+            return HTTPStatus.OK, [
+                schema.GroupSchema(id=g.pk, name=g.name) for g in groups
+            ]
+
+        @api.get(
+            "superuser/settings/",
+            response={
+                HTTPStatus.OK: schema.SuperuserNotificationSettingsSchema,
+                HTTPStatus.FORBIDDEN: dict,
+            },
+            tags=self.tags,
+            summary="Get global notification settings for superusers",
+        )
+        def get_notification_settings(request):
+            if not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
+
+            settings_obj = GeneralNotificationSettings.get_solo()
+            return HTTPStatus.OK, schema.SuperuserNotificationSettingsSchema(
+                order_created_group_ids=list(
+                    settings_obj.order_created_groups.values_list("id", flat=True)
+                ),
+                order_status_group_ids=list(
+                    settings_obj.order_status_groups.values_list("id", flat=True)
+                ),
+            )
+
+        @api.put(
+            "superuser/settings/",
+            response={
+                HTTPStatus.OK: schema.SuperuserNotificationSettingsSchema,
+                HTTPStatus.FORBIDDEN: dict,
+            },
+            tags=self.tags,
+            summary="Update global notification settings for superusers",
+        )
+        def update_notification_settings(
+            request, payload: schema.SuperuserNotificationSettingsSchema
+        ):
+            if not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
+
+            settings_obj = GeneralNotificationSettings.get_solo()
+            settings_obj.order_created_groups.set(payload.order_created_group_ids)
+            settings_obj.order_status_groups.set(payload.order_status_group_ids)
+
+            return HTTPStatus.OK, schema.SuperuserNotificationSettingsSchema(
+                order_created_group_ids=list(
+                    settings_obj.order_created_groups.values_list("id", flat=True)
+                ),
+                order_status_group_ids=list(
+                    settings_obj.order_status_groups.values_list("id", flat=True)
+                ),
+            )
+
+        @api.get(
+            "superuser/owners/",
+            response={
+                HTTPStatus.OK: list[schema.OwnerSettingSchema],
+                HTTPStatus.FORBIDDEN: dict,
+            },
+            tags=self.tags,
+            summary="List all owners across the entire system for superuser management",
+        )
+        def list_all_owners(request):
+            if not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
+
+            owners = (
+                Owner.objects.all()
+                .select_related(
+                    "user",
+                    "character__character",
+                    "corporation__alliance",
+                )
+                .prefetch_related(
+                    "bpforge_update_status",
+                    "notify_order_created_groups",
+                    "notify_order_status_groups",
+                )
+                .annotate(
+                    blueprint_count=Count("bpforge_blueprints", distinct=True),
+                    bpo_count=Count(
+                        "bpforge_blueprints",
+                        filter=Q(bpforge_blueprints__runs__isnull=True)
+                        | Q(bpforge_blueprints__runs=0),
+                        distinct=True,
+                    ),
+                    bpc_count=Count(
+                        "bpforge_blueprints",
+                        filter=Q(bpforge_blueprints__runs__gt=0),
+                        distinct=True,
+                    ),
+                )
+                .order_by("id")
+            )
+
+            result = [_build_owner_setting_schema(owner) for owner in owners]
+            return HTTPStatus.OK, result
+
+        @api.patch(
+            "superuser/owners/{int:owner_id}/",
+            response={
+                HTTPStatus.OK: schema.OwnerSettingSchema,
+                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.NOT_FOUND: dict,
+            },
+            tags=self.tags,
+            summary="Superuser update of an owner's settings and notification groups",
+        )
+        def update_owner_by_superuser(
+            request, owner_id: int, payload: schema.SuperuserOwnerUpdateRequest
+        ):
+            if not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
+
+            owner = get_object_or_404(
+                Owner.objects.select_related(
+                    "character__character",
+                    "corporation__alliance",
+                )
+                .prefetch_related(
+                    "bpforge_update_status",
+                    "notify_order_created_groups",
+                    "notify_order_status_groups",
+                )
+                .annotate(
+                    blueprint_count=Count("bpforge_blueprints", distinct=True),
+                    bpo_count=Count(
+                        "bpforge_blueprints",
+                        filter=Q(bpforge_blueprints__runs__isnull=True)
+                        | Q(bpforge_blueprints__runs=0),
+                        distinct=True,
+                    ),
+                    bpc_count=Count(
+                        "bpforge_blueprints",
+                        filter=Q(bpforge_blueprints__runs__gt=0),
+                        distinct=True,
+                    ),
+                ),
+                id=owner_id,
+            )
+
+            update_fields = []
+            if payload.is_public is not None:
+                owner.is_public = payload.is_public
+                update_fields.append("is_public")
+            if payload.public_type is not None:
+                owner.public_type = payload.public_type
+                update_fields.append("public_type")
+            if payload.selective_bpo_enabled is not None:
+                owner.selective_bpo_enabled = payload.selective_bpo_enabled
+                update_fields.append("selective_bpo_enabled")
+
+            if update_fields:
+                owner.save(update_fields=update_fields)
+
+            if payload.notify_order_created_group_ids is not None:
+                owner.notify_order_created_groups.set(
+                    payload.notify_order_created_group_ids
+                )
+            if payload.notify_order_status_group_ids is not None:
+                owner.notify_order_status_groups.set(
+                    payload.notify_order_status_group_ids
+                )
+
+            return HTTPStatus.OK, _build_owner_setting_schema(owner)
+
+        @api.get(
+            "superuser/owners/{int:owner_id}/blueprints/",
+            response={
+                HTTPStatus.OK: list[schema.BlueprintItemSchema],
+                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.NOT_FOUND: dict,
+            },
+            tags=self.tags,
+            summary="List all blueprints for a specific owner for superuser inspection",
+        )
+        def list_owner_blueprints_for_superuser(request, owner_id: int):
+            if not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
+
+            owner = get_object_or_404(
+                Owner.objects.select_related("character__character", "corporation"),
+                id=owner_id,
+            )
+
+            blueprints = (
+                Blueprint.objects.filter(owner=owner)
+                .select_related(
+                    "eve_type__group",
+                    "location",
+                    "owner__character__character",
+                    "owner__corporation",
+                )
+                .order_by("eve_type__name")
+            )
+
+            result: list[schema.BlueprintItemSchema] = []
+            for bp in blueprints:
+                owner_name = (
+                    owner.corporation.corporation_name
+                    if owner.corporation
+                    else (
+                        owner.character.character.character_name
+                        if owner.character
+                        else owner.user.username
+                    )
+                )
+                result.append(
+                    schema.BlueprintItemSchema(
+                        item_id=bp.item_id,
+                        type_id=bp.eve_type.id,
+                        type_name=bp.eve_type.name,
+                        group_id=bp.eve_type.group.id if bp.eve_type.group else 0,
+                        group_name=bp.eve_type.group.name if bp.eve_type.group else "",
+                        location_id=bp.location.location_id,
+                        location_name=bp.location.name,
+                        material_efficiency=bp.material_efficency or 0,
+                        time_efficiency=bp.time_efficiency or 0,
+                        runs=bp.runs or 0,
+                        quantity=bp.quantity,
+                        is_original=bp.is_original,
+                        is_corp_bp=bp.is_corp_bp,
+                        owner_id=owner.id,
+                        owner_name=owner_name,
+                    )
+                )
+            return HTTPStatus.OK, result
+
+        @api.post(
+            "superuser/owners/{int:owner_id}/update/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.NOT_FOUND: dict,
+            },
+            tags=self.tags,
+            summary="Trigger update_owner Celery task for a specific owner",
+        )
+        def trigger_owner_update(
+            request,
+            owner_id: int,
+            payload: schema.SuperuserUpdateOwnerTaskRequest | None = None,
+        ):
+            if not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
+
+            owner = get_object_or_404(
+                Owner.objects.select_related("character__character", "corporation"),
+                id=owner_id,
+            )
+            force_refresh = payload.force_refresh if payload else False
+            update_owner.delay(owner_pk=owner.pk, force_refresh=force_refresh)
+
+            owner_name = (
+                owner.corporation.corporation_name
+                if owner.corporation
+                else (
+                    owner.character.character.character_name
+                    if owner.character
+                    else owner.user.username
+                )
+            )
+
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=_(
+                    f"Update task queued for {owner_name} (force_refresh={force_refresh})."
+                ),
+            )
+

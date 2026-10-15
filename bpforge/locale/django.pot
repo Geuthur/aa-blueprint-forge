@@ -1,0 +1,44 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: AA Example\n"
+"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-example/\n"
+"POT-Creation-Date: 2026-09-10 03:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: example/api/character.py:47
+msgid "Permission Denied."
+msgstr ""
+
+#: example/models/general.py:13
+msgid "Can access this app, Example"
+msgstr ""
+
+#: example/models/general.py:14
+msgid "Can manage Example"
+msgstr ""
+
+#: example/templates/example/base.html:5 example/templates/example/base.html:9
+#: example/templates/example/partials/navigation/navigation.html:5
+#: example/templates/example/view-index.html:17
+msgid "Example"
+msgstr ""
+
+#: example/templates/example/base.html:64
+msgid "Internal Server Error"
+msgstr ""
+
+#: example/templates/example/view-index.html:25
+msgid "Welcome to Example."
+msgstr ""

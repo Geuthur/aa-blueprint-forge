@@ -1,0 +1,2576 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AA Blueprint Forge API",
+    "version": "0.5.0",
+    "description": ""
+  },
+  "paths": {
+    "/bpforge/api/menu/": {
+      "get": {
+        "operationId": "bpforge_api_general_get_menu",
+        "summary": "Get AA Blueprint Shop navigation menu",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuSchema"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/user/": {
+      "get": {
+        "operationId": "bpforge_api_general_get_user",
+        "summary": "Get User",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserData"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/settings/": {
+      "get": {
+        "operationId": "bpforge_api_general_get_user_settings",
+        "summary": "Get current user's settings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSettingsSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "bpforge_api_general_update_user_settings",
+        "summary": "Update current user's settings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSettingsSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserSettingsUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/settings/owners/": {
+      "get": {
+        "operationId": "bpforge_api_general_get_user_owners",
+        "summary": "List current user's blueprint owners",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OwnerSettingSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/user/characters/status/": {
+      "get": {
+        "operationId": "bpforge_api_general_get_user_character_statuses",
+        "summary": "Get current user's character and corporation update statuses for settings overview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserCharacterStatusSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/settings/owners/{owner_id}/": {
+      "patch": {
+        "operationId": "bpforge_api_general_update_owner_setting",
+        "summary": "Update public status of an owner",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_id",
+            "schema": {
+              "title": "Owner Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerSettingSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerSettingUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/settings/owners/{owner_id}/bpos/": {
+      "get": {
+        "operationId": "bpforge_api_general_list_owner_bpos",
+        "summary": "List all BPOs for an owner with their selective offering status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_id",
+            "schema": {
+              "title": "Owner Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OwnerBpoItemSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "bpforge_api_general_update_owner_bpos",
+        "summary": "Update offered BPOs for an owner",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_id",
+            "schema": {
+              "title": "Owner Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerBpoSelectionUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/blueprints/": {
+      "get": {
+        "operationId": "bpforge_api_blueprints_list_public_blueprints",
+        "summary": "List all public blueprint owners",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OwnerPublicSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shop"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/blueprints/{owner_id}/": {
+      "get": {
+        "operationId": "bpforge_api_blueprints_list_owner_blueprints",
+        "summary": "List blueprints for a specific owner",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_id",
+            "schema": {
+              "title": "Owner Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BlueprintItemSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shop"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/my-blueprints/": {
+      "get": {
+        "operationId": "bpforge_api_my_blueprints_list_my_blueprints",
+        "summary": "List all blueprints owned by the current user across characters and corporations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BlueprintItemSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "My Blueprints"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/orders/": {
+      "post": {
+        "operationId": "bpforge_api_orders_create_order",
+        "summary": "Create a new batch order with multiple blueprints",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "bpforge_api_orders_list_orders",
+        "summary": "List orders (either placed as buyer or received as seller)",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "role",
+            "schema": {
+              "default": "all",
+              "title": "Role",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OrderSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "description": "Role can be 'buyer', 'seller', or 'all'.",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/orders/{order_id}/": {
+      "get": {
+        "operationId": "bpforge_api_orders_get_order",
+        "summary": "Get specific order details",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "title": "Order Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/orders/{order_id}/status/": {
+      "post": {
+        "operationId": "bpforge_api_orders_update_order_status",
+        "summary": "Update order status (Accept, Deliver, Decline, Cancel)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "title": "Order Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderStatusUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/superuser/groups/": {
+      "get": {
+        "operationId": "bpforge_api_superuser_list_groups",
+        "summary": "List all Alliance Auth groups for notification configuration",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GroupSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Superuser"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/superuser/settings/": {
+      "get": {
+        "operationId": "bpforge_api_superuser_get_notification_settings",
+        "summary": "Get global notification settings for superusers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuperuserNotificationSettingsSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Superuser"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "bpforge_api_superuser_update_notification_settings",
+        "summary": "Update global notification settings for superusers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuperuserNotificationSettingsSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Superuser"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuperuserNotificationSettingsSchema"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/superuser/owners/": {
+      "get": {
+        "operationId": "bpforge_api_superuser_list_all_owners",
+        "summary": "List all owners across the entire system for superuser management",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OwnerSettingSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Superuser"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/superuser/owners/{owner_id}/": {
+      "patch": {
+        "operationId": "bpforge_api_superuser_update_owner_by_superuser",
+        "summary": "Superuser update of an owner's settings and notification groups",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_id",
+            "schema": {
+              "title": "Owner Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerSettingSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Superuser"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuperuserOwnerUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/superuser/owners/{owner_id}/blueprints/": {
+      "get": {
+        "operationId": "bpforge_api_superuser_list_owner_blueprints_for_superuser",
+        "summary": "List all blueprints for a specific owner for superuser inspection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_id",
+            "schema": {
+              "title": "Owner Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BlueprintItemSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Superuser"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/superuser/owners/{owner_id}/update/": {
+      "post": {
+        "operationId": "bpforge_api_superuser_trigger_owner_update",
+        "summary": "Trigger update_owner Celery task for a specific owner",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_id",
+            "schema": {
+              "title": "Owner Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTriggerResponseSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Superuser"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/SuperuserUpdateOwnerTaskRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "required": false
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MenuLink": {
+        "description": "Represents a link in the menu.\n\nParameters:\n    name (str): The name of the menu link.\n    link (str): The URL or path the menu link points to.\n    is_external (bool): Indicates if the link is an external link.",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "link": {
+            "default": "",
+            "title": "Link",
+            "type": "string"
+          },
+          "is_external": {
+            "default": false,
+            "title": "Is External",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "MenuLink",
+        "type": "object"
+      },
+      "MenuModalSchema": {
+        "description": "Schema for menu modals, including the example modal.",
+        "properties": {
+          "create_example": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModalSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "MenuModalSchema",
+        "type": "object"
+      },
+      "MenuSchema": {
+        "description": "Schema for the overall menu, including links and modals.\n\nParameters:\n    links (list[MenuLink]): The list of links in the menu.\n    modals (MenuModalSchema | None): The modals associated with the menu.",
+        "properties": {
+          "left_links": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MenuLink"
+            },
+            "title": "Left Links",
+            "type": "array"
+          },
+          "right_links": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MenuLink"
+            },
+            "title": "Right Links",
+            "type": "array"
+          },
+          "modals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MenuModalSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "MenuSchema",
+        "type": "object"
+      },
+      "ModalSchema": {
+        "description": "Schema for modal dialog data.",
+        "properties": {
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "icon": {
+            "title": "Icon",
+            "type": "string"
+          },
+          "modal_id": {
+            "title": "Modal Id",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "buttonText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Buttontext"
+          }
+        },
+        "required": [
+          "title",
+          "text",
+          "icon",
+          "modal_id",
+          "url"
+        ],
+        "title": "ModalSchema",
+        "type": "object"
+      },
+      "UserData": {
+        "description": "Schema for user data, including character ID and character name.\n\nParameters:\n    user_id (int): The ID of the user.\n    character_id (int): The ID of the character associated with the user.\n    character_name (str): The name of the character.\n    corporation_id (int): The ID of the corporation associated with the user.\n    corporation_name (str): The name of the corporation associated with the user.\n    alliance_id (int | None): The ID of the alliance associated with the user, if any.\n    alliance_name (str | None): The name of the alliance associated with the user, if any.\n    portrait (str | None): The URL or path to the character's portrait image.\n    is_admin (boolean): The admin status for the user.",
+        "properties": {
+          "user_id": {
+            "title": "User Id",
+            "type": "integer"
+          },
+          "character_id": {
+            "title": "Character Id",
+            "type": "integer"
+          },
+          "character_name": {
+            "title": "Character Name",
+            "type": "string"
+          },
+          "corporation_id": {
+            "title": "Corporation Id",
+            "type": "integer"
+          },
+          "corporation_name": {
+            "title": "Corporation Name",
+            "type": "string"
+          },
+          "alliance_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alliance Id"
+          },
+          "alliance_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alliance Name"
+          },
+          "portrait": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portrait"
+          },
+          "is_admin": {
+            "default": false,
+            "title": "Is Admin",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_id",
+          "character_id",
+          "character_name",
+          "corporation_id",
+          "corporation_name"
+        ],
+        "title": "UserData",
+        "type": "object"
+      },
+      "UserSettingsSchema": {
+        "properties": {
+          "disable_notifications": {
+            "title": "Disable Notifications",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "disable_notifications"
+        ],
+        "title": "UserSettingsSchema",
+        "type": "object"
+      },
+      "UserSettingsUpdateRequest": {
+        "properties": {
+          "disable_notifications": {
+            "title": "Disable Notifications",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "disable_notifications"
+        ],
+        "title": "UserSettingsUpdateRequest",
+        "type": "object"
+      },
+      "OwnerSettingSchema": {
+        "description": "User owner configuration in Settings.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "is_corporation": {
+            "title": "Is Corporation",
+            "type": "boolean"
+          },
+          "character_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Id"
+          },
+          "character_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Name"
+          },
+          "corporation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporation Id"
+          },
+          "corporation_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporation Name"
+          },
+          "corporation_ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporation Ticker"
+          },
+          "alliance_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alliance Id"
+          },
+          "portrait_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portrait Url"
+          },
+          "is_public": {
+            "default": false,
+            "title": "Is Public",
+            "type": "boolean"
+          },
+          "public_type": {
+            "default": "all",
+            "title": "Public Type",
+            "type": "string"
+          },
+          "selective_bpo_enabled": {
+            "default": false,
+            "title": "Selective Bpo Enabled",
+            "type": "boolean"
+          },
+          "notify_order_created_group_ids": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Notify Order Created Group Ids",
+            "type": "array"
+          },
+          "notify_order_status_group_ids": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Notify Order Status Group Ids",
+            "type": "array"
+          },
+          "blueprint_count": {
+            "default": 0,
+            "title": "Blueprint Count",
+            "type": "integer"
+          },
+          "bpo_count": {
+            "default": 0,
+            "title": "Bpo Count",
+            "type": "integer"
+          },
+          "bpc_count": {
+            "default": 0,
+            "title": "Bpc Count",
+            "type": "integer"
+          },
+          "status": {
+            "default": "incomplete",
+            "title": "Status",
+            "type": "string"
+          },
+          "has_error": {
+            "default": false,
+            "title": "Has Error",
+            "type": "boolean"
+          },
+          "last_sync": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sync"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "sections": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/OwnerStatusSectionSchema"
+            },
+            "title": "Sections",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "is_corporation"
+        ],
+        "title": "OwnerSettingSchema",
+        "type": "object"
+      },
+      "OwnerStatusSectionSchema": {
+        "description": "Status of an individual update section.",
+        "properties": {
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "section_name": {
+            "title": "Section Name",
+            "type": "string"
+          },
+          "is_success": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Success"
+          },
+          "has_token_error": {
+            "default": false,
+            "title": "Has Token Error",
+            "type": "boolean"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "last_run_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Run At"
+          },
+          "last_run_finished_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Run Finished At"
+          }
+        },
+        "required": [
+          "section",
+          "section_name"
+        ],
+        "title": "OwnerStatusSectionSchema",
+        "type": "object"
+      },
+      "UserCharacterStatusSchema": {
+        "description": "Alias schema for character and corporation update status in settings.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "is_corporation": {
+            "title": "Is Corporation",
+            "type": "boolean"
+          },
+          "character_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Id"
+          },
+          "character_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Name"
+          },
+          "corporation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporation Id"
+          },
+          "corporation_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporation Name"
+          },
+          "corporation_ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporation Ticker"
+          },
+          "alliance_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alliance Id"
+          },
+          "portrait_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Portrait Url"
+          },
+          "is_public": {
+            "default": false,
+            "title": "Is Public",
+            "type": "boolean"
+          },
+          "public_type": {
+            "default": "all",
+            "title": "Public Type",
+            "type": "string"
+          },
+          "selective_bpo_enabled": {
+            "default": false,
+            "title": "Selective Bpo Enabled",
+            "type": "boolean"
+          },
+          "notify_order_created_group_ids": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Notify Order Created Group Ids",
+            "type": "array"
+          },
+          "notify_order_status_group_ids": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Notify Order Status Group Ids",
+            "type": "array"
+          },
+          "blueprint_count": {
+            "default": 0,
+            "title": "Blueprint Count",
+            "type": "integer"
+          },
+          "bpo_count": {
+            "default": 0,
+            "title": "Bpo Count",
+            "type": "integer"
+          },
+          "bpc_count": {
+            "default": 0,
+            "title": "Bpc Count",
+            "type": "integer"
+          },
+          "status": {
+            "default": "incomplete",
+            "title": "Status",
+            "type": "string"
+          },
+          "has_error": {
+            "default": false,
+            "title": "Has Error",
+            "type": "boolean"
+          },
+          "last_sync": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sync"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "sections": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/OwnerStatusSectionSchema"
+            },
+            "title": "Sections",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "is_corporation"
+        ],
+        "title": "UserCharacterStatusSchema",
+        "type": "object"
+      },
+      "OwnerSettingUpdateRequest": {
+        "description": "Payload to update visibility and settings of an owner.",
+        "properties": {
+          "is_public": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Public"
+          },
+          "public_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Public Type"
+          },
+          "selective_bpo_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selective Bpo Enabled"
+          }
+        },
+        "title": "OwnerSettingUpdateRequest",
+        "type": "object"
+      },
+      "OwnerBpoItemSchema": {
+        "description": "BPO item representation for selective offering in settings.",
+        "properties": {
+          "item_id": {
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "type_id": {
+            "title": "Type Id",
+            "type": "integer"
+          },
+          "type_name": {
+            "title": "Type Name",
+            "type": "string"
+          },
+          "group_name": {
+            "title": "Group Name",
+            "type": "string"
+          },
+          "material_efficiency": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Material Efficiency"
+          },
+          "time_efficiency": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Efficiency"
+          },
+          "location_name": {
+            "default": "",
+            "title": "Location Name",
+            "type": "string"
+          },
+          "is_offered": {
+            "default": false,
+            "title": "Is Offered",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "item_id",
+          "type_id",
+          "type_name",
+          "group_name"
+        ],
+        "title": "OwnerBpoItemSchema",
+        "type": "object"
+      },
+      "OwnerBpoSelectionUpdateRequest": {
+        "description": "Payload to update offered BPOs for an owner.",
+        "properties": {
+          "offered_item_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Offered Item Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "offered_item_ids"
+        ],
+        "title": "OwnerBpoSelectionUpdateRequest",
+        "type": "object"
+      },
+      "OwnerPublicSchema": {
+        "description": "Publicly listed Blueprint owner.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "is_corporation": {
+            "title": "Is Corporation",
+            "type": "boolean"
+          },
+          "character_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Id"
+          },
+          "corporation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporation Id"
+          },
+          "alliance_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alliance Id"
+          },
+          "blueprint_count": {
+            "default": 0,
+            "title": "Blueprint Count",
+            "type": "integer"
+          },
+          "bpo_count": {
+            "default": 0,
+            "title": "Bpo Count",
+            "type": "integer"
+          },
+          "bpc_count": {
+            "default": 0,
+            "title": "Bpc Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "is_corporation"
+        ],
+        "title": "OwnerPublicSchema",
+        "type": "object"
+      },
+      "BlueprintItemSchema": {
+        "description": "Detailed Blueprint item information.",
+        "properties": {
+          "item_id": {
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "type_id": {
+            "title": "Type Id",
+            "type": "integer"
+          },
+          "type_name": {
+            "title": "Type Name",
+            "type": "string"
+          },
+          "group_name": {
+            "title": "Group Name",
+            "type": "string"
+          },
+          "is_original": {
+            "title": "Is Original",
+            "type": "boolean"
+          },
+          "is_corp_bp": {
+            "title": "Is Corp Bp",
+            "type": "boolean"
+          },
+          "runs": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runs"
+          },
+          "quantity": {
+            "default": 1,
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "material_efficiency": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Material Efficiency"
+          },
+          "time_efficiency": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Efficiency"
+          },
+          "location_id": {
+            "title": "Location Id",
+            "type": "integer"
+          },
+          "location_name": {
+            "title": "Location Name",
+            "type": "string"
+          },
+          "owner_id": {
+            "title": "Owner Id",
+            "type": "integer"
+          },
+          "owner_name": {
+            "title": "Owner Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id",
+          "type_id",
+          "type_name",
+          "group_name",
+          "is_original",
+          "is_corp_bp",
+          "location_id",
+          "location_name",
+          "owner_id",
+          "owner_name"
+        ],
+        "title": "BlueprintItemSchema",
+        "type": "object"
+      },
+      "OrderItemSchema": {
+        "description": "Blueprint line item inside an Order.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "blueprint_id": {
+            "title": "Blueprint Id",
+            "type": "integer"
+          },
+          "type_id": {
+            "title": "Type Id",
+            "type": "integer"
+          },
+          "type_name": {
+            "title": "Type Name",
+            "type": "string"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "runs": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runs"
+          },
+          "material_efficiency": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Material Efficiency"
+          },
+          "time_efficiency": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Efficiency"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "blueprint_id",
+          "type_id",
+          "type_name",
+          "quantity",
+          "status"
+        ],
+        "title": "OrderItemSchema",
+        "type": "object"
+      },
+      "OrderSchema": {
+        "description": "Full customer order representation.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "owner_id": {
+            "title": "Owner Id",
+            "type": "integer"
+          },
+          "owner_name": {
+            "title": "Owner Name",
+            "type": "string"
+          },
+          "requesting_user_id": {
+            "title": "Requesting User Id",
+            "type": "integer"
+          },
+          "requesting_user_name": {
+            "title": "Requesting User Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OrderItemSchema"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          },
+          "closed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closed At"
+          }
+        },
+        "required": [
+          "id",
+          "owner_id",
+          "owner_name",
+          "requesting_user_id",
+          "requesting_user_name",
+          "status",
+          "note",
+          "items",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "OrderSchema",
+        "type": "object"
+      },
+      "OrderCreateRequest": {
+        "description": "Payload to place a new order.",
+        "properties": {
+          "owner_id": {
+            "title": "Owner Id",
+            "type": "integer"
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OrderItemCreateSchema"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "owner_id",
+          "items"
+        ],
+        "title": "OrderCreateRequest",
+        "type": "object"
+      },
+      "OrderItemCreateSchema": {
+        "description": "Payload to add a blueprint to an order.",
+        "properties": {
+          "blueprint_id": {
+            "title": "Blueprint Id",
+            "type": "integer"
+          },
+          "quantity": {
+            "default": 1,
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "runs": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runs"
+          }
+        },
+        "required": [
+          "blueprint_id"
+        ],
+        "title": "OrderItemCreateSchema",
+        "type": "object"
+      },
+      "OrderStatusUpdateRequest": {
+        "description": "Payload to change an order status.",
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "OrderStatusUpdateRequest",
+        "type": "object"
+      },
+      "GroupSchema": {
+        "description": "Alliance Auth group representation for notification settings.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "GroupSchema",
+        "type": "object"
+      },
+      "SuperuserNotificationSettingsSchema": {
+        "description": "Global notification settings for Superusers.",
+        "properties": {
+          "order_created_group_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Order Created Group Ids",
+            "type": "array"
+          },
+          "order_status_group_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Order Status Group Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "order_created_group_ids",
+          "order_status_group_ids"
+        ],
+        "title": "SuperuserNotificationSettingsSchema",
+        "type": "object"
+      },
+      "SuperuserOwnerUpdateRequest": {
+        "description": "Payload for superusers to update owner visibility and notification groups.",
+        "properties": {
+          "is_public": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Public"
+          },
+          "public_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Public Type"
+          },
+          "selective_bpo_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selective Bpo Enabled"
+          },
+          "notify_order_created_group_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notify Order Created Group Ids"
+          },
+          "notify_order_status_group_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notify Order Status Group Ids"
+          }
+        },
+        "title": "SuperuserOwnerUpdateRequest",
+        "type": "object"
+      },
+      "TaskTriggerResponseSchema": {
+        "description": "Response schema for triggered async tasks.",
+        "properties": {
+          "success": {
+            "default": true,
+            "title": "Success",
+            "type": "boolean"
+          },
+          "message": {
+            "default": "",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "title": "TaskTriggerResponseSchema",
+        "type": "object"
+      },
+      "SuperuserUpdateOwnerTaskRequest": {
+        "description": "Payload to trigger update_owner Celery task.",
+        "properties": {
+          "force_refresh": {
+            "default": false,
+            "title": "Force Refresh",
+            "type": "boolean"
+          }
+        },
+        "title": "SuperuserUpdateOwnerTaskRequest",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "SessionAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sessionid"
+      }
+    }
+  },
+  "servers": []
+}
