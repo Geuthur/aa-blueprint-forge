@@ -28,6 +28,8 @@ Section Order:
 
 <!-- Your changes go here -->
 
+## [1.0.0] - 2026-10-15
+
 ### Added
 
 - Interactive blueprint catalog for browsing and filtering available Blueprint Originals (BPOs) and Copies (BPCs) across characters and corporations.
@@ -41,4 +43,5 @@ Section Order:
 
 <!-- Links -->
 
+[1.0.0]: https://github.com/Geuthur/aa-blueprint-forge/compare/v...v1.0.0 "v1.0.0"
 [in development]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.0...HEAD "In Development"
