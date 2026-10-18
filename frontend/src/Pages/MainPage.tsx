@@ -2,22 +2,25 @@
 import { useMemo, useState } from "react";
 
 // Third Party
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Store, AlertCircle, RefreshCw } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { RefreshCw } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { Button, Form, Spinner, Alert } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { loadPublicCatalogs, loadCatalogBlueprints, createOrder, searchPublicBlueprints } from "@/Api/ApiCalls";
+import {
+  createOrder,
+  loadCatalogBlueprints,
+  loadPublicCatalogs,
+  searchPublicBlueprints,
+} from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
 import BaseSectionHeader from "@/Components/Base/BaseHeader";
-import { BlueprintTable } from "@/Components/Blueprint/BlueprintTable";
-import type { BlueprintItem } from "@/Components/Blueprint/BlueprintTableColumns";
-import { OrderFloatingBar } from "@/Components/Blueprint/OrderFloatingBar";
-import { OrderModal } from "@/Components/Blueprint/OrderModal";
-import type { CartItem } from "@/Components/Blueprint/OrderModal";
-import { OwnerCard } from "@/Components/Blueprint/OwnerCard";
+import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
+import { CatalogDetailSection } from "@/Components/Main/CatalogDetailSection";
+import { CatalogDirectorySection } from "@/Components/Main/CatalogDirectorySection";
+import type { CartItem } from "@/Components/Main/OrderModal";
 import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 
@@ -45,12 +48,13 @@ function MainPage() {
     queryFn: loadPublicCatalogs,
   });
 
-  const selectedOwner = shops.find((s) => s.id === activeCatalogId) ?? null;
+  const selectedOwner = shops.find((s) => s.id === activeCatalogId) ?? undefined;
 
   // Load blueprints for the selected owner
   const {
     data: blueprints = [],
     isLoading: isBlueprintsLoading,
+    refetch: refetchBlueprints,
   } = useQuery({
     queryKey: activeCatalogId ? queryKeys.CatalogBlueprints(activeCatalogId) : ["none"],
     queryFn: () => (activeCatalogId ? loadCatalogBlueprints(activeCatalogId) : Promise.resolve([])),
@@ -72,11 +76,12 @@ function MainPage() {
   });
 
   const matchingByOwner = useMemo(() => {
-    const map = new Map<number, BlueprintItem[]>();
+    const map: Record<number, BlueprintItem[]> = {};
     for (const bp of searchResults) {
-      const list = map.get(bp.owner_id) ?? [];
-      list.push(bp as BlueprintItem);
-      map.set(bp.owner_id, list);
+      if (!map[bp.owner_id]) {
+        map[bp.owner_id] = [];
+      }
+      map[bp.owner_id].push(bp as BlueprintItem);
     }
     return map;
   }, [searchResults]);
@@ -150,20 +155,24 @@ function MainPage() {
     });
   };
 
-  const filteredShops = useMemo(() => {
-    if (!trimmedSearch) return shops;
-    const lower = trimmedSearch.toLowerCase();
-    return shops.filter((s) => {
-      const matchesOwnerName = s.name.toLowerCase().includes(lower);
-      const matchesBlueprints = matchingByOwner.has(s.id);
-      return matchesOwnerName || matchesBlueprints;
-    });
-  }, [shops, trimmedSearch, matchingByOwner]);
+  const handleBackToDirectory = () => {
+    setSelectedCatalogId(null);
+    setCatalogTypeFilter("all");
+    setCart(new Map());
+  };
 
   return (
     <main className="d-flex flex-column gap-3">
       {/* Top Header */}
-      <BaseSectionHeader name={selectedOwner ? selectedOwner.name : (activeCatalogId ? t("Blueprint Catalog") : t("Blueprints"))}>
+      <BaseSectionHeader
+        name={
+          selectedOwner
+            ? selectedOwner.name
+            : activeCatalogId
+              ? t("Blueprint Catalog")
+              : t("Blueprints")
+        }
+      >
         <div className="d-flex align-items-center gap-2">
           {activeCatalogId &&
             renderTooltip(
@@ -172,28 +181,25 @@ function MainPage() {
                 variant="secondary"
                 size="sm"
                 aria-label={t("All Blueprints")}
-                onClick={() => {
-                  setSelectedCatalogId(null);
-                  setCatalogTypeFilter("all");
-                  setCart(new Map());
-                }}
+                onClick={handleBackToDirectory}
                 className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
               >
-                <ArrowLeft size={16} />
+                <span>{t("All Blueprints")}</span>
               </Button>
             )}
 
+          {/* Catalog select dropdown */}
           <Form.Select
-            aria-label={t("Select Catalog")}
             size="sm"
             value={activeCatalogId ?? ""}
+            aria-label={t("Select Catalog")}
             onChange={(e) => {
               const val = e.target.value;
               setSelectedCatalogId(val ? Number(val) : null);
               setCatalogTypeFilter("all");
               setCart(new Map());
             }}
-            className={`bg-dark text-light border-secondary ${styles.catalogSelectDropdown}`}
+            className={styles.catalogSelectDropdown}
           >
             <option value="">{t("All Blueprints (Overview)")}</option>
             {shops.map((s) => (
@@ -221,131 +227,45 @@ function MainPage() {
 
       {/* View 1: Public Blueprint Catalog Directory */}
       {!activeCatalogId && (
-        <section className="d-flex flex-column gap-3">
-          <div className="aa-panel p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div>
-              <h4 className="text-light mb-1 fw-bold">{t("Public Blueprint Catalog")}</h4>
-              <p className="text-secondary small mb-0">
-                {t("Browse authorized blueprint providers, inspect their available BPO and BPC catalogs, and place orders.")}
-              </p>
-            </div>
-            <div className={`${styles.catalogSearchInput} position-relative`}>
-              <Form.Control
-                type="text"
-                placeholder={t("Search catalogs or blueprints...")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-dark text-light border-secondary pe-5"
-              />
-              {isSearchFetching && (
-                <div
-                  className="position-absolute end-0 top-50 translate-middle-y me-3"
-                  style={{ pointerEvents: "none" }}
-                >
-                  <Spinner animation="border" size="sm" variant="primary" />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {isShopsLoading && (
-            <div className="text-center py-5">
-              <Spinner animation="border" variant="primary" />
-              <div className="text-secondary mt-2">{t("Loading catalogs...")}</div>
-            </div>
-          )}
-
-          {isShopsError && (
-            <Alert variant="danger" className="d-flex align-items-center gap-2">
-              <AlertCircle size={18} />
-              <span>{t("Failed to load blueprint catalogs. Please try again.")}</span>
-            </Alert>
-          )}
-
-          {!isShopsLoading && !isSearchFetching && !isShopsError && filteredShops.length === 0 && (
-            <div className="aa-panel p-5 text-center text-secondary">
-              <Store size={48} className="mb-2 opacity-50" />
-              <div className="fs-5">{t("No public blueprints found.")}</div>
-              <p className="small text-secondary mb-0">
-                {trimmedSearch
-                  ? t("No public blueprints or catalogs matched \"{{query}}\".", { query: trimmedSearch })
-                  : t("Currently no corporation or pilot has published their blueprints.")}
-              </p>
-            </div>
-          )}
-
-          <div className="row g-3">
-            {filteredShops.map((owner) => (
-              <div className="col-12 col-md-6 col-lg-4" key={owner.id}>
-                <OwnerCard
-                  owner={owner}
-                  matchingBlueprints={matchingByOwner.get(owner.id)}
-                  onSelect={(o, initialType) => {
-                    setSelectedCatalogId(o.id);
-                    setCatalogTypeFilter(initialType ?? "all");
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
+        <CatalogDirectorySection
+          shops={shops}
+          isLoading={isShopsLoading}
+          isError={isShopsError}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          isSearchFetching={isSearchFetching}
+          searchResults={matchingByOwner}
+          onSelectShop={(o, initialType) => {
+            setSelectedCatalogId(o.id);
+            setCatalogTypeFilter(initialType ?? "all");
+          }}
+        />
       )}
 
       {/* View 2: Selected Owner Blueprint Catalog */}
       {activeCatalogId && (
-        <section className="d-flex flex-column gap-3">
-          {!isShopsLoading && !selectedOwner && shops.length > 0 ? (
-            <Alert variant="warning" className="d-flex align-items-center justify-content-between">
-              <span>{t("Selected catalog was not found or is no longer public.")}</span>
-              <Button
-                variant="outline-warning"
-                size="sm"
-                onClick={() => {
-                  setSelectedCatalogId(null);
-                  setCatalogTypeFilter("all");
-                  setCart(new Map());
-                }}
-              >
-                {t("Return to Overview")}
-              </Button>
-            </Alert>
-          ) : (
-            <>
-              <BlueprintTable
-                data={blueprints}
-                isFetching={isBlueprintsLoading}
-                selectedBlueprints={cart}
-                onToggleSelect={handleToggleSelect}
-                showSelectColumn={true}
-                typeFilter={catalogTypeFilter}
-                onTypeFilterChange={setCatalogTypeFilter}
-                onOpenOrderModal={() => setShowOrderModal(true)}
-              />
-
-              {/* Floating Cart Bar */}
-              <OrderFloatingBar
-                itemCount={cart.size}
-                onOpenOrderModal={() => setShowOrderModal(true)}
-                onClearCart={() => setCart(new Map())}
-              />
-
-              {/* Order Modal */}
-              <OrderModal
-                show={showOrderModal}
-                onHide={() => setShowOrderModal(false)}
-                shopName={selectedOwner?.name ?? t("Blueprint Catalog")}
-                items={Array.from(cart.values())}
-                onUpdateQuantity={handleUpdateQuantity}
-                onUpdateRuns={handleUpdateRuns}
-                onRemoveItem={handleRemoveItem}
-                onSubmitOrder={async (note) => {
-                  await orderMutation.mutateAsync(note);
-                }}
-                isSubmitting={orderMutation.isPending}
-              />
-            </>
-          )}
-        </section>
+        <CatalogDetailSection
+          selectedOwner={selectedOwner}
+          blueprints={blueprints}
+          isBlueprintsLoading={isBlueprintsLoading}
+          catalogTypeFilter={catalogTypeFilter}
+          onCatalogTypeFilterChange={setCatalogTypeFilter}
+          cart={cart}
+          onToggleSelect={handleToggleSelect}
+          onUpdateQuantity={handleUpdateQuantity}
+          onUpdateRuns={handleUpdateRuns}
+          onRemoveItem={handleRemoveItem}
+          onClearCart={() => setCart(new Map())}
+          showOrderModal={showOrderModal}
+          onOpenOrderModal={() => setShowOrderModal(true)}
+          onCloseOrderModal={() => setShowOrderModal(false)}
+          onSubmitOrder={async (note) => {
+            await orderMutation.mutateAsync(note);
+          }}
+          isSubmittingOrder={orderMutation.isPending}
+          onBackToDirectory={handleBackToDirectory}
+          onRefetchBlueprints={() => refetchBlueprints()}
+        />
       )}
     </main>
   );

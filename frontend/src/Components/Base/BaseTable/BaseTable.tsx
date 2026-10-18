@@ -56,6 +56,7 @@ export interface BaseTableProps<TData, TValue = unknown> {
   pageSizeOptions?: number[];
   itemLabel?: string;
   getRowClassName?: (row: Row<TData>) => string;
+  onRowClick?: (row: Row<TData>) => void;
 }
 
 const BaseTable = <TData, TValue = unknown>({
@@ -75,6 +76,7 @@ const BaseTable = <TData, TValue = unknown>({
   pageSizeOptions = [10, 25, 50, 100],
   itemLabel,
   getRowClassName,
+  onRowClick,
 }: BaseTableProps<TData, TValue>) => {
   const location = useLocation();
   const { t } = useTranslation();
@@ -116,7 +118,7 @@ const BaseTable = <TData, TValue = unknown>({
       >
         <div className="aa-table-scroll">
           <table
-            className={`aa-table ${isLight ? "aa-table-light" : ""} ${tableClassName ?? ""}`}
+            className={`table ${tableClassName ?? ""}`}
           >
             <thead className="aa-table-head">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -172,7 +174,7 @@ const BaseTable = <TData, TValue = unknown>({
                   >
                     <div className="d-flex flex-column align-items-center justify-content-center gap-2">
                       <Spinner animation="border" variant="primary" role="status" />
-                      <span className="text-secondary small">{t("Loading data...")}</span>
+                      <span className="text-light small">{t("Loading data...")}</span>
                     </div>
                   </td>
                 </tr>
@@ -189,6 +191,7 @@ const BaseTable = <TData, TValue = unknown>({
                 rows.map((row) => (
                   <tr
                     key={row.id}
+                    onClick={onRowClick ? () => onRowClick(row) : undefined}
                     className={`aa-table-row ${getRowClassName
                       ? getRowClassName(row)
                       : "aa-table-row-hover"
@@ -339,7 +342,7 @@ const BaseTable = <TData, TValue = unknown>({
             <tr>
               <td className="text-center py-5" colSpan={table.getVisibleLeafColumns().length}>
                 <Spinner animation="border" variant="primary" role="status" />
-                <div className="text-secondary small mt-2">{t("Loading data...")}</div>
+                <div className="text-light small mt-2">{t("Loading data...")}</div>
               </td>
             </tr>
           ) : rows.length === 0 ? (

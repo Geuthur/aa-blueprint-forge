@@ -108,7 +108,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
       }
       footer={footer}
     >
-      <div className="aa-panel p-3">
+      <div className="bg-dark p-3">
         {errorMsg && (
           <Alert variant="danger" className="d-flex align-items-center gap-2 mb-3">
             <AlertCircle size={18} />
@@ -116,13 +116,13 @@ export const OrderModal: React.FC<OrderModalProps> = ({
           </Alert>
         )}
 
-        <p className="text-secondary small mb-3">
+        <p className="text-light small mb-3">
           {t("Review your selected blueprint items below. You can configure requested copies and runs before confirming.")}
         </p>
 
         <div className="table-responsive border border-secondary rounded mb-3">
           <Table variant="dark" hover className="align-middle mb-0">
-            <thead className="table-secondary text-dark">
+            <thead className="table-secondary">
               <tr>
                 <th>{t("Blueprint")}</th>
                 <th>{t("Type")}</th>
@@ -134,7 +134,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             <tbody>
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center text-secondary py-4">
+                  <td colSpan={5} className="text-center text-light py-4">
                     {t("Your order cart is empty.")}
                   </td>
                 </tr>
@@ -151,8 +151,8 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                           className="rounded"
                         />
                         <div>
-                          <span className="fw-semibold text-light">{blueprint.type_name}</span>
-                          <div className="text-secondary small">
+                          <span className="fw-semibold">{blueprint.type_name}</span>
+                          <div className="text-light small">
                             ME {blueprint.material_efficiency ?? 0} | TE {blueprint.time_efficiency ?? 0}
                           </div>
                         </div>
@@ -175,7 +175,6 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                           onUpdateQuantity(blueprint.item_id, Math.max(1, parseInt(e.target.value) || 1))
                         }
                         size="sm"
-                        className="bg-dark text-light border-secondary"
                       />
                     </td>
                     <td>
@@ -192,10 +191,9 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                             )
                           }
                           size="sm"
-                          className="bg-dark text-light border-secondary"
                         />
                       ) : (
-                        <span className="text-secondary small">
+                        <span className="text-light small">
                           {blueprint.runs ?? 1} {t("runs")}
                         </span>
                       )}
@@ -222,14 +220,13 @@ export const OrderModal: React.FC<OrderModalProps> = ({
         </div>
 
         <Form.Group className="mb-2">
-          <Form.Label className="small text-secondary">{t("Note / Instructions (optional)")}</Form.Label>
+          <Form.Label className="small text-light">{t("Note / Instructions (optional)")}</Form.Label>
           <Form.Control
             as="textarea"
             rows={2}
             placeholder={t("e.g. Delivery location details, contact preference...")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="bg-dark text-light border-secondary"
           />
         </Form.Group>
       </div>

@@ -31,7 +31,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
       : null;
 
   return (
-    <Card className="aa-panel h-100 shadow-sm border-0 d-flex flex-column justify-content-between">
+    <Card className="bg-dark h-100 shadow-sm border-0 d-flex flex-column justify-content-between">
       <Card.Body className="p-3">
         <div className="d-flex align-items-center gap-3 mb-3">
           {avatarUrl ? (
@@ -52,11 +52,11 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
           <div className="overflow-hidden">
             {renderTooltip(
               owner.name,
-              <h5 className="mb-1 text-truncate text-light fw-bold">
+              <h5 className="mb-1 text-truncate fw-bold">
                 {owner.name}
               </h5>
             )}
-            <div className="d-flex align-items-center gap-1 text-secondary small">
+            <div className="d-flex align-items-center gap-1 text-light small">
               {owner.is_corporation ? (
                 <>
                   <Building2 size={14} className="text-info" />
@@ -120,7 +120,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
               t("Browse only Copies (BPC)"),
               <div
                 aria-label={t("Browse only Copies (BPC)")}
-                className={`p-2 rounded bg-info text-dark border border-info ${styles.clickable}`}
+                className={`p-2 rounded bg-info border border-info ${styles.clickable}`}
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelect(owner, "bpc")}
@@ -141,7 +141,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
         {matchingBlueprints && matchingBlueprints.length > 0 && (
           <div className="mt-3 pt-2 border-top border-secondary">
             <div className="d-flex align-items-center justify-content-between mb-2">
-              <span className="small text-secondary fw-semibold">
+              <span className="small text-light fw-semibold">
                 {t("Matching Blueprints ({{count}})", { count: matchingBlueprints.length })}
               </span>
             </div>
@@ -159,7 +159,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
                   }}
                   role="button"
                   tabIndex={0}
-                  className={`d-flex align-items-center justify-content-between p-1 px-2 rounded bg-dark border border-secondary text-light small ${styles.matchingBlueprintItem}`}
+                  className={`d-flex align-items-center justify-content-between p-1 px-2 rounded border border-secondary-subtle small ${styles.matchingBlueprintItem}`}
                   style={{ cursor: "pointer" }}
                 >
                   <div className="d-flex align-items-center gap-2 text-truncate me-2">
@@ -174,7 +174,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
                   </div>
                   <div className="d-flex align-items-center gap-1 flex-shrink-0">
                     <span
-                      className={`badge ${bp.is_original ? "bg-primary" : "bg-info text-dark"}`}
+                      className={`badge ${bp.is_original ? "bg-primary" : "bg-info"}`}
                     >
                       {bp.is_original ? "BPO" : `BPC (${bp.runs})`}
                     </span>
@@ -182,7 +182,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
                 </div>
               ))}
               {matchingBlueprints.length > 10 && (
-                <div className="text-center text-secondary small py-1">
+                <div className="text-center text-light small py-1">
                   {t("+{{count}} more", { count: matchingBlueprints.length - 10 })}
                 </div>
               )}

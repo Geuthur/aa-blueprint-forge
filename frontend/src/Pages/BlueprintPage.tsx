@@ -3,8 +3,8 @@ import { useSearchParams } from "react-router";
 
 // Third Party
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, Inbox, RefreshCw, Send, Shield, ShoppingBag } from "lucide-react";
-import { Alert, Badge, Button, ButtonGroup, Spinner } from "react-bootstrap";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import { Alert, Button, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -17,6 +17,8 @@ import {
 import { queryKeys } from "@/Api/query";
 import BaseSectionHeader from "@/Components/Base/BaseHeader";
 import { OrderCard } from "@/Components/Orders/OrderCard";
+import { OrdersEmptyState } from "@/Components/Orders/OrdersEmptyState";
+import { OrdersTabBar, type OrderTab } from "@/Components/Orders/OrdersTabBar";
 
 export function OrdersPage() {
   const { t } = useTranslation();
@@ -33,14 +35,14 @@ export function OrdersPage() {
   const currentUserId = userData?.user.user_id;
   const canManageOrders = Boolean(userData?.user.can_manage_orders);
 
-  const activeTab: "buyer" | "seller" | "all" | "manage" =
+  const activeTab: OrderTab =
     urlTab === "manage" && canManageOrders
       ? "manage"
       : urlTab === "seller" || urlTab === "all" || urlTab === "buyer"
         ? urlTab
         : "buyer";
 
-  const handleSelectTab = (tab: "buyer" | "seller" | "all" | "manage") => {
+  const handleSelectTab = (tab: OrderTab) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
       next.set("tab", tab);
@@ -132,79 +134,18 @@ export function OrdersPage() {
       </BaseSectionHeader>
 
       {/* Tabs */}
-      <ButtonGroup className="w-100 border border-secondary" role="tablist">
-        <Button
-          variant={`${activeTab === "buyer" ? "aa-btn-primary fw-semibold" : "aa-btn-secondary"}`}
-          role="tab"
-          aria-selected={activeTab === "buyer"}
-          onClick={() => handleSelectTab("buyer")}
-          className={`d-flex align-items-center justify-content-center gap-2 flex-fill py-2 px-3 aa-btn ${activeTab === "buyer" ? "aa-btn-primary fw-semibold" : "aa-btn-secondary"
-            }`}
-        >
-          <Send size={15} />
-          <span>{t("My Orders (as Buyer)")}</span>
-        </Button>
-
-        <Button
-          variant={`${activeTab === "seller" ? "aa-btn-primary fw-semibold" : "aa-btn-secondary"}`}
-          role="tab"
-          aria-selected={activeTab === "seller"}
-          onClick={() => handleSelectTab("seller")}
-          className={`d-flex align-items-center justify-content-center gap-2 flex-fill py-2 px-3 aa-btn ${activeTab === "seller" ? "aa-btn-primary fw-semibold" : "aa-btn-secondary"
-            } ${openSellerCount > 0 ? "aa-order-nav-pulse" : ""}`}
-        >
-          <Inbox size={15} />
-          <span>{t("Catalog Orders (as Seller)")}</span>
-          {openSellerCount > 0 && (
-            <Badge
-              pill
-              className="aa-order-badge ms-1"
-              data-testid="seller-orders-badge"
-            >
-              {openSellerCount}
-            </Badge>
-          )}
-        </Button>
-
-        <Button
-          variant={`${activeTab === "all" ? "aa-btn-primary fw-semibold" : "aa-btn-secondary"}`}
-          role="tab"
-          aria-selected={activeTab === "all"}
-          onClick={() => handleSelectTab("all")}
-          className={`d-flex align-items-center justify-content-center gap-2 flex-fill py-2 px-3 aa-btn ${activeTab === "all" ? "aa-btn-primary fw-semibold" : "aa-btn-secondary"
-            }`}
-        >
-          <span>{t("All Orders")}</span>
-        </Button>
-
-        {canManageOrders && (
-          <Button
-            variant={activeTab === "manage" ? "aa-btn-primary fw-semibold" : "aa-btn-secondary"}
-            role="tab"
-            aria-selected={activeTab === "manage"}
-            onClick={() => handleSelectTab("manage")}
-            className={`d-flex align-items-center justify-content-center gap-2 flex-fill py-2 px-3 aa-btn ${activeTab === "manage" ? "aa-btn-primary fw-semibold" : "aa-btn-secondary"
-              } ${openManageCount > 0 ? "aa-order-nav-pulse" : ""}`}
-          >
-            <Shield size={15} />
-            <span>{t("Order Management (Verwalter)")}</span>
-            {openManageCount > 0 && (
-              <Badge
-                pill
-                className="aa-order-badge ms-1"
-                data-testid="manage-orders-badge"
-              >
-                {openManageCount}
-              </Badge>
-            )}
-          </Button>
-        )}
-      </ButtonGroup>
+      <OrdersTabBar
+        activeTab={activeTab}
+        onSelectTab={handleSelectTab}
+        openSellerCount={openSellerCount}
+        canManageOrders={canManageOrders}
+        openManageCount={openManageCount}
+      />
 
       {isLoading && (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <div className="text-secondary mt-2">{t("Loading orders...")}</div>
+          <div className="text-light mt-2">{t("Loading orders...")}</div>
         </div>
       )}
 
@@ -216,19 +157,7 @@ export function OrdersPage() {
       )}
 
       {!isLoading && !isError && orders.length === 0 && (
-        <div className="aa-panel p-5 text-center text-secondary">
-          <ShoppingBag size={48} className="mb-2 opacity-50" />
-          <div className="fs-5">{t("No orders found.")}</div>
-          <p className="small text-secondary mb-0">
-            {activeTab === "buyer"
-              ? t("You have not placed any blueprint orders yet.")
-              : activeTab === "seller"
-                ? t("No orders have been received for your shop.")
-                : activeTab === "manage"
-                  ? t("No manageable orders found.")
-                  : t("No orders found.")}
-          </p>
-        </div>
+        <OrdersEmptyState activeTab={activeTab} />
       )}
 
       {/* Orders List */}

@@ -49,9 +49,9 @@ export function getBlueprintColumns({
               loading="lazy"
             />
             <div>
-              <span className="text-light">{bp.type_name}</span>
+              <span className="fw-medium">{bp.type_name}</span>
               {bp.group_name && (
-                <div className="text-secondary small">{bp.group_name}</div>
+                <div className="text-light small">{bp.group_name}</div>
               )}
             </div>
           </div>
@@ -82,7 +82,7 @@ export function getBlueprintColumns({
       cell: ({ row }) => {
         const bp = row.original;
         if (bp.is_original) {
-          return <span className="text-secondary">∞ ({t("Unlimited")})</span>;
+          return <span className="text-light">∞ ({t("Unlimited")})</span>;
         }
         return <span className="text-info">{bp.runs ?? 1}</span>;
       },
@@ -96,7 +96,7 @@ export function getBlueprintColumns({
         return val !== null && val !== undefined ? (
           <span className="text-success fw-bold">ME {Number(val)}</span>
         ) : (
-          <span className="text-secondary">-</span>
+          <span className="text-light">-</span>
         );
       },
     }),
@@ -109,7 +109,7 @@ export function getBlueprintColumns({
         return val !== null && val !== undefined ? (
           <span className="text-warning fw-bold">TE {Number(val)}</span>
         ) : (
-          <span className="text-secondary">-</span>
+          <span className="text-light">-</span>
         );
       },
     }),
@@ -132,7 +132,7 @@ export function getBlueprintColumns({
           const text = String(getValue() || t("Unknown"));
           return renderTooltip(
             text,
-            <span className={`text-secondary small text-truncate d-inline-block ${styles.locationCell}`}>
+            <span className={`text-light small text-truncate d-inline-block ${styles.locationCell}`}>
               {text}
             </span>
           );
@@ -145,7 +145,7 @@ export function getBlueprintColumns({
     columns.push(
       columnHelper.display({
         id: "select",
-        header: () => <div className="text-end text-secondary">{t("Order")}</div>,
+        header: () => <div className="text-end text-light">{t("Order")}</div>,
         cell: ({ row }) => {
           const bp = row.original;
           const isSelected = selectedIds?.has(bp.item_id);

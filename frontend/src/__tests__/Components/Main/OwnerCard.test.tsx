@@ -3,8 +3,8 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 // AA bpforge
-import type { BlueprintItem } from '@/Components/Blueprint/BlueprintTableColumns';
-import { OwnerCard } from '@/Components/Blueprint/OwnerCard';
+import type { BlueprintItem } from '@/Components/BlueprintTable/BlueprintTableColumns';
+import { OwnerCard } from '@/Components/Main/OwnerCard';
 
 describe('OwnerCard Component', () => {
   const mockOwner = {
