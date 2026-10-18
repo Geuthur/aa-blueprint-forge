@@ -9,23 +9,27 @@ from unittest.mock import patch
 from django.contrib.auth.models import Group
 
 # AA Blueprint Forge
-from bpforge.models.blueprint import Owner, OwnerPublicType
+from bpforge.models.blueprint import OwnerPublicType
 from bpforge.models.general import GeneralNotificationSettings
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
+from bpforge.tests.testdata.bpforge import (
+    BlueprintFactory,
+    GroupFactory,
+    OwnerFactory,
+)
 
 
 class TestApiSuperuser(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.group1 = Group.objects.create(name="Industry Managers")
-        self.group2 = Group.objects.create(name="Production Staff")
+        self.group1 = GroupFactory(name="Industry Managers")
+        self.group2 = GroupFactory(name="Production Staff")
 
         # Create an owner
         self.owner_user = UserMainFactory()
-        self.owner = Owner.objects.create(
+        self.owner = OwnerFactory(
             user=self.owner_user,
-            character=self.owner_user.profile.main_character.character_ownership,
             is_public=True,
             public_type=OwnerPublicType.ALL,
         )
@@ -191,28 +195,10 @@ class TestApiSuperuser(AuthTestCase):
         self.user.save()
         self.client.force_login(self.user)
 
-        # Eve SDE
-        # Alliance Auth (External Libs)
-        from eve_sde.models import ItemGroup, ItemType
-
-        # AA Blueprint Forge
-        from bpforge.models.blueprint import Blueprint, Location
-
-        group, _ = ItemGroup.objects.get_or_create(
-            id=105, defaults={"name": "Frigate Blueprint"}
-        )
-        item_type, _ = ItemType.objects.get_or_create(
-            id=688, defaults={"name": "Rifter Blueprint", "group": group}
-        )
-        loc, _ = Location.objects.get_or_create(
-            location_id=60003760, defaults={"name": "Jita IV - 4"}
-        )
-
-        bp = Blueprint.objects.create(
+        bp = BlueprintFactory(
             item_id=300001,
             owner=self.owner,
-            eve_type=item_type,
-            location=loc,
+            eve_type__name="Rifter Blueprint",
             runs=None,
             is_offered=False,
         )

@@ -259,7 +259,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
           {/* Note if available */}
           {order.note && (
-            <div className="mt-2 p-2 rounded border border-secondary-subtle small bg-body-tertiary">
+            <div className="mt-2 p-2 rounded border border-secondary-subtle small bg-body">
               <strong>{t("Customer Note:")}</strong> {order.note}
             </div>
           )}
@@ -363,7 +363,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                   { id: order.id, count: order.items.length },
                 )}
               </p>
-              <div className="p-2 rounded border border-secondary-subtle small bg-body-tertiary">
+              <div className="p-2 rounded border border-secondary-subtle small bg-body">
                 <div>
                   <strong>{t("Owner:")}</strong> {order.owner_name}
                 </div>

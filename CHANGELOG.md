@@ -30,6 +30,21 @@ Section Order:
 
 <!-- Your changes go here -->
 
+### Added
+
+- Automatic deletion of blueprints during synchronization when they are no longer owned or present in ESI.
+- Factory Boy factories for `bpforge` test data (`OwnerFactory`, `BlueprintFactory`, `OrderFactory`, `RequestFactory`, `GroupFactory`, `LocationFactory`, `OwnerUpdateStatusFactory`).
+- Performance indexes on `Blueprint` (`(owner, runs)`, `(owner, is_offered)`, `(owner, eve_type)`, `(runs)`) and `Owner` (`(is_public)`, `(is_public, public_type)`).
+- `BlueprintQuerySet.with_catalog_relations()` to skip unused location joins in public catalog views.
+
+### Fixed
+
+- Blueprint synchronization `IntegrityError` when multiple owners own blueprints with the same `item_id`. Blueprints now use a dedicated primary key (`id`) and enforce uniqueness per owner `(owner, item_id)`.
+- Blueprint sync manager deduplicates incoming ESI items within a single batch and correctly preserves primary keys on bulk updates.
+- Refactored backend tests to use Factory Boy factories instead of direct ORM model creation.
+- Eliminated severe N+1 query storm on blueprint location parents by preloading `location__parent` in `with_api_relations()`.
+- Eliminated per-owner count query storm in `list_public_blueprints` by annotating `selective_bpo_count` with conditional aggregation.
+
 ## [1.0.1] - 2026-10-18
 
 ### Added

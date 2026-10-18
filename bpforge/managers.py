@@ -172,7 +172,15 @@ class BlueprintQuerySet(AccessQuerySet):
         """Preload related objects commonly needed for API representation."""
         return self.select_related(
             "eve_type__group",
-            "location",
+            "location__parent",
+            "owner__character__character",
+            "owner__corporation",
+        )
+
+    def with_catalog_relations(self):
+        """Preload related objects commonly needed for catalog representation (locations omitted)."""
+        return self.select_related(
+            "eve_type__group",
             "owner__character__character",
             "owner__corporation",
         )
@@ -185,6 +193,10 @@ class BlueprintManager(AccessManager["BlueprintContext"]):
     def with_api_relations(self):
         """Preload related objects commonly needed for API representation."""
         return self.get_queryset().with_api_relations()
+
+    def with_catalog_relations(self):
+        """Preload related objects commonly needed for catalog representation (locations omitted)."""
+        return self.get_queryset().with_catalog_relations()
 
     def update_or_create_blueprints(
         self, owner: "OwnerContext", force_refresh: bool = False
@@ -223,14 +235,19 @@ class BlueprintManager(AccessManager["BlueprintContext"]):
         # AA Blueprint Forge
         from bpforge.models.blueprint import Location
 
-        existing_item_ids = self.filter(owner=owner).values_list("item_id", flat=True)
+        existing_items = {bp.item_id: bp for bp in self.filter(owner=owner)}
 
         new_items = []
         old_items = []
+        seen_item_ids = set()
 
         for obj in objs:
+            if obj.item_id in seen_item_ids:
+                continue
+            seen_item_ids.add(obj.item_id)
+
             runs = obj.runs
-            if obj.runs < 1:
+            if obj.runs is None or obj.runs < 1:
                 runs = None  # Original Blueprint
 
             quantity = obj.quantity
@@ -244,33 +261,40 @@ class BlueprintManager(AccessManager["BlueprintContext"]):
             location_flag = LocationFlag.from_esi_data(obj.location_flag)
             location = Location.objects.get_or_create(location_id=obj.location_id)[0]
 
-            item = self.model(
-                item_id=obj.item_id,
-                owner=owner,
-                eve_type=eve_type,
-                material_efficency=obj.material_efficiency,
-                time_efficiency=obj.time_efficiency,
-                runs=runs,
-                quantity=quantity,
-                location_flag=location_flag,
-                location=location,
-            )
-
-            if item.item_id in existing_item_ids:
+            if obj.item_id in existing_items:
+                item = existing_items[obj.item_id]
+                item.eve_type = eve_type
+                item.material_efficency = obj.material_efficiency
+                item.time_efficiency = obj.time_efficiency
+                item.runs = runs
+                item.quantity = quantity
+                item.location_flag = location_flag
+                item.location = location
                 old_items.append(item)
             else:
+                item = self.model(
+                    item_id=obj.item_id,
+                    owner=owner,
+                    eve_type=eve_type,
+                    material_efficency=obj.material_efficiency,
+                    time_efficiency=obj.time_efficiency,
+                    runs=runs,
+                    quantity=quantity,
+                    location_flag=location_flag,
+                    location=location,
+                )
                 new_items.append(item)
 
         if new_items:
             self.bulk_create(
                 objs=new_items,
+                batch_size=BPFORGE_BULK_BATCH_SIZE,
             )
 
         if old_items:
             self.bulk_update(
                 objs=old_items,
                 fields=[
-                    "owner",
                     "eve_type",
                     "material_efficency",
                     "time_efficiency",
@@ -281,6 +305,10 @@ class BlueprintManager(AccessManager["BlueprintContext"]):
                 ],
                 batch_size=BPFORGE_BULK_BATCH_SIZE,
             )
+
+        to_delete_item_ids = set(existing_items.keys()) - seen_item_ids
+        if to_delete_item_ids:
+            self.filter(owner=owner, item_id__in=to_delete_item_ids).delete()
 
 
 class LocationQuerySet(AccessQuerySet):

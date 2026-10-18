@@ -34,6 +34,11 @@ class ApiEndpoints:
             if not request.user.has_perm("bpforge.basic_access"):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
+            bpo_filter = Q(bpforge_blueprints__runs__isnull=True) | Q(
+                bpforge_blueprints__runs=0
+            )
+            bpc_filter = Q(bpforge_blueprints__runs__gt=0)
+
             # Query public owners with blueprint counts
             owners = (
                 Owner.objects.filter(is_public=True)
@@ -45,13 +50,17 @@ class ApiEndpoints:
                     blueprint_count=Count("bpforge_blueprints", distinct=True),
                     bpo_count=Count(
                         "bpforge_blueprints",
-                        filter=Q(bpforge_blueprints__runs__isnull=True)
-                        | Q(bpforge_blueprints__runs=0),
+                        filter=bpo_filter,
                         distinct=True,
                     ),
                     bpc_count=Count(
                         "bpforge_blueprints",
-                        filter=Q(bpforge_blueprints__runs__gt=0),
+                        filter=bpc_filter,
+                        distinct=True,
+                    ),
+                    selective_bpo_count=Count(
+                        "bpforge_blueprints",
+                        filter=bpo_filter & Q(bpforge_blueprints__is_offered=True),
                         distinct=True,
                     ),
                 )
@@ -89,17 +98,13 @@ class ApiEndpoints:
                 elif owner.public_type == "bpo":
                     effective_bpc = 0
                     if owner.selective_bpo_enabled:
-                        effective_bpo = owner.bpforge_blueprints.filter(
-                            Q(runs__isnull=True) | Q(runs=0), is_offered=True
-                        ).count()
+                        effective_bpo = owner.selective_bpo_count
                     else:
                         effective_bpo = owner.bpo_count
                 else:
                     effective_bpc = owner.bpc_count
                     if owner.selective_bpo_enabled:
-                        effective_bpo = owner.bpforge_blueprints.filter(
-                            Q(runs__isnull=True) | Q(runs=0), is_offered=True
-                        ).count()
+                        effective_bpo = owner.selective_bpo_count
                     else:
                         effective_bpo = owner.bpo_count
 
@@ -199,7 +204,9 @@ class ApiEndpoints:
                     "error": _("This blueprint catalog is private.")
                 }
 
-            blueprint_qs = Blueprint.objects.with_api_relations().filter(owner=owner)
+            blueprint_qs = Blueprint.objects.with_catalog_relations().filter(
+                owner=owner
+            )
 
             # In the blueprint catalog, always filter by public_type & selective BPOs as configured by the owner
             if owner.public_type == "bpo":

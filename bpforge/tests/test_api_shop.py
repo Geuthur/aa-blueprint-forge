@@ -10,12 +10,19 @@ from allianceauth.groupmanagement.models import Group
 from eve_sde.models import ItemGroup, ItemType, SolarSystem
 
 # AA Blueprint Forge
-from bpforge.models.blueprint import Blueprint, Location, Owner
 from bpforge.models.general import GeneralNotificationSettings
 from bpforge.models.helpers.core import RequestStatus
 from bpforge.models.request import Order, Request
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
+from bpforge.tests.testdata.bpforge import (
+    BlueprintFactory,
+    GroupFactory,
+    LocationFactory,
+    OrderFactory,
+    OwnerFactory,
+    RequestFactory,
+)
 from bpforge.tests.testdata.factory import (
     EveAllianceInfoFactory,
     EveCharacterFactory,
@@ -38,29 +45,27 @@ class TestApiShop(AuthTestCase):
             id=688, defaults={"name": "Rifter Blueprint", "group": self.item_group}
         )
 
-        self.location, _ = Location.objects.get_or_create(
+        self.location = LocationFactory(
             location_id=60003760,
-            defaults={"name": "Jita IV - 4 - Caldari Navy Assembly Plant"},
+            name="Jita IV - 4 - Caldari Navy Assembly Plant",
         )
 
         # Public Character Owner
         self.char_owner_user = UserMainFactory()
-        self.public_owner = Owner.objects.create(
+        self.public_owner = OwnerFactory(
             user=self.char_owner_user,
-            character=self.char_owner_user.profile.main_character.character_ownership,
             is_public=True,
         )
 
         # Private Owner
         self.other_user = UserMainFactory()
-        self.private_owner = Owner.objects.create(
+        self.private_owner = OwnerFactory(
             user=self.other_user,
-            character=self.other_user.profile.main_character.character_ownership,
             is_public=False,
         )
 
         # Blueprint for public owner
-        self.bpo = Blueprint.objects.create(
+        self.bpo = BlueprintFactory(
             item_id=100001,
             owner=self.public_owner,
             eve_type=self.eve_type,
@@ -73,7 +78,7 @@ class TestApiShop(AuthTestCase):
         )
 
         # Blueprint for private owner
-        self.private_bp = Blueprint.objects.create(
+        self.private_bp = BlueprintFactory(
             item_id=100002,
             owner=self.private_owner,
             eve_type=self.eve_type,
@@ -265,19 +270,18 @@ class TestApiOrders(AuthTestCase):
             id=688, defaults={"name": "Rifter Blueprint", "group": self.item_group}
         )
 
-        self.location, _ = Location.objects.get_or_create(
+        self.location = LocationFactory(
             location_id=60003760,
-            defaults={"name": "Jita IV - 4 - Caldari Navy Assembly Plant"},
+            name="Jita IV - 4 - Caldari Navy Assembly Plant",
         )
 
         self.seller_user = UserMainFactory()
-        self.seller_owner = Owner.objects.create(
+        self.seller_owner = OwnerFactory(
             user=self.seller_user,
-            character=self.seller_user.profile.main_character.character_ownership,
             is_public=True,
         )
 
-        self.bp1 = Blueprint.objects.create(
+        self.bp1 = BlueprintFactory(
             item_id=200001,
             owner=self.seller_owner,
             eve_type=self.eve_type,
@@ -289,7 +293,7 @@ class TestApiOrders(AuthTestCase):
             time_efficiency=20,
         )
 
-        self.bp2 = Blueprint.objects.create(
+        self.bp2 = BlueprintFactory(
             item_id=200002,
             owner=self.seller_owner,
             eve_type=self.eve_type,
@@ -332,13 +336,13 @@ class TestApiOrders(AuthTestCase):
 
     def test_update_order_status_should_allow_owner_to_accept_and_deliver(self):
         # Test Data
-        order = Order.objects.create(
+        order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
             status=RequestStatus.PENDING,
             note="Test order",
         )
-        Request.objects.create(
+        RequestFactory(
             order=order,
             blueprint=self.bp1,
             requesting_user=self.user,
@@ -375,7 +379,7 @@ class TestApiOrders(AuthTestCase):
 
     def test_buyer_can_cancel_pending_order(self):
         # Test Data
-        order = Order.objects.create(
+        order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
             status=RequestStatus.PENDING,
@@ -410,7 +414,7 @@ class TestApiOrders(AuthTestCase):
         self,
     ):
         # Test Data
-        global_group = Group.objects.create(name="Global Order Managers")
+        global_group = GroupFactory(name="Global Order Managers")
         global_settings = GeneralNotificationSettings.get_solo()
         global_settings.order_created_groups.add(global_group)
 
@@ -418,17 +422,16 @@ class TestApiOrders(AuthTestCase):
         manager_user.groups.add(global_group)
 
         other_user = UserMainFactory()
-        other_owner = Owner.objects.create(
+        other_owner = OwnerFactory(
             user=other_user,
-            character=other_user.profile.main_character.character_ownership,
             is_public=True,
         )
-        order1 = Order.objects.create(
+        order1 = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
             status=RequestStatus.PENDING,
         )
-        order2 = Order.objects.create(
+        order2 = OrderFactory(
             owner=other_owner,
             requesting_user=other_user,
             status=RequestStatus.PENDING,
@@ -459,19 +462,18 @@ class TestApiOrders(AuthTestCase):
         corp_manager.user_permissions.add(perm)
 
         # Order 1: Placed by corp_manager (same corporation)
-        order_corp = Order.objects.create(
+        order_corp = OrderFactory(
             owner=self.seller_owner,
             requesting_user=corp_manager,
             status=RequestStatus.PENDING,
         )
         # Order 2: Placed by other user with another shop outside corp_manager's corp
         other_user = UserMainFactory()
-        other_owner = Owner.objects.create(
+        other_owner = OwnerFactory(
             user=other_user,
-            character=other_user.profile.main_character.character_ownership,
             is_public=True,
         )
-        order_other = Order.objects.create(
+        order_other = OrderFactory(
             owner=other_owner,
             requesting_user=other_user,
             status=RequestStatus.PENDING,
@@ -490,7 +492,7 @@ class TestApiOrders(AuthTestCase):
 
     def test_delete_order_should_return_403_for_regular_user(self):
         # Test Data
-        order = Order.objects.create(
+        order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
             status=RequestStatus.PENDING,
@@ -506,19 +508,19 @@ class TestApiOrders(AuthTestCase):
 
     def test_delete_order_should_allow_global_manager_to_delete_order(self):
         # Test Data
-        global_group = Group.objects.create(name="Global Status Managers")
+        global_group = GroupFactory(name="Global Status Managers")
         global_settings = GeneralNotificationSettings.get_solo()
         global_settings.order_status_groups.add(global_group)
 
         manager_user = UserMainFactory()
         manager_user.groups.add(global_group)
 
-        order = Order.objects.create(
+        order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
             status=RequestStatus.PENDING,
         )
-        req = Request.objects.create(
+        req = RequestFactory(
             order=order,
             blueprint=self.bp1,
             requesting_user=self.user,
@@ -548,19 +550,18 @@ class TestApiOrders(AuthTestCase):
         corp_manager.user_permissions.add(perm)
 
         # Order 1: In corp_manager's corp
-        order_corp = Order.objects.create(
+        order_corp = OrderFactory(
             owner=self.seller_owner,
             requesting_user=corp_manager,
             status=RequestStatus.PENDING,
         )
         # Order 2: Outside corp_manager's corp
         other_user = UserMainFactory()
-        other_owner = Owner.objects.create(
+        other_owner = OwnerFactory(
             user=other_user,
-            character=other_user.profile.main_character.character_ownership,
             is_public=True,
         )
-        order_other = Order.objects.create(
+        order_other = OrderFactory(
             owner=other_owner,
             requesting_user=other_user,
             status=RequestStatus.PENDING,
@@ -584,14 +585,14 @@ class TestApiOrders(AuthTestCase):
 
     def test_update_order_status_should_allow_manager_to_update_status(self):
         # Test Data
-        global_group = Group.objects.create(name="Global Status Update Managers")
+        global_group = GroupFactory(name="Global Status Update Managers")
         global_settings = GeneralNotificationSettings.get_solo()
         global_settings.order_status_groups.add(global_group)
 
         manager_user = UserMainFactory()
         manager_user.groups.add(global_group)
 
-        order = Order.objects.create(
+        order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
             status=RequestStatus.PENDING,
@@ -616,14 +617,14 @@ class TestApiOrders(AuthTestCase):
         # AA Blueprint Forge
         from bpforge.thirdparty.discord import _build_order_notification_message
 
-        global_group = Group.objects.create(name="Notification Managers")
+        global_group = GroupFactory(name="Notification Managers")
         global_settings = GeneralNotificationSettings.get_solo()
         global_settings.order_created_groups.add(global_group)
 
         manager_user = UserMainFactory()
         manager_user.groups.add(global_group)
 
-        order = Order.objects.create(
+        order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
             status=RequestStatus.PENDING,
@@ -646,7 +647,7 @@ class TestApiOrders(AuthTestCase):
         from bpforge.thirdparty.discord import _build_order_notification_message
 
         buyer_user = UserMainFactory()
-        order = Order.objects.create(
+        order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=buyer_user,
             status=RequestStatus.PENDING,
@@ -669,7 +670,7 @@ class TestApiOrders(AuthTestCase):
         from bpforge.thirdparty.discord import _build_order_notification_message
 
         seller_user = self.seller_user
-        order = Order.objects.create(
+        order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
             status=RequestStatus.PENDING,
