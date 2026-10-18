@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
-import styles from "@/Styles/modules/Catalog.module.css";
+import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
@@ -75,16 +75,20 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, onSelect }) => {
             {renderTooltip(
               t("Browse all blueprints"),
               <div
-                className={`p-2 rounded aa-bg-dark border border-secondary ${styles.clickable}`}
+                aria-label={t("Browse all blueprints")}
+                className={`p-2 rounded bg-secondary text-light border border-secondary ${styles.clickable}`}
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelect(owner)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") onSelect(owner);
+                }}
               >
-                <div className="text-secondary small d-flex align-items-center justify-content-center gap-1">
+                <div className="small d-flex align-items-center justify-content-center gap-1 opacity-75">
                   <Box size={13} />
                   <span>{t("Total")}</span>
                 </div>
-                <span className="fw-bold fs-6 text-light">{owner.blueprint_count}</span>
+                <span className="fw-bold fs-6">{owner.blueprint_count}</span>
               </div>
             )}
           </div>
@@ -92,16 +96,20 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, onSelect }) => {
             {renderTooltip(
               t("Browse only Originals (BPO)"),
               <div
-                className={`p-2 rounded aa-bg-dark border border-primary ${styles.clickable}`}
+                aria-label={t("Browse only Originals (BPO)")}
+                className={`p-2 rounded bg-primary text-light border border-primary ${styles.clickable}`}
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelect(owner, "bpo")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") onSelect(owner, "bpo");
+                }}
               >
-                <div className="text-primary small d-flex align-items-center justify-content-center gap-1">
+                <div className="small d-flex align-items-center justify-content-center gap-1 opacity-75">
                   <Layers size={13} />
                   <span>{t("BPO")}</span>
                 </div>
-                <span className="fw-bold fs-6 text-primary">{owner.bpo_count}</span>
+                <span className="fw-bold fs-6">{owner.bpo_count}</span>
               </div>
             )}
           </div>
@@ -109,16 +117,20 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, onSelect }) => {
             {renderTooltip(
               t("Browse only Copies (BPC)"),
               <div
-                className={`p-2 rounded aa-bg-dark border border-info ${styles.clickable}`}
+                aria-label={t("Browse only Copies (BPC)")}
+                className={`p-2 rounded bg-info text-dark border border-info ${styles.clickable}`}
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelect(owner, "bpc")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") onSelect(owner, "bpc");
+                }}
               >
-                <div className="text-info small d-flex align-items-center justify-content-center gap-1">
+                <div className="small d-flex align-items-center justify-content-center gap-1 opacity-75">
                   <Layers size={13} />
                   <span>{t("BPC")}</span>
                 </div>
-                <span className="fw-bold fs-6 text-info">{owner.bpc_count}</span>
+                <span className="fw-bold fs-6">{owner.bpc_count}</span>
               </div>
             )}
           </div>
@@ -127,7 +139,8 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, onSelect }) => {
 
       <Card.Footer className="bg-transparent border-0 p-3 pt-0">
         <Button
-          className="w-100 d-flex align-items-center justify-content-center gap-2 fw-semibold aa-btn aa-btn-primary"
+          variant="primary"
+          className="w-100 d-flex align-items-center justify-content-center gap-2 aa-btn aa-btn-primary"
           onClick={() => onSelect(owner)}
         >
           <ShoppingBag size={16} />

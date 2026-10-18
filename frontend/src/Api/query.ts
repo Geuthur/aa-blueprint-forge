@@ -11,7 +11,7 @@ export const queryKeys = {
     CatalogBlueprints: (ownerId: number) => ["CatalogBlueprints", ownerId] as const,
     ShopBlueprints: (ownerId: number) => ["CatalogBlueprints", ownerId] as const,
     MyBlueprints: ["MyBlueprints"] as const,
-    Orders: (role?: string) => ["Orders", role ?? "all"] as const,
+    Orders: (role?: string) => (role ? (["Orders", role] as const) : (["Orders"] as const)),
     OrderDetail: (orderId: number) => ["OrderDetail", orderId] as const,
     OwnerBpos: (ownerId: number) => ["OwnerBpos", ownerId] as const,
     SuperuserGroups: ["SuperuserGroups"] as const,

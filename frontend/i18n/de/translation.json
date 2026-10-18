@@ -288,5 +288,15 @@
   "{{count}} Blueprints_other": "{{count}} Blaupausen",
   "{{count}} Rows": "{{count}} Zeilen",
   "{{count}} Rows_one": "{{count}} Zeile",
-  "{{count}} Rows_other": "{{count}} Zeilen"
+  "{{count}} Rows_other": "{{count}} Zeilen",
+  "Delete": "Löschen",
+  "Delete Order #{{id}}": "Auftrag #{{id}} löschen",
+  "Are you sure you want to permanently delete this order?": "Möchtest du diesen Auftrag wirklich dauerhaft löschen?",
+  "This will permanently remove Order #{{id}} and all {{count}} blueprint item(s) from the system. This action cannot be undone._one": "Dadurch wird Auftrag #{{id}} und der zugehörige Bauplan-Eintrag dauerhaft aus dem System entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
+  "This will permanently remove Order #{{id}} and all {{count}} blueprint item(s) from the system. This action cannot be undone._other": "Dadurch wird Auftrag #{{id}} und alle {{count}} zugehörigen Bauplan-Einträge dauerhaft aus dem System entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
+  "Status:": "Status:",
+  "Deleting...": "Löschen...",
+  "Confirm Delete": "Löschen bestätigen",
+  "Order Management (Verwalter)": "Auftragsverwaltung (Verwalter)",
+  "No manageable orders found.": "Keine verwaltbaren Aufträge gefunden."
 }

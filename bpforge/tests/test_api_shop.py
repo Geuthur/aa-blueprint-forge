@@ -3,11 +3,15 @@
 # Standard Library
 from http import HTTPStatus
 
+# Alliance Auth
+from allianceauth.groupmanagement.models import Group
+
 # Alliance Auth (External Libs)
 from eve_sde.models import ItemGroup, ItemType, SolarSystem
 
 # AA Blueprint Forge
 from bpforge.models.blueprint import Blueprint, Location, Owner
+from bpforge.models.general import GeneralNotificationSettings
 from bpforge.models.helpers.core import RequestStatus
 from bpforge.models.request import Order, Request
 from bpforge.tests import AuthTestCase
@@ -323,3 +327,295 @@ class TestApiOrders(AuthTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         order.refresh_from_db()
         self.assertEqual(order.status, RequestStatus.CANCELLED)
+
+    def test_list_orders_with_manage_role_should_return_403_for_unauthorized_user(
+        self,
+    ):
+        # Test Data
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/?role=manage")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_list_orders_with_manage_role_should_return_all_orders_for_global_manager(
+        self,
+    ):
+        # Test Data
+        global_group = Group.objects.create(name="Global Order Managers")
+        global_settings = GeneralNotificationSettings.get_solo()
+        global_settings.order_created_groups.add(global_group)
+
+        manager_user = UserMainFactory()
+        manager_user.groups.add(global_group)
+
+        other_user = UserMainFactory()
+        other_owner = Owner.objects.create(
+            user=other_user,
+            character=other_user.profile.main_character.character_ownership,
+            is_public=True,
+        )
+        order1 = Order.objects.create(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.PENDING,
+        )
+        order2 = Order.objects.create(
+            owner=other_owner,
+            requesting_user=other_user,
+            status=RequestStatus.PENDING,
+        )
+
+        self.client.force_login(manager_user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/?role=manage")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        order_ids = [o["id"] for o in response.json()]
+        self.assertIn(order1.id, order_ids)
+        self.assertIn(order2.id, order_ids)
+
+    def test_list_orders_with_manage_role_should_return_only_corp_orders_for_corp_manager(
+        self,
+    ):
+        # Test Data
+        # Django
+        from django.contrib.auth.models import Permission
+
+        corp_manager = UserMainFactory()
+        perm = Permission.objects.get(
+            content_type__app_label="bpforge", codename="manage_access"
+        )
+        corp_manager.user_permissions.add(perm)
+
+        # Order 1: Placed by corp_manager (same corporation)
+        order_corp = Order.objects.create(
+            owner=self.seller_owner,
+            requesting_user=corp_manager,
+            status=RequestStatus.PENDING,
+        )
+        # Order 2: Placed by other user with another shop outside corp_manager's corp
+        other_user = UserMainFactory()
+        other_owner = Owner.objects.create(
+            user=other_user,
+            character=other_user.profile.main_character.character_ownership,
+            is_public=True,
+        )
+        order_other = Order.objects.create(
+            owner=other_owner,
+            requesting_user=other_user,
+            status=RequestStatus.PENDING,
+        )
+
+        self.client.force_login(corp_manager)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/?role=manage")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        order_ids = [o["id"] for o in response.json()]
+        self.assertIn(order_corp.id, order_ids)
+        self.assertNotIn(order_other.id, order_ids)
+
+    def test_delete_order_should_return_403_for_regular_user(self):
+        # Test Data
+        order = Order.objects.create(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.PENDING,
+        )
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.delete(f"/bpforge/api/orders/{order.id}/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertTrue(Order.objects.filter(id=order.id).exists())
+
+    def test_delete_order_should_allow_global_manager_to_delete_order(self):
+        # Test Data
+        global_group = Group.objects.create(name="Global Status Managers")
+        global_settings = GeneralNotificationSettings.get_solo()
+        global_settings.order_status_groups.add(global_group)
+
+        manager_user = UserMainFactory()
+        manager_user.groups.add(global_group)
+
+        order = Order.objects.create(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.PENDING,
+        )
+        req = Request.objects.create(
+            order=order,
+            blueprint=self.bp1,
+            requesting_user=self.user,
+            quantity=1,
+            status=RequestStatus.PENDING,
+        )
+
+        self.client.force_login(manager_user)
+
+        # Test Action
+        response = self.client.delete(f"/bpforge/api/orders/{order.id}/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertFalse(Order.objects.filter(id=order.id).exists())
+        self.assertFalse(Request.objects.filter(id=req.id).exists())
+
+    def test_delete_order_should_allow_corp_manager_only_for_corp_order(self):
+        # Test Data
+        # Django
+        from django.contrib.auth.models import Permission
+
+        corp_manager = UserMainFactory()
+        perm = Permission.objects.get(
+            content_type__app_label="bpforge", codename="manage_access"
+        )
+        corp_manager.user_permissions.add(perm)
+
+        # Order 1: In corp_manager's corp
+        order_corp = Order.objects.create(
+            owner=self.seller_owner,
+            requesting_user=corp_manager,
+            status=RequestStatus.PENDING,
+        )
+        # Order 2: Outside corp_manager's corp
+        other_user = UserMainFactory()
+        other_owner = Owner.objects.create(
+            user=other_user,
+            character=other_user.profile.main_character.character_ownership,
+            is_public=True,
+        )
+        order_other = Order.objects.create(
+            owner=other_owner,
+            requesting_user=other_user,
+            status=RequestStatus.PENDING,
+        )
+
+        self.client.force_login(corp_manager)
+
+        # Test Action 1: Delete other's order
+        response_other = self.client.delete(f"/bpforge/api/orders/{order_other.id}/")
+
+        # Expected Result 1
+        self.assertEqual(response_other.status_code, HTTPStatus.FORBIDDEN)
+        self.assertTrue(Order.objects.filter(id=order_other.id).exists())
+
+        # Test Action 2: Delete corp's order
+        response_corp = self.client.delete(f"/bpforge/api/orders/{order_corp.id}/")
+
+        # Expected Result 2
+        self.assertEqual(response_corp.status_code, HTTPStatus.OK)
+        self.assertFalse(Order.objects.filter(id=order_corp.id).exists())
+
+    def test_update_order_status_should_allow_manager_to_update_status(self):
+        # Test Data
+        global_group = Group.objects.create(name="Global Status Update Managers")
+        global_settings = GeneralNotificationSettings.get_solo()
+        global_settings.order_status_groups.add(global_group)
+
+        manager_user = UserMainFactory()
+        manager_user.groups.add(global_group)
+
+        order = Order.objects.create(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.PENDING,
+        )
+
+        self.client.force_login(manager_user)
+
+        # Test Action
+        response = self.client.post(
+            f"/bpforge/api/orders/{order.id}/status/",
+            data={"status": RequestStatus.ACCEPTED},
+            content_type="application/json",
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        order.refresh_from_db()
+        self.assertEqual(order.status, RequestStatus.ACCEPTED)
+
+    def test_notification_message_should_link_to_manage_for_order_manager(self):
+        # Test Data
+        # AA Blueprint Forge
+        from bpforge.thirdparty.discord import _build_order_notification_message
+
+        global_group = Group.objects.create(name="Notification Managers")
+        global_settings = GeneralNotificationSettings.get_solo()
+        global_settings.order_created_groups.add(global_group)
+
+        manager_user = UserMainFactory()
+        manager_user.groups.add(global_group)
+
+        order = Order.objects.create(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.PENDING,
+        )
+
+        # Test Action
+        msg = _build_order_notification_message(
+            order=order,
+            base_message="Test message",
+            recipient=manager_user,
+        )
+
+        # Expected Result
+        self.assertIn("?tab=manage", msg)
+        self.assertIn("Open Order Management", msg)
+
+    def test_notification_message_should_link_to_buyer_for_requesting_user(self):
+        # Test Data
+        # AA Blueprint Forge
+        from bpforge.thirdparty.discord import _build_order_notification_message
+
+        buyer_user = UserMainFactory()
+        order = Order.objects.create(
+            owner=self.seller_owner,
+            requesting_user=buyer_user,
+            status=RequestStatus.PENDING,
+        )
+
+        # Test Action
+        msg = _build_order_notification_message(
+            order=order,
+            base_message="Test message",
+            recipient=buyer_user,
+        )
+
+        # Expected Result
+        self.assertIn("?tab=buyer", msg)
+        self.assertIn("View Order", msg)
+
+    def test_notification_message_should_link_to_seller_for_shop_owner(self):
+        # Test Data
+        # AA Blueprint Forge
+        from bpforge.thirdparty.discord import _build_order_notification_message
+
+        seller_user = self.seller_user
+        order = Order.objects.create(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.PENDING,
+        )
+
+        # Test Action
+        msg = _build_order_notification_message(
+            order=order,
+            base_message="Test message",
+            recipient=seller_user,
+        )
+
+        # Expected Result
+        self.assertIn("?tab=seller", msg)
+        self.assertIn("View Catalog Orders", msg)

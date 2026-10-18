@@ -7,7 +7,7 @@ import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import styles from "@/Styles/modules/Catalog.module.css";
+import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 
 interface OrderFloatingBarProps {
@@ -29,7 +29,7 @@ export const OrderFloatingBar: React.FC<OrderFloatingBarProps> = ({
     <div
       className={`position-fixed bottom-0 start-50 translate-middle-x mb-4 z-3 shadow-lg ${styles.cartFloatingBar}`}
     >
-      <div className="bg-primary text-light rounded-pill px-4 py-2 d-flex align-items-center justify-content-between gap-3 border border-light border-opacity-25 shadow">
+      <div className="aa-bg-primary text-light rounded-pill px-4 py-2 d-flex align-items-center justify-content-between gap-3 border border-light border-opacity-25 shadow">
         <div className="d-flex align-items-center gap-2">
           <ShoppingCart size={20} />
           <span className="fw-bold">
@@ -54,7 +54,7 @@ export const OrderFloatingBar: React.FC<OrderFloatingBarProps> = ({
           <Button
             variant="light"
             size="sm"
-            className="rounded-pill fw-bold d-flex align-items-center gap-1 text-primary px-3"
+            className="rounded-pill fw-bold d-flex align-items-center gap-1 px-3 aa-btn aa-btn-secondary"
             onClick={onOpenOrderModal}
           >
             <span>{t("Review Order")}</span>

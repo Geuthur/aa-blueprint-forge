@@ -15,7 +15,7 @@ import { ErrorPage } from "@/Pages/404";
 import AuthBase from "@/Pages/Base";
 import MainPage from "@/Pages/MainPage";
 import MyBlueprintsPage from "@/Pages/MyBlueprintsPage";
-import OrdersPage from "@/Pages/OrdersPage";
+import OrdersPage from "@/Pages/BlueprintPage";
 import SettingsPage from "@/Pages/SettingsPage";
 import SuperuserPage from "@/Pages/SuperuserPage";
 

@@ -5,6 +5,7 @@ from celery import shared_task
 
 # Django
 from django.apps import apps
+from django.conf import settings
 from django.utils import timezone
 
 # Alliance Auth
@@ -161,6 +162,28 @@ def send_user_notification(
         )
 
 
+def _build_order_notification_message(order, base_message: str, recipient: User) -> str:
+    """Append a tailored link to the orders page for the recipient."""
+    # pylint: disable=import-outside-toplevel
+    # AA Blueprint Forge
+    from bpforge.models.general import user_can_manage_orders
+
+    site_url = getattr(settings, "SITE_URL", "").rstrip("/")
+    base_orders_url = f"{site_url}/bpforge/orders/" if site_url else "/bpforge/orders/"
+
+    if user_can_manage_orders(recipient):
+        order_url = f"{base_orders_url}?tab=manage"
+        action_label = "Open Order Management"
+    elif recipient.pk == order.requesting_user_id:
+        order_url = f"{base_orders_url}?tab=buyer"
+        action_label = "View Order"
+    else:
+        order_url = f"{base_orders_url}?tab=seller"
+        action_label = "View Catalog Orders"
+
+    return f"{base_message}\n\n🔗 [{action_label}]({order_url})"
+
+
 def notify_order_created(order) -> None:
     """Notify the shop owner and configured groups that a new order has been created."""
     # pylint: disable=import-outside-toplevel
@@ -208,14 +231,25 @@ def notify_order_created(order) -> None:
             recipients.add(user.pk)
 
     for uid in recipients:
+        try:
+            recipient_user = User.objects.get(pk=uid)
+        except User.DoesNotExist:
+            continue
+
+        personalized_message = _build_order_notification_message(
+            order=order,
+            base_message=message,
+            recipient=recipient_user,
+        )
         send_user_notification(
             user_id=uid,
             title=title,
-            message=message,
+            message=personalized_message,
             level="info",
         )
 
 
+# pylint: disable=too-many-locals
 def notify_order_status_updated(
     order, old_status: str, new_status: str, actor: User
 ) -> None:
@@ -274,9 +308,19 @@ def notify_order_status_updated(
             recipients.add(user.pk)
 
     for uid in recipients:
+        try:
+            recipient_user = User.objects.get(pk=uid)
+        except User.DoesNotExist:
+            continue
+
+        personalized_message = _build_order_notification_message(
+            order=order,
+            base_message=message,
+            recipient=recipient_user,
+        )
         send_user_notification(
             user_id=uid,
             title=title,
-            message=message,
+            message=personalized_message,
             level=level,
         )

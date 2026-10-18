@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 
 // Third Party
 import { useQuery } from "@tanstack/react-query";
+import { ShieldAlert } from "lucide-react";
 import { Nav } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
@@ -110,6 +111,29 @@ export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPa
     );
 };
 
+export const SuperuserMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
+    const { t } = useTranslation();
+    const path = useLocation();
+    const hit = path.pathname.endsWith(link.link ?? "");
+
+    return (
+        <Nav.Item as="li">
+            <Nav.Link
+                as={Link}
+                to={{ pathname: toPath(link.link ?? ""), search: path.search }}
+                id={link.name}
+                key={link.name}
+                active={hit}
+                className="aa-nav-danger d-flex align-items-center gap-1"
+                data-testid="superuser-nav-link"
+            >
+                <ShieldAlert size={15} className="text-danger flex-shrink-0" />
+                <span>{t(link.name)}</span>
+            </Nav.Link>
+        </Nav.Item>
+    );
+};
+
 export const MenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
     const { t } = useTranslation();
     const path = useLocation();
@@ -150,6 +174,15 @@ export const MenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
 
     if (isSettingsLink) {
         return <SettingsMenuItem link={link} toPath={toPath} />;
+    }
+
+    const isSuperuserLink = Boolean(
+        link.link?.replace(/^\/+|\/+$/g, "") === "superuser" ||
+        link.name.toLowerCase() === "superuser"
+    );
+
+    if (isSuperuserLink) {
+        return <SuperuserMenuItem link={link} toPath={toPath} />;
     }
 
     return (

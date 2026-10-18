@@ -14,8 +14,8 @@
       "_bootstrap-libs-QAKZN_La.js"
     ]
   },
-  "_react-libs-rgnYqKpP.js": {
-    "file": "react/js/react-libs-rgnYqKpP.js",
+  "_react-libs-DLrSZHJg.js": {
+    "file": "react/js/react-libs-DLrSZHJg.js",
     "name": "react-libs",
     "imports": [
       "_rolldown-runtime-CbXtAM7H.js",
@@ -26,29 +26,29 @@
     "file": "react/js/rolldown-runtime-CbXtAM7H.js",
     "name": "rolldown-runtime"
   },
-  "_vendor-CJoc9aey.js": {
-    "file": "react/js/vendor-CJoc9aey.js",
+  "_vendor-De36XHLg.js": {
+    "file": "react/js/vendor-De36XHLg.js",
     "name": "vendor",
     "imports": [
       "_rolldown-runtime-CbXtAM7H.js",
       "_bootstrap-libs-QAKZN_La.js",
-      "_react-libs-rgnYqKpP.js"
+      "_react-libs-DLrSZHJg.js"
     ]
   },
   "index.html": {
-    "file": "react/js/index-CzXdR4vg.js",
+    "file": "react/js/index-CSCgmDQB.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-CbXtAM7H.js",
       "_bootstrap-libs-QAKZN_La.js",
-      "_vendor-CJoc9aey.js",
-      "_react-libs-rgnYqKpP.js",
+      "_vendor-De36XHLg.js",
+      "_react-libs-DLrSZHJg.js",
       "_lang-libs-CDSd6lGw.js"
     ],
     "css": [
-      "react/css/index-Ba1NSdJ-.css"
+      "react/css/index-D4J6kiNK.css"
     ]
   }
 }

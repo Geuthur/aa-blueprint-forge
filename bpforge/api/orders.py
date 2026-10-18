@@ -14,6 +14,11 @@ from django.utils.translation import gettext as _
 # AA Blueprint Forge
 from bpforge.api import schema
 from bpforge.models.blueprint import Blueprint, Owner
+from bpforge.models.general import (
+    get_manageable_orders_filter,
+    user_can_manage_order,
+    user_can_manage_orders,
+)
 from bpforge.models.helpers.core import RequestStatus
 from bpforge.models.request import Order, Request
 from bpforge.thirdparty.discord import (
@@ -25,6 +30,7 @@ from bpforge.thirdparty.discord import (
 class ApiEndpoints:
     tags = ["Orders"]
 
+    # pylint: disable=too-many-statements
     def __init__(self, api: NinjaAPI):
         @api.post(
             "orders/",
@@ -132,7 +138,7 @@ class ApiEndpoints:
             summary="List orders (either placed as buyer or received as seller)",
         )
         def list_orders(request, role: str = "all"):
-            """Role can be 'buyer', 'seller', or 'all'."""
+            """Role can be 'buyer', 'seller', 'manage', or 'all'."""
             if not request.user.has_perm("bpforge.basic_access"):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -149,6 +155,13 @@ class ApiEndpoints:
                 queryset = queryset.filter(requesting_user=request.user)
             elif role == "seller":
                 queryset = queryset.filter(owner__user=request.user)
+            elif role == "manage":
+                if not user_can_manage_orders(request.user):
+                    return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+                manage_filter = get_manageable_orders_filter(request.user)
+                if manage_filter is None:
+                    return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+                queryset = queryset.filter(manage_filter)
             else:
                 queryset = queryset.filter(
                     requesting_user=request.user
@@ -183,9 +196,9 @@ class ApiEndpoints:
 
             is_buyer = order.requesting_user == request.user
             is_seller = order.owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_manager = user_can_manage_order(request.user, order)
 
-            if not (is_buyer or is_seller or is_admin):
+            if not (is_buyer or is_seller or is_manager):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             return HTTPStatus.OK, _serialize_order(order)
@@ -223,10 +236,7 @@ class ApiEndpoints:
                     "error": _(f"Invalid status. Must be one of: {valid_statuses}")
                 }
 
-            can_edit = bool(
-                request.user.has_perm("bpforge.manage_access")
-                or request.user.has_perm("bpforge.full_access")
-            )
+            can_edit = user_can_manage_order(request.user, order)
 
             old_status = order.status
             success = order.handle_status(
@@ -249,6 +259,41 @@ class ApiEndpoints:
                 )
 
             return HTTPStatus.OK, _serialize_order(order)
+
+        @api.delete(
+            "orders/{int:order_id}/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.NOT_FOUND: dict,
+            },
+            tags=self.tags,
+            summary="Delete an order completely (Managers only)",
+        )
+        def delete_order(request, order_id: int):
+            if not request.user.has_perm("bpforge.basic_access"):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            order = get_object_or_404(
+                Order.objects.select_related(
+                    "owner__character__character",
+                    "owner__corporation",
+                    "owner__user",
+                    "requesting_user__profile__main_character",
+                ),
+                id=order_id,
+            )
+
+            if not user_can_manage_order(request.user, order):
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("You are not authorized to delete this order.")
+                }
+
+            order.delete()
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=_("Order has been deleted successfully."),
+            )
 
 
 # pylint: disable=duplicate-code

@@ -12,13 +12,13 @@ import { useTranslation } from "react-i18next";
 import { loadPublicCatalogs, loadCatalogBlueprints, createOrder } from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
 import BaseSectionHeader from "@/Components/Base/BaseHeader";
-import { BlueprintTable } from "@/Components/Catalog/BlueprintTable";
-import type { BlueprintItem } from "@/Components/Catalog/BlueprintTableColumns";
-import { OrderFloatingBar } from "@/Components/Catalog/OrderFloatingBar";
-import { OrderModal } from "@/Components/Catalog/OrderModal";
-import type { CartItem } from "@/Components/Catalog/OrderModal";
-import { OwnerCard } from "@/Components/Catalog/OwnerCard";
-import styles from "@/Styles/modules/Catalog.module.css";
+import { BlueprintTable } from "@/Components/Blueprint/BlueprintTable";
+import type { BlueprintItem } from "@/Components/Blueprint/BlueprintTableColumns";
+import { OrderFloatingBar } from "@/Components/Blueprint/OrderFloatingBar";
+import { OrderModal } from "@/Components/Blueprint/OrderModal";
+import type { CartItem } from "@/Components/Blueprint/OrderModal";
+import { OwnerCard } from "@/Components/Blueprint/OwnerCard";
+import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 
 function MainPage() {
@@ -139,6 +139,7 @@ function MainPage() {
             renderTooltip(
               t("All Blueprints"),
               <Button
+                variant="secondary"
                 size="sm"
                 aria-label={t("All Blueprints")}
                 onClick={() => {
@@ -176,6 +177,7 @@ function MainPage() {
             renderTooltip(
               t("Refresh"),
               <Button
+                variant="secondary"
                 size="sm"
                 onClick={() => refetchShops()}
                 className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
@@ -276,6 +278,7 @@ function MainPage() {
                 showSelectColumn={true}
                 typeFilter={catalogTypeFilter}
                 onTypeFilterChange={setCatalogTypeFilter}
+                onOpenOrderModal={() => setShowOrderModal(true)}
               />
 
               {/* Floating Cart Bar */}

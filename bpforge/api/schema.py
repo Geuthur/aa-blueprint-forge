@@ -28,6 +28,8 @@ class UserData(Schema):
     portrait: str | None = None
 
     is_admin: bool = False
+    can_manage_orders: bool = False
+    is_global_order_manager: bool = False
 
 
 class UserSettingsSchema(Schema):

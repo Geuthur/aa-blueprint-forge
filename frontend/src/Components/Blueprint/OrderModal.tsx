@@ -8,8 +8,8 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import { BaseModal } from "@/Components/Base/BaseModal";
-import type { BlueprintItem } from "@/Components/Catalog/BlueprintTableColumns";
-import styles from "@/Styles/modules/Catalog.module.css";
+import type { BlueprintItem } from "@/Components/Blueprint/BlueprintTableColumns";
+import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
@@ -65,6 +65,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   const footer = (
     <div className="d-flex justify-content-end gap-2 w-100">
       <Button
+        variant="secondary"
         className="aa-btn aa-btn-secondary"
         onClick={onHide}
         disabled={isSubmitting}
@@ -72,6 +73,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
         {t("Cancel")}
       </Button>
       <Button
+        variant="primary"
         className="aa-btn aa-btn-primary d-flex align-items-center gap-2"
         onClick={() => handleSubmit()}
         disabled={items.length === 0 || isSubmitting}
@@ -95,7 +97,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
     <BaseModal
       show={show}
       onHide={onHide}
-      size="lg"
+      size="xl"
       centered
       backdrop="static"
       title={
@@ -202,6 +204,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                       {renderTooltip(
                         t("Remove item"),
                         <Button
+                          variant="danger"
                           size="sm"
                           aria-label={t("Remove item")}
                           onClick={() => onRemoveItem(blueprint.item_id)}

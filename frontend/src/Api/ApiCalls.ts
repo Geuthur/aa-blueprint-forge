@@ -123,7 +123,7 @@ export async function createOrder(
 }
 
 export async function loadOrders(
-  role: "all" | "buyer" | "seller" = "all",
+  role: "all" | "buyer" | "seller" | "manage" = "all",
 ): Promise<components["schemas"]["OrderSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/orders/`, {
     params: {
@@ -162,6 +162,20 @@ export async function updateOrderStatus(
   });
   if (error || !data) {
     throw new Error("Failed to update order status");
+  }
+  return data;
+}
+
+export async function deleteOrder(
+  orderId: number,
+): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
+  const { data, error } = await apiClient.DELETE(`/${ProjectName}/api/orders/{order_id}/`, {
+    params: {
+      path: { order_id: orderId },
+    },
+  });
+  if (error || !data) {
+    throw new Error("Failed to delete order");
   }
   return data;
 }

@@ -188,4 +188,24 @@ describe('AuthLeftMenu', () => {
             expect(settingsLink.classList.contains('aa-order-nav-pulse')).toBe(true);
         });
     });
+
+    it('should render Superuser link with red danger styling', async () => {
+        // Test Data
+        const testData = [{ name: 'Superuser', link: '/superuser/' }];
+
+        // Test Action
+        render(
+            <QueryClientProvider client={createQueryClient()}>
+                <MemoryRouter initialEntries={[`/${ProjectName}/`]}>
+                    <AuthLeftMenu data={testData} isLoading={false} error={false} />
+                </MemoryRouter>
+            </QueryClientProvider>
+        );
+
+        // Expected Result
+        const superuserLink = await screen.findByTestId('superuser-nav-link');
+        expect(superuserLink).toBeDefined();
+        expect(superuserLink.classList.contains('aa-nav-danger')).toBe(true);
+        expect(superuserLink.textContent).toContain('Superuser');
+    });
 });

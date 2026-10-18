@@ -185,7 +185,7 @@ export interface paths {
         };
         /**
          * List orders (either placed as buyer or received as seller)
-         * @description Role can be 'buyer', 'seller', or 'all'.
+         * @description Role can be 'buyer', 'seller', 'manage', or 'all'.
          */
         get: operations["bpforge_api_orders_list_orders"];
         put?: never;
@@ -208,7 +208,8 @@ export interface paths {
         get: operations["bpforge_api_orders_get_order"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete an order completely (Managers only) */
+        delete: operations["bpforge_api_orders_delete_order"];
         options?: never;
         head?: never;
         patch?: never;
@@ -446,6 +447,16 @@ export interface components {
              * @default false
              */
             is_admin: boolean;
+            /**
+             * Can Manage Orders
+             * @default false
+             */
+            can_manage_orders: boolean;
+            /**
+             * Is Global Order Manager
+             * @default false
+             */
+            is_global_order_manager: boolean;
         };
         /** UserSettingsSchema */
         UserSettingsSchema: {
@@ -851,6 +862,22 @@ export interface components {
             runs?: number | null;
         };
         /**
+         * TaskTriggerResponseSchema
+         * @description Response schema for triggered async tasks.
+         */
+        TaskTriggerResponseSchema: {
+            /**
+             * Success
+             * @default true
+             */
+            success: boolean;
+            /**
+             * Message
+             * @default
+             */
+            message: string;
+        };
+        /**
          * OrderStatusUpdateRequest
          * @description Payload to change an order status.
          */
@@ -893,22 +920,6 @@ export interface components {
             notify_order_created_group_ids?: number[] | null;
             /** Notify Order Status Group Ids */
             notify_order_status_group_ids?: number[] | null;
-        };
-        /**
-         * TaskTriggerResponseSchema
-         * @description Response schema for triggered async tasks.
-         */
-        TaskTriggerResponseSchema: {
-            /**
-             * Success
-             * @default true
-             */
-            success: boolean;
-            /**
-             * Message
-             * @default
-             */
-            message: string;
         };
         /**
          * SuperuserUpdateOwnerTaskRequest
@@ -1454,6 +1465,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderSchema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    bpforge_api_orders_delete_order: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskTriggerResponseSchema"];
                 };
             };
             /** @description Forbidden */

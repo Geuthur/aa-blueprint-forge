@@ -416,56 +416,79 @@
 
 .aa-btn-primary {
     background-color: var(--aa-bg-blue);
-    color: var(--aa-color-white-light);
+    color: var(--aa-color-blue-light);
 }
 
 .aa-btn-primary:hover:not(:disabled) {
     background-color: var(--aa-bg-blue-light);
     color: var(--aa-color-white);
+    border-color: var(--aa-color-blue);
+}
+
+.aa-btn-light {
+    background-color: var(--aa-bg-light);
+    color: var(--aa-color-black);
+}
+
+.aa-btn-light:hover:not(:disabled) {
+    background-color: var(--aa-bg-light);
+    color: var(--aa-color-black);
+    border-color: var(--aa-color-light);
 }
 
 .aa-btn-secondary {
     background-color: var(--aa-bg-grey);
     color: var(--aa-color-white-light);
-    border-color: var(--aa-border-light);
 }
 
 .aa-btn-secondary:hover:not(:disabled) {
     background-color: var(--aa-bg-grey-light);
     color: var(--aa-color-white);
+    border-color: var(--aa-color-secondary);
+}
+
+.aa-btn-info {
+    background-color: var(--aa-bg-blue-light);
+    color: var(--aa-color-white);
+}
+
+.aa-btn-info:hover:not(:disabled) {
+    background-color: var(--aa-bg-blue-dark);
+    color: var(--aa-color-white);
+    border-color: var(--aa-color-blue);
 }
 
 .aa-btn-success {
     background-color: var(--aa-bg-emerald-dark);
     color: var(--aa-color-emerald-light);
-    border-color: var(--aa-color-emerald);
 }
 
 .aa-btn-success:hover:not(:disabled) {
     background-color: var(--aa-bg-emerald);
     color: var(--aa-color-white);
+    border-color: var(--aa-color-emerald);
 }
 
 .aa-btn-warning {
     background-color: var(--aa-bg-amber-dark);
     color: var(--aa-color-amber-light);
-    border-color: var(--aa-border-amber);
 }
 
 .aa-btn-warning:hover:not(:disabled) {
     background-color: var(--aa-bg-amber);
-    color: var(--aa-color-black)
+    color: var(--aa-color-black);
+    border-color: var(--aa-color-amber);
 }
 
 .aa-btn-danger {
     background-color: var(--aa-bg-rose-dark);
     color: var(--aa-color-rose-light);
-    border-color: var(--aa-border-rose);
 }
 
 .aa-btn-danger:hover:not(:disabled) {
     background-color: var(--aa-bg-rose-dark);
     color: var(--aa-color-white);
+    border-color: var(--aa-color-rose);
 }
 
 .aa-btn-sm {
@@ -946,4 +969,14 @@
         color: var(--aa-color-amber-light, #fcd34d);
         text-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
     }
+}
+
+.aa-nav-danger {
+    color: var(--aa-color-rose, #f43f5e) !important;
+    font-weight: 600;
+}
+
+.aa-nav-danger:hover {
+    color: var(--aa-color-rose-light, #fda4af) !important;
+    text-shadow: 0 0 8px rgba(244, 63, 94, 0.4);
 }

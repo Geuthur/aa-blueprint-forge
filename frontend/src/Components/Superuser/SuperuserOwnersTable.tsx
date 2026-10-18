@@ -107,11 +107,11 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
         cell: ({ row }) => {
           const owner = row.original;
           return owner.is_corporation ? (
-            <span className="badge aa-bg-info text-info border border-info">
+            <span className="badge aa-bg-info border border-info">
               {t("Corporation")}
             </span>
           ) : (
-            <span className="badge aa-bg-warning text-warning border border-warning">
+            <span className="badge aa-bg-warning border border-warning">
               {t("Character")}
             </span>
           );
@@ -173,7 +173,7 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
         cell: ({ row }) => {
           const owner = row.original;
           return owner.selective_bpo_enabled ? (
-            <span className="badge bg-primary-subtle text-primary border border-primary-subtle">
+            <span className="badge aa-bg-primary border border-primary">
               {t("Selective")}
             </span>
           ) : (
@@ -189,14 +189,14 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
           const owner = row.original;
           return renderTooltip(
             t("Inspect All Blueprints"),
-            <button
-              type="button"
+            <Button
+              variant="link"
               className="btn btn-link btn-sm p-0 text-decoration-none text-light"
               onClick={() => onInspect(owner)}
             >
               <span className="text-primary fw-semibold">{owner.bpo_count} BPO</span> •{" "}
               <span>{owner.bpc_count} BPC</span>
-            </button>
+            </Button>
           );
         },
       }),
@@ -234,6 +234,7 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
               {renderTooltip(
                 t("Inspect All Blueprints"),
                 <Button
+                  variant="link"
                   size="sm"
                   onClick={() => onInspect(owner)}
                   className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-primary"
@@ -245,9 +246,10 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
               {renderTooltip(
                 t("Edit Owner Settings"),
                 <Button
+                  variant="warning"
                   size="sm"
                   onClick={() => onEdit(owner)}
-                  className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                  className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-warning"
                 >
                   <Edit2 size={13} />
                   <span>{t("Edit")}</span>
@@ -257,10 +259,11 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
                 {renderTooltip(
                   t("Trigger update_owner task (normal)"),
                   <Button
+                    variant="danger"
                     size="sm"
                     onClick={() => onTriggerUpdate(owner.id, false)}
                     disabled={updatingOwnerId === owner.id}
-                    className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-primary"
+                    className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-danger"
                   >
                     {updatingOwnerId === owner.id ? (
                       <Spinner size="sm" animation="border" />
@@ -275,9 +278,10 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
                   <Dropdown.Toggle
                     split
                     size="sm"
+                    variant="danger"
                     aria-label={t("More update options")}
                     disabled={updatingOwnerId === owner.id}
-                    className="aa-btn aa-btn-primary"
+                    className="aa-btn aa-btn-danger"
                   />
                 )}
                 <Dropdown.Menu

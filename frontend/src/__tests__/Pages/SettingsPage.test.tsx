@@ -256,4 +256,56 @@ describe("SettingsPage", () => {
       expect.any(Object),
     );
   });
+
+  it("allows switching catalog public type via the ButtonGroup", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
+      disable_notifications: false,
+    });
+    const mockOwners = [
+      {
+        id: 1,
+        name: "Test Character",
+        is_corporation: false,
+        character_id: 12345,
+        character_name: "Test Character",
+        corporation_id: 54321,
+        corporation_name: "Test Corp",
+        corporation_ticker: "TC",
+        alliance_id: null,
+        portrait_url: null,
+        is_public: true,
+        public_type: "all",
+        selective_bpo_enabled: false,
+        notify_order_created_group_ids: [],
+        notify_order_status_group_ids: [],
+        blueprint_count: 10,
+        bpo_count: 4,
+        bpc_count: 6,
+        status: "ok",
+        has_error: false,
+        last_sync: "2026-10-14 18:20",
+        error_message: null,
+        sections: [],
+      },
+    ];
+    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.updateOwnerSetting).mockResolvedValue({
+      ...mockOwners[0],
+      public_type: "bpo",
+    });
+
+    // Test Action
+    renderPage();
+    const bpoBtn = await screen.findByRole("button", { name: "BPO Only" });
+    expect(bpoBtn).toBeInTheDocument();
+    await user.click(bpoBtn);
+
+    // Expected Result
+    expect(ApiCalls.updateOwnerSetting).toHaveBeenCalledWith(
+      { ownerId: 1, payload: { public_type: "bpo" } },
+      expect.any(Object),
+    );
+  });
 });
