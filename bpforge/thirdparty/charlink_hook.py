@@ -21,7 +21,7 @@ _corp_perms = [
 ]
 
 
-# pylint: disable=unused-argument, duplicate-code
+# pylint: disable=unused-argument
 def _add_character(request, token):
     character = get_object_or_404(EveCharacter, character_id=token.character_id)
     characterowner = Owner.objects.update_or_create(
@@ -35,7 +35,7 @@ def _add_character(request, token):
     )
 
 
-# pylint: disable=unused-argument, duplicate-code
+# pylint: disable=unused-argument
 def _add_character_corp(request, token):
     character = get_object_or_404(EveCharacter, character_id=token.character_id)
     try:

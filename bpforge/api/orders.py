@@ -296,18 +296,9 @@ class ApiEndpoints:
             )
 
 
-# pylint: disable=duplicate-code
 def _serialize_order(order: Order) -> schema.OrderSchema:
     owner = order.owner
-    owner_name = (
-        owner.corporation.corporation_name
-        if owner.corporation
-        else (
-            owner.character.character.character_name
-            if owner.character
-            else owner.user.username
-        )
-    )
+    owner_name = owner.name
 
     try:
         buyer_name = order.requesting_user.profile.main_character.character_name

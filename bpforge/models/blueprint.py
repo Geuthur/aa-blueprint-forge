@@ -142,6 +142,23 @@ class Owner(UpdateManagerMixin, models.Model):
             return self.corporation
         return self.user.username
 
+    @property
+    def name(self) -> str:
+        """Human-readable display name of the owner."""
+        if self.corporation:
+            return self.corporation.corporation_name
+        if self.character:
+            return self.character.character.character_name
+        return self.user.username
+
+    @property
+    def is_corporation(self) -> bool:
+        """Whether this owner is a corporation."""
+        return bool(self.corporation_id)
+
+    def __str__(self) -> str:
+        return self.name
+
     @staticmethod
     def get_corporation_scopes():
         return [
@@ -184,9 +201,10 @@ class Owner(UpdateManagerMixin, models.Model):
         )
 
         if not token:
-            raise TokenError(
-                f"Token not found for corporation {self.corporation.corporation.corporation_name}"
+            corp_name = (
+                self.corporation.corporation_name if self.corporation else "Unknown"
             )
+            raise TokenError(f"Token not found for corporation {corp_name}")
         return token
 
     def update_blueprints(self, force_refresh: bool = False) -> None:

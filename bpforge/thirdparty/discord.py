@@ -191,15 +191,7 @@ def notify_order_created(order) -> None:
     from bpforge.models.general import GeneralNotificationSettings
 
     owner = order.owner
-    owner_name = (
-        owner.corporation.corporation_name
-        if owner.corporation
-        else (
-            owner.character.character.character_name
-            if owner.character
-            else owner.user.username
-        )
-    )
+    owner_name = owner.name
 
     try:
         buyer_name = order.requesting_user.profile.main_character.character_name
@@ -259,15 +251,7 @@ def notify_order_status_updated(
     from bpforge.models.general import GeneralNotificationSettings
 
     owner = order.owner
-    owner_name = (
-        owner.corporation.corporation_name
-        if owner.corporation
-        else (
-            owner.character.character.character_name
-            if owner.character
-            else owner.user.username
-        )
-    )
+    owner_name = owner.name
 
     try:
         actor_name = actor.profile.main_character.character_name

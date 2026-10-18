@@ -40,6 +40,7 @@ Section Order:
 - Improved menu navigation to route cleanly without persisting search filters across pages.
 - Migrated modals across the application to the standardized `BaseModal` design.
 - Synchronized order tab selection with URL query parameters.
+- Refactored owner display name and blueprint serialization into reusable helpers to eliminate code duplication across API endpoints and Discord notifications.
 
 ### Fixed
 
