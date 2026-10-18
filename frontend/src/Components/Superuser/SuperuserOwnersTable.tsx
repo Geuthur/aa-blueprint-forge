@@ -9,6 +9,7 @@ import {
   Edit2,
   Eye,
   RefreshCw,
+  Trash2,
   User,
   Users,
 } from "lucide-react";
@@ -32,6 +33,7 @@ interface SuperuserOwnersTableProps {
   onInspect: (owner: OwnerSettingSchema) => void;
   onEdit: (owner: OwnerSettingSchema) => void;
   onTriggerUpdate: (ownerId: number, forceRefresh: boolean) => void;
+  onDelete: (owner: OwnerSettingSchema) => void;
 }
 
 export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
@@ -44,6 +46,7 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
   onInspect,
   onEdit,
   onTriggerUpdate,
+  onDelete,
 }) => {
   const { t } = useTranslation();
 
@@ -298,12 +301,24 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
+              {renderTooltip(
+                t("Delete Owner"),
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => onDelete(owner)}
+                  className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-danger"
+                >
+                  <Trash2 size={13} />
+                  <span>{t("Delete")}</span>
+                </Button>
+              )}
             </div>
           );
         },
       }),
     ];
-  }, [t, updatingOwnerId, onInspect, onEdit, onTriggerUpdate]);
+  }, [t, updatingOwnerId, onInspect, onEdit, onTriggerUpdate, onDelete]);
 
   return (
     <Card className="bg-secondary text-light border-0 shadow-sm">

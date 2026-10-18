@@ -30,6 +30,16 @@ Section Order:
 
 <!-- Your changes go here -->
 
+### Added
+
+- Django Admin view for `Owner` model (`bpforge/admin.py`) with force update actions (bypassing cache), normal updates, inline update status inspection, and permission controls.
+- Superuser API endpoint `DELETE /bpforge/api/superuser/owners/{owner_id}/` to allow superusers to delete owners and cascade associated blueprints/settings.
+- Frontend Superuser Owner deletion action in `SuperuserOwnersTable` and `SuperuserPage` with a confirmation modal (`BaseModal`) before deletion is executed.
+
+### Fixed
+
+- Fixed invalid ORM field lookups in `bpforge.thirdparty.charlink_hook` (`character__character` and `corporation__corporation_id` in `is_character_added_annotation`).
+
 ## [1.0.2] - 2026-10-18
 
 ### Added

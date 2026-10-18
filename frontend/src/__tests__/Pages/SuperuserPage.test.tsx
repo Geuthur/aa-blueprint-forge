@@ -18,6 +18,7 @@ vi.mock("react-i18next", () => ({
 }));
 
 vi.mock("@/Api/ApiCalls", () => ({
+  deleteSuperuserOwner: vi.fn(),
   loadSuperuserGroups: vi.fn(),
   loadSuperuserSettings: vi.fn(),
   updateSuperuserSettings: vi.fn(),
@@ -362,6 +363,66 @@ describe("SuperuserPage", () => {
     });
     expect(
       await screen.findByText("Update task queued for Enterprise Industrialists (force_refresh=True).")
+    ).toBeInTheDocument();
+  });
+
+  it("should open delete confirmation modal and delete owner when confirmed", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    const mockOwners = [
+      {
+        id: 10,
+        name: "Enterprise Industrialists",
+        is_corporation: true,
+        corporation_id: 98000001,
+        status: "ok",
+        has_error: false,
+        sections: [],
+        is_public: true,
+        public_type: "all",
+        selective_bpo_enabled: false,
+        blueprint_count: 5,
+        bpo_count: 3,
+        bpc_count: 2,
+        notify_order_created_group_ids: [],
+        notify_order_status_group_ids: [],
+      },
+    ];
+
+    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+      order_created_group_ids: [],
+      order_status_group_ids: [],
+    });
+    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.deleteSuperuserOwner).mockResolvedValue({
+      success: true,
+      message: "Owner Enterprise Industrialists and all associated data deleted successfully.",
+    });
+
+    // Test Action
+    renderPage();
+
+    expect(await screen.findByText("Enterprise Industrialists")).toBeInTheDocument();
+
+    const deleteBtn = screen.getByRole("button", { name: "Delete" });
+    await user.click(deleteBtn);
+
+    // Expected Result: confirmation modal opens
+    expect(await screen.findByText("Delete Owner")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Are you sure you want to delete owner/i)
+    ).toBeInTheDocument();
+
+    const confirmBtn = screen.getByRole("button", { name: "Confirm Delete" });
+    await user.click(confirmBtn);
+
+    await waitFor(() => {
+      expect(ApiCalls.deleteSuperuserOwner).toHaveBeenCalledWith(10);
+    });
+
+    expect(
+      await screen.findByText("Owner Enterprise Industrialists and all associated data deleted successfully.")
     ).toBeInTheDocument();
   });
 });

@@ -73,6 +73,8 @@ class Owner(UpdateManagerMixin, models.Model):
 
     class Meta:
         default_permissions = ()
+        verbose_name = _("Owner")
+        verbose_name_plural = _("Owners")
         indexes = [
             models.Index(fields=["is_public"], name="bpforge_owner_is_public_idx"),
             models.Index(
