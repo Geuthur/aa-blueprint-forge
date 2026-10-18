@@ -30,6 +30,8 @@ Section Order:
 
 <!-- Your changes go here -->
 
+## [1.0.2] - 2026-10-18
+
 ### Added
 
 - Automatic deletion of blueprints during synchronization when they are no longer owned or present in ESI.
@@ -88,4 +90,5 @@ Section Order:
 
 [1.0.0]: https://github.com/Geuthur/aa-blueprint-forge/compare/v...v1.0.0 "v1.0.0"
 [1.0.1]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.0...v1.0.1 "v1.0.1"
-[in development]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.1...HEAD "In Development"
+[1.0.2]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.1...v1.0.2 "v1.0.2"
+[in development]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.2...HEAD "In Development"

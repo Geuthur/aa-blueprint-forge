@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AA Blueprint Forge\n"
 "Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-blueprint-forge/\n"
-"POT-Creation-Date: 2026-10-18 18:46+0200\n"
+"POT-Creation-Date: 2026-10-18 20:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bpforge/api/blueprints.py:35 bpforge/api/blueprints.py:133
-#: bpforge/api/blueprints.py:187 bpforge/api/general.py:237
+#: bpforge/api/blueprints.py:35 bpforge/api/blueprints.py:138
+#: bpforge/api/blueprints.py:192 bpforge/api/general.py:237
 #: bpforge/api/general.py:293 bpforge/api/general.py:311
 #: bpforge/api/general.py:331 bpforge/api/general.py:372
 #: bpforge/api/general.py:416 bpforge/api/general.py:446
@@ -32,7 +32,7 @@ msgstr ""
 msgid "Permission Denied."
 msgstr ""
 
-#: bpforge/api/blueprints.py:199
+#: bpforge/api/blueprints.py:204
 msgid "This blueprint catalog is private."
 msgstr ""
 
@@ -129,107 +129,107 @@ msgstr ""
 msgid "Only Copies (BPC)"
 msgstr ""
 
-#: bpforge/models/blueprint.py:89
+#: bpforge/models/blueprint.py:95
 msgid "The character that owns this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:102
+#: bpforge/models/blueprint.py:108
 msgid "The corporation that owns this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:107
+#: bpforge/models/blueprint.py:113
 msgid "Whether this owner's blueprints are public."
 msgstr ""
 
-#: bpforge/models/blueprint.py:114
+#: bpforge/models/blueprint.py:120
 msgid "Which types of blueprints are public for this owner."
 msgstr ""
 
-#: bpforge/models/blueprint.py:119
+#: bpforge/models/blueprint.py:125
 msgid "Whether only explicitly selected BPOs are offered."
 msgstr ""
 
-#: bpforge/models/blueprint.py:126
+#: bpforge/models/blueprint.py:132
 msgid "Groups to notify when a new order is created for this owner."
 msgstr ""
 
-#: bpforge/models/blueprint.py:133
+#: bpforge/models/blueprint.py:139
 msgid "Groups to notify when an order status changes for this owner."
 msgstr ""
 
-#: bpforge/models/blueprint.py:229
+#: bpforge/models/blueprint.py:257
 msgid "The Eve ID of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:236
+#: bpforge/models/blueprint.py:265
 msgid "The owner of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:243
+#: bpforge/models/blueprint.py:272
 msgid "The Eve type of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:250
+#: bpforge/models/blueprint.py:279
 msgid "The location of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:254
+#: bpforge/models/blueprint.py:283
 msgid "The flag of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:260
+#: bpforge/models/blueprint.py:289
 msgid "The quantity of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:267
+#: bpforge/models/blueprint.py:296
 msgid "The number of runs for this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:272
+#: bpforge/models/blueprint.py:301
 msgid "The material efficiency of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:278
+#: bpforge/models/blueprint.py:307
 msgid "The time efficiency of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:284
+#: bpforge/models/blueprint.py:313
 msgid "Whether this blueprint is offered when selective BPO mode is enabled."
 msgstr ""
 
-#: bpforge/models/blueprint.py:312
+#: bpforge/models/blueprint.py:341
 msgid "The Eve ID of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:317
+#: bpforge/models/blueprint.py:346
 msgid "The name of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:327
+#: bpforge/models/blueprint.py:356
 msgid "The parent location of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:337
+#: bpforge/models/blueprint.py:366
 msgid "The solar system of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:347
+#: bpforge/models/blueprint.py:376
 msgid "The Eve type of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:357
+#: bpforge/models/blueprint.py:386
 msgid "The owner of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:392
+#: bpforge/models/blueprint.py:421
 msgid "The Eve ID of this entity."
 msgstr ""
 
-#: bpforge/models/blueprint.py:397
+#: bpforge/models/blueprint.py:426
 msgid "The name of this entity."
 msgstr ""
 
-#: bpforge/models/blueprint.py:402
+#: bpforge/models/blueprint.py:431
 msgid "The category of this entity."
 msgstr ""
 
