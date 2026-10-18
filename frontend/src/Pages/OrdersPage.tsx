@@ -65,8 +65,8 @@ export function OrdersPage() {
   const { data: sellerOrders = [] } = useQuery({
     queryKey: queryKeys.Orders("seller"),
     queryFn: () => loadOrders("seller"),
-    refetchInterval: 30000,
-    staleTime: 15000,
+    refetchInterval: 10000,
+    staleTime: 5000,
   });
 
   const openSellerCount = sellerOrders.filter(
@@ -78,8 +78,8 @@ export function OrdersPage() {
     queryKey: queryKeys.Orders("manage"),
     queryFn: () => loadOrders("manage"),
     enabled: canManageOrders,
-    refetchInterval: 30000,
-    staleTime: 15000,
+    refetchInterval: 10000,
+    staleTime: 5000,
   });
 
   const openManageCount = manageOrders.filter(

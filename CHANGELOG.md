@@ -28,6 +28,10 @@ Section Order:
 
 <!-- AI Changes -->
 
+### Changed
+
+- [CHANGE] Integrated `nuqs` URL query parameter (`?inspect=<ownerId>`) for the Superuser inspection view, enabling native browser back/forward navigation.
+
 <!-- Your changes go here -->
 
 ### Added
