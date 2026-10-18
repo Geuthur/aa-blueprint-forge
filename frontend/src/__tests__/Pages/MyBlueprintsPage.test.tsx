@@ -50,6 +50,8 @@ describe("MyBlueprintsPage Component", () => {
     expect(await screen.findByText("Personal & Corporation Blueprints")).toBeInTheDocument();
     expect(await screen.findByText("Rifter Blueprint")).toBeInTheDocument();
     expect(screen.getByText("Originals (BPO)")).toBeInTheDocument();
+    expect(screen.getByText("Location")).toBeInTheDocument();
+    expect(screen.getByText("Jita IV - 4")).toBeInTheDocument();
   });
 
   it("filters blueprints by originals (BPO) and copies (BPC) when clicking KPI cards", async () => {

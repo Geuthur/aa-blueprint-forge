@@ -244,6 +244,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
           data={ownerBlueprints}
           isFetching={isLoading}
           showSelectColumn={false}
+          showLocationColumn={true}
           typeFilter={inspectionTypeFilter}
           onTypeFilterChange={setInspectionTypeFilter}
         />

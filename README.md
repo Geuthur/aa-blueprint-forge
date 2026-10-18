@@ -8,7 +8,7 @@ ______________________________________________________________________
 
 - [AA Blueprint Forge](#aa-blueprint-forge)
   - [Features](#features)
-  - [Highlights](#highlights)
+  - [Screenshots](#screenshots)
   - [Installation](#installation)
     - [Step 1 - Install the Package](#step-1---install-the-package)
     - [Step 2 - Configure Alliance Auth](#step-2---configure-alliance-auth)
@@ -18,10 +18,6 @@ ______________________________________________________________________
     - [Step 4.1 - Migrate App and collect static](#step-41---migrate-app-and-collect-static)
     - [Step 5 - Setting up Permissions](#step-5---setting-up-permissions)
     - [Step 6 - (Optional) Setting up Compatibilies](#step-6---optional-setting-up-compatibilies)
-  - [Frontend Development (React SPA)](#frontend-development-react-spa)
-    - [Tech Stack](#tech-stack)
-    - [Frontend Makefile Commands](#frontend-makefile-commands)
-    - [Local Frontend Development](#local-frontend-development)
   - [Translations](#translations)
   - [Contributing](#contributing)
 
@@ -29,7 +25,41 @@ ______________________________________________________________________
 
 ## Features<a name="features"></a>
 
-## Highlights<a name="highlights"></a>
+- **Interactive Blueprint Catalog & Directory**:
+  - Browse public blueprints offered by characters and corporations across your alliance.
+  - Global blueprint search in the catalog directory with real-time preview of matching blueprints on provider cards.
+  - Filter blueprints by type (Originals / BPOs, Copies / BPCs), group, and location.
+  - Dedicated `/overview/` route with direct navigation and deep-linking into provider catalogs.
+- **Batch Ordering System & Shopping Cart**:
+  - Add multiple blueprints across different providers into a unified shopping cart.
+  - Customize requested runs and copy quantities per item with optional customer notes.
+  - Complete order workflow with status tracking (Pending, Accepted, Delivered, Declined, Cancelled).
+  - Dedicated order management dashboard with tab filtering, order history, and deletion.
+  - Role-based manager permissions for order oversight (global and corporation-scoped).
+- **Personal & Corporation Inventory (`My Blueprints`)**:
+  - Comprehensive overview of your own personal and corporation blueprint inventories.
+  - Interactive KPI summary cards for quick filtering between BPOs and BPCs.
+  - Detailed blueprint stats including Material Efficiency (ME), Time Efficiency (TE), runs, and storage locations.
+- **Flexible Catalog Offering & Privacy Controls**:
+  - Toggle public or private visibility for each character and corporation catalog.
+  - Configurable offering modes: Offer all blueprints, BPOs only, or BPCs only.
+  - Selective BPO offering: Selectively publish specific BPOs while keeping sensitive blueprints unlisted.
+- **Automated EVE Online ESI Synchronization**:
+  - Background synchronization for blueprints, character/corporation assets, stations, and citadels via Celery tasks.
+  - Live status indicators, timestamp tracking, and error reporting in the settings dashboard.
+- **Discord & Alliance Auth Notifications**:
+  - Instant Discord notifications for new orders and order status changes with direct order links.
+  - Configurable notification recipient groups globally and per owner.
+- **Superuser Administration Dashboard**:
+  - Dedicated `/superuser/` administration view to inspect all owners and raw inventories across the installation.
+  - On-demand sync task triggers and global notification group configuration.
+- **Modern Responsive React SPA**:
+  - Built with React, TypeScript, and Vite for a fast and fluid user experience.
+  - Dark-mode optimized design with responsive tables, loading animations, and standardized modals.
+- **Multi-Language Support**:
+  - Full localization support for English and German.
+
+## Screenshots<a name="screenshots"></a>
 
 ![Image: overview]
 ![Image: superuser]
@@ -134,65 +164,6 @@ The Following Settings can be setting up in the `local.py`
 - BPFORGE_TASKS_TIME_LIMIT: `7200` - Defines the time (in seconds) a task will timeout
 
 If you set up BPFORGE_LOGGER_USE to `True` you need to add the following code below:
-
-## Frontend Development (React SPA)<a name="frontend-development-react-spa"></a>
-
-The user interface of AA Blueprint Forge is built as a modern React Single-Page Application (SPA) located in the `frontend/` directory.
-
-### Tech Stack<a name="tech-stack"></a>
-
-- **Framework**: React 19, TypeScript
-- **Bundler & Tooling**: Vite 8 (`@vitejs/plugin-react-swc`), AllianceAuth styles from `frontend/src/index.css`
-- **UI Components & Icons**: React-Bootstrap, Lucide Icons (`lucide-react`)
-- **Data & Tables**: TanStack React Query (`@tanstack/react-query`), TanStack Table (`@tanstack/react-table`)
-- **API Client**: `openapi-fetch` with types generated via `openapi-typescript`
-- **Testing**: Vitest with `@testing-library/react` and `jsdom`
-- **Localization**: `i18next` & `react-i18next` (12 languages)
-
-### Frontend Makefile Commands<a name="frontend-makefile-commands"></a>
-
-You can control the frontend build, test, and development workflows directly from the repository root:
-
-| Command                        | Description                                                             |
-| :----------------------------- | :---------------------------------------------------------------------- |
-| `make react-dev`               | Starts the Vite development server with proxy to backend                |
-| `make react-build`             | Runs TypeScript compilation (`tsc -b`) and Vite production build        |
-| `make react-test`              | Runs Vitest unit tests                                                  |
-| `make react-lint`              | Runs ESLint verification                                                |
-| `make react-eslint`            | Runs ESLint with automated fixes (`--fix`)                              |
-| `make react-test-build`        | Runs build, asset copy, translation sync, and `collectstatic`           |
-| `make react-release`           | Runs full release build (build, i18n scan, asset copy, `collectstatic`) |
-| `make react-copy-assets`       | Copies Vite production build artifacts to Django's static directory     |
-| `make react-copy-translations` | Copies frontend i18n translations to Django's static directory          |
-| `make react-translations`      | Scans source code and updates i18n translation files                    |
-| `make react-openapi`           | Exports Django Ninja OpenAPI schema and regenerates TypeScript types    |
-| `make react-clean`             | Cleans React build directory                                            |
-
-### Local Frontend Development<a name="local-frontend-development"></a>
-
-1. **Install dependencies**:
-
-   ```shell
-   cd frontend
-   npm install
-   ```
-
-1. **Start Vite development server**:
-
-   ```shell
-   # Inside frontend/
-   npm run dev
-
-   # Or from repository root:
-   make react-dev
-   ```
-
-1. **Run tests and linter**:
-
-   ```shell
-   make react-test
-   make react-lint
-   ```
 
 ## Translations<a name="translations"></a>
 

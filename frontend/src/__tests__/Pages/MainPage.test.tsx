@@ -104,6 +104,8 @@ describe("MainPage Component", () => {
     // Expected Result
     expect(await screen.findByText("Rifter Blueprint")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "All Blueprints" })).toBeInTheDocument();
+    expect(screen.queryByText("Location")).not.toBeInTheDocument();
+    expect(screen.queryByText("Jita IV - 4")).not.toBeInTheDocument();
   });
 
   it("switches catalog via the select dropdown on the right header", async () => {
