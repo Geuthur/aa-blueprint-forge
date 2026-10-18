@@ -65,6 +65,7 @@ ______________________________________________________________________
 ![Image: superuser]
 ![Image: orders]
 ![Image: blueprints]
+![Image: discord]
 
 ## Installation<a name="installation"></a>
 
@@ -180,6 +181,7 @@ Please ensure you read the [Contribution Guidelines]
 
 [contribution guidelines]: https://github.com/Geuthur/aa-blueprint-forge/blob/master/CONTRIBUTING.md "Contribution Guidelines"
 [image: blueprints]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/blueprints.png "Blueprint Forge Blueprints"
+[image: discord]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/discord.png "Blueprint Forge Discord"
 [image: orders]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/orders.png "Blueprint Forge Orders"
 [image: overview]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/overview.png "Blueprint Forge Overview"
 [image: superuser]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/superuser.png "Blueprint Forge Superuser"
