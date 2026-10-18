@@ -191,7 +191,7 @@ class BlueprintItemSchema(Schema):
     owner_name: str
 
     @classmethod
-    def from_blueprint(cls, bp) -> "BlueprintItemSchema":
+    def from_blueprint(cls, bp, include_location: bool = True) -> "BlueprintItemSchema":
         """Construct a BlueprintItemSchema from a Blueprint model object."""
         return cls(
             item_id=bp.item_id,
@@ -204,11 +204,22 @@ class BlueprintItemSchema(Schema):
             quantity=bp.quantity,
             material_efficiency=bp.material_efficency,
             time_efficiency=bp.time_efficiency,
-            location_id=bp.location_id,
-            location_name=bp.location.name if bp.location else "",
+            location_id=bp.location_id if include_location else 0,
+            location_name=cls.get_location_name(bp) if include_location else "",
             owner_id=bp.owner_id,
             owner_name=bp.owner.name,
         )
+
+    @classmethod
+    def get_location_name(cls, bp):
+        """Get the location name of a blueprint."""
+        if bp.location:
+            if bp.location.parent:
+                return bp.location.parent.name
+            return bp.location.name
+        if bp.eve_solar_system:
+            return bp.eve_solar_system.name
+        return "Unknown"
 
 
 class OrderItemCreateSchema(Schema):

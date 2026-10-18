@@ -18,6 +18,7 @@ interface BlueprintTableProps {
   selectedBlueprints?: Map<number, { blueprint: BlueprintItem; quantity: number; runs: number | null }>;
   onToggleSelect?: (blueprint: BlueprintItem) => void;
   showSelectColumn?: boolean;
+  showLocationColumn?: boolean;
   typeFilter?: "all" | "bpo" | "bpc";
   onTypeFilterChange?: (filter: "all" | "bpo" | "bpc") => void;
   showOwnerFilter?: boolean;
@@ -30,6 +31,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
   selectedBlueprints,
   onToggleSelect,
   showSelectColumn = true,
+  showLocationColumn = false,
   typeFilter: typeFilterProp,
   onTypeFilterChange,
   onOpenOrderModal,
@@ -59,7 +61,10 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
         const query = searchTerm.toLowerCase();
         const matchesName = bp.type_name.toLowerCase().includes(query);
         const matchesGroup = bp.group_name.toLowerCase().includes(query);
-        const matchesLocation = bp.location_name.toLowerCase().includes(query);
+        const matchesLocation =
+          showLocationColumn && bp.location_name
+            ? bp.location_name.toLowerCase().includes(query)
+            : false;
         if (!matchesName && !matchesGroup && !matchesLocation) {
           return false;
         }
@@ -72,7 +77,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
 
       return true;
     });
-  }, [data, searchTerm, activeTypeFilter]);
+  }, [data, searchTerm, activeTypeFilter, showLocationColumn]);
 
   const columns = useMemo(() => {
     return getBlueprintColumns({
@@ -80,8 +85,9 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
       selectedIds,
       onToggleSelect,
       showSelectColumn,
+      showLocationColumn,
     });
-  }, [t, selectedIds, onToggleSelect, showSelectColumn]);
+  }, [t, selectedIds, onToggleSelect, showSelectColumn, showLocationColumn]);
 
   return (
     <div className="d-flex flex-column gap-3">
@@ -95,7 +101,11 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
             </span>
             <Form.Control
               type="text"
-              placeholder={t("Search by blueprint or group...")}
+              placeholder={
+                showLocationColumn
+                  ? t("Search by blueprint, group, or location...")
+                  : t("Search by blueprint or group...")
+              }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="bg-dark text-light border-secondary"

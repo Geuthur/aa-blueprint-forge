@@ -129,6 +129,7 @@ export function MyBlueprintsPage() {
           data={blueprints}
           isFetching={isLoading}
           showSelectColumn={false}
+          showLocationColumn={true}
           typeFilter={typeFilter}
           onTypeFilterChange={setTypeFilter}
         />

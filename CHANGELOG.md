@@ -26,6 +26,10 @@ Section Order:
 ### Removed
 -->
 
+<!-- Your changes go here -->
+
+## [1.0.1] - 2026-10-18
+
 ### Added
 
 - Blueprint search in the overview catalog directory with quick access and direct preview on provider cards.
@@ -62,4 +66,5 @@ Section Order:
 <!-- Links -->
 
 [1.0.0]: https://github.com/Geuthur/aa-blueprint-forge/compare/v...v1.0.0 "v1.0.0"
-[in development]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.0...HEAD "In Development"
+[1.0.1]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.0...v1.0.1 "v1.0.1"
+[in development]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.1...HEAD "In Development"

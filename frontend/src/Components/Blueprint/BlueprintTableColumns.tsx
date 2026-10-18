@@ -18,6 +18,7 @@ export interface BlueprintTableColumnsOptions {
   selectedIds?: Set<number>;
   onToggleSelect?: (blueprint: BlueprintItem) => void;
   showSelectColumn?: boolean;
+  showLocationColumn?: boolean;
 }
 
 export function getBlueprintColumns({
@@ -25,6 +26,7 @@ export function getBlueprintColumns({
   selectedIds,
   onToggleSelect,
   showSelectColumn = true,
+  showLocationColumn = false,
 }: BlueprintTableColumnsOptions): ColumnDef<BlueprintItem, unknown>[] {
   const columnHelper = createColumnHelper<BlueprintItem>();
 
@@ -118,22 +120,26 @@ export function getBlueprintColumns({
       cell: ({ getValue }) => (
         <span className="fw-semibold">{Number(getValue() ?? 1)}</span>
       ),
-    }),
-
-    columnHelper.accessor("location_name", {
-      id: "location_name",
-      header: t("Location"),
-      cell: ({ getValue }) => {
-        const text = String(getValue() || t("Unknown"));
-        return renderTooltip(
-          text,
-          <span className={`text-secondary small text-truncate d-inline-block ${styles.locationCell}`}>
-            {text}
-          </span>
-        );
-      },
     })
   );
+
+  if (showLocationColumn) {
+    columns.push(
+      columnHelper.accessor("location_name", {
+        id: "location_name",
+        header: t("Location"),
+        cell: ({ getValue }) => {
+          const text = String(getValue() || t("Unknown"));
+          return renderTooltip(
+            text,
+            <span className={`text-secondary small text-truncate d-inline-block ${styles.locationCell}`}>
+              {text}
+            </span>
+          );
+        },
+      })
+    );
+  }
 
   if (showSelectColumn && onToggleSelect) {
     columns.push(

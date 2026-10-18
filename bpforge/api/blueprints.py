@@ -167,7 +167,8 @@ class ApiEndpoints:
             )
 
             result = [
-                schema.BlueprintItemSchema.from_blueprint(bp) for bp in blueprint_qs
+                schema.BlueprintItemSchema.from_blueprint(bp, include_location=False)
+                for bp in blueprint_qs
             ]
             return HTTPStatus.OK, result
 
@@ -212,6 +213,7 @@ class ApiEndpoints:
             blueprints = blueprint_qs.order_by("eve_type__name")
 
             result = [
-                schema.BlueprintItemSchema.from_blueprint(bp) for bp in blueprints
+                schema.BlueprintItemSchema.from_blueprint(bp, include_location=False)
+                for bp in blueprints
             ]
             return HTTPStatus.OK, result
