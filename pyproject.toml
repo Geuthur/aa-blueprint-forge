@@ -6,7 +6,7 @@ requires = [
 
 [project]
 name = "aa-blueprint-forge"
-description = ""
+description = "Blueprint library and copy order management system for Alliance Auth."
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
