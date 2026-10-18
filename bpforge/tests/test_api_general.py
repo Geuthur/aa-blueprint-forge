@@ -6,9 +6,14 @@ from http import HTTPStatus
 from django.urls import reverse
 
 # AA Blueprint Forge
-from bpforge.models.blueprint import Owner
+from bpforge.models.helpers.update_manager import UpdateSection
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
+from bpforge.tests.testdata.bpforge import (
+    BlueprintFactory,
+    OwnerFactory,
+    OwnerUpdateStatusFactory,
+)
 
 
 class TestApiGeneral(AuthTestCase):
@@ -47,17 +52,9 @@ class TestApiGeneral(AuthTestCase):
     def test_get_user_owners_should_return_only_current_user_owners(self):
         # Test Data
         self.client.force_login(self.user)
-        owner_self = Owner.objects.create(
-            user=self.user,
-            character=self.user.profile.main_character.character_ownership,
-            is_public=False,
-        )
+        owner_self = OwnerFactory(user=self.user, is_public=False)
         other_user = UserMainFactory()
-        owner_other = Owner.objects.create(
-            user=other_user,
-            character=other_user.profile.main_character.character_ownership,
-            is_public=True,
-        )
+        owner_other = OwnerFactory(user=other_user, is_public=True)
 
         # Test Action
         response = self.client.get("/bpforge/api/settings/owners/")
@@ -72,11 +69,7 @@ class TestApiGeneral(AuthTestCase):
     def test_update_owner_setting_should_toggle_is_public(self):
         # Test Data
         self.client.force_login(self.user)
-        owner = Owner.objects.create(
-            user=self.user,
-            character=self.user.profile.main_character.character_ownership,
-            is_public=False,
-        )
+        owner = OwnerFactory(user=self.user, is_public=False)
 
         # Test Action
         response = self.client.patch(
@@ -95,11 +88,7 @@ class TestApiGeneral(AuthTestCase):
         # Test Data
         self.client.force_login(self.user)
         other_user = UserMainFactory()
-        owner_other = Owner.objects.create(
-            user=other_user,
-            character=other_user.profile.main_character.character_ownership,
-            is_public=False,
-        )
+        owner_other = OwnerFactory(user=other_user, is_public=False)
 
         # Test Action
         response = self.client.patch(
@@ -116,9 +105,8 @@ class TestApiGeneral(AuthTestCase):
     def test_update_owner_setting_should_update_public_type_and_selective_bpo(self):
         # Test Data
         self.client.force_login(self.user)
-        owner = Owner.objects.create(
+        owner = OwnerFactory(
             user=self.user,
-            character=self.user.profile.main_character.character_ownership,
             is_public=True,
             public_type="all",
             selective_bpo_enabled=False,
@@ -145,53 +133,29 @@ class TestApiGeneral(AuthTestCase):
     def test_get_and_update_owner_bpos_should_return_and_set_offered_status(self):
         # Test Data
         self.client.force_login(self.user)
-        owner = Owner.objects.create(
-            user=self.user,
-            character=self.user.profile.main_character.character_ownership,
-            is_public=True,
-        )
-        # Eve SDE
-        # Alliance Auth (External Libs)
-        from eve_sde.models import ItemGroup, ItemType
+        owner = OwnerFactory(user=self.user, is_public=True)
 
-        # AA Blueprint Forge
-        from bpforge.models.blueprint import Blueprint, Location
-
-        group, _ = ItemGroup.objects.get_or_create(
-            id=105, defaults={"name": "Frigate Blueprint"}
-        )
-        item_type1, _ = ItemType.objects.get_or_create(
-            id=688, defaults={"name": "Rifter Blueprint", "group": group}
-        )
-        item_type2, _ = ItemType.objects.get_or_create(
-            id=689, defaults={"name": "Breacher Blueprint", "group": group}
-        )
-        loc, _ = Location.objects.get_or_create(
-            location_id=60003760, defaults={"name": "Jita IV - 4"}
-        )
-
-        bp1 = Blueprint.objects.create(
+        bp1 = BlueprintFactory(
             item_id=200001,
             owner=owner,
-            eve_type=item_type1,
-            location=loc,
+            eve_type__name="Rifter Blueprint",
             runs=None,
             is_offered=False,
         )
-        bp2 = Blueprint.objects.create(
+        bp2 = BlueprintFactory(
             item_id=200002,
             owner=owner,
-            eve_type=item_type2,
-            location=loc,
+            eve_type__name="Breacher Blueprint",
             runs=None,
             is_offered=True,
+            location=bp1.location,
         )
         # BPC (runs > 0) should not appear in BPO endpoint
-        Blueprint.objects.create(
+        BlueprintFactory(
             item_id=200003,
             owner=owner,
-            eve_type=item_type1,
-            location=loc,
+            eve_type=bp1.eve_type,
+            location=bp1.location,
             runs=10,
             is_offered=True,
         )
@@ -225,11 +189,7 @@ class TestApiGeneral(AuthTestCase):
         # Test Data
         self.client.force_login(self.user)
         other_user = UserMainFactory()
-        owner_other = Owner.objects.create(
-            user=other_user,
-            character=other_user.profile.main_character.character_ownership,
-            is_public=False,
-        )
+        owner_other = OwnerFactory(user=other_user, is_public=False)
 
         # Test Action
         response = self.client.get(
@@ -242,22 +202,14 @@ class TestApiGeneral(AuthTestCase):
     def test_get_user_owners_should_include_status_and_sections(self):
         # Test Data
         self.client.force_login(self.user)
-        owner = Owner.objects.create(
-            user=self.user,
-            character=self.user.profile.main_character.character_ownership,
-            is_public=False,
-        )
+        owner = OwnerFactory(user=self.user, is_public=False)
 
-        # AA Blueprint Forge
-        from bpforge.models.blueprint import OwnerUpdateStatus
-        from bpforge.models.helpers.update_manager import UpdateSection
-
-        OwnerUpdateStatus.objects.create(
+        OwnerUpdateStatusFactory(
             owner=owner,
             section=UpdateSection.BLUEPRINTS,
             is_success=True,
         )
-        OwnerUpdateStatus.objects.create(
+        OwnerUpdateStatusFactory(
             owner=owner,
             section=UpdateSection.LOCATIONS,
             is_success=False,
@@ -283,11 +235,7 @@ class TestApiGeneral(AuthTestCase):
     def test_get_user_character_statuses_should_return_character_statuses(self):
         # Test Data
         self.client.force_login(self.user)
-        Owner.objects.create(
-            user=self.user,
-            character=self.user.profile.main_character.character_ownership,
-            is_public=False,
-        )
+        OwnerFactory(user=self.user, is_public=False)
 
         # Test Action
         response = self.client.get("/bpforge/api/user/characters/status/")

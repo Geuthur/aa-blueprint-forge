@@ -73,6 +73,12 @@ class Owner(UpdateManagerMixin, models.Model):
 
     class Meta:
         default_permissions = ()
+        indexes = [
+            models.Index(fields=["is_public"], name="bpforge_owner_is_public_idx"),
+            models.Index(
+                fields=["is_public", "public_type"], name="bpforge_owner_pub_type_idx"
+            ),
+        ]
 
     objects: OwnerManager = OwnerManager()
 
@@ -221,12 +227,35 @@ class Blueprint(models.Model):
 
     class Meta:
         default_permissions = ()
+        constraints = [
+            models.UniqueConstraint(
+                fields=["owner", "item_id"],
+                name="bpforge_blueprint_owner_item_id_unique",
+            )
+        ]
+        indexes = [
+            models.Index(fields=["owner", "runs"], name="bpforge_bp_owner_runs_idx"),
+            models.Index(
+                fields=["owner", "is_offered"], name="bpforge_bp_owner_offered_idx"
+            ),
+            models.Index(
+                fields=["owner", "eve_type"], name="bpforge_bp_owner_type_idx"
+            ),
+            models.Index(fields=["runs"], name="bpforge_bp_runs_idx"),
+        ]
 
     objects: BlueprintManager = BlueprintManager()
 
-    item_id = models.BigIntegerField(
+    id = models.BigAutoField(
+        auto_created=True,
         primary_key=True,
+        serialize=False,
+        verbose_name="ID",
+    )
+
+    item_id = models.BigIntegerField(
         help_text=_("The Eve ID of this blueprint."),
+        db_index=True,
     )
 
     owner = models.ForeignKey(
