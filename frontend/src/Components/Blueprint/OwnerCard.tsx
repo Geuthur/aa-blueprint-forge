@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
+import type { BlueprintItem } from "@/Components/Blueprint/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
@@ -16,10 +17,11 @@ type PublicOwner = components["schemas"]["OwnerPublicSchema"];
 
 interface OwnerCardProps {
   owner: PublicOwner;
+  matchingBlueprints?: BlueprintItem[];
   onSelect: (owner: PublicOwner, initialType?: "bpo" | "bpc") => void;
 }
 
-export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, onSelect }) => {
+export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints, onSelect }) => {
   const { t } = useTranslation();
 
   const avatarUrl = owner.is_corporation && owner.corporation_id
@@ -135,6 +137,58 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, onSelect }) => {
             )}
           </div>
         </div>
+
+        {matchingBlueprints && matchingBlueprints.length > 0 && (
+          <div className="mt-3 pt-2 border-top border-secondary">
+            <div className="d-flex align-items-center justify-content-between mb-2">
+              <span className="small text-secondary fw-semibold">
+                {t("Matching Blueprints ({{count}})", { count: matchingBlueprints.length })}
+              </span>
+            </div>
+            <div
+              className="d-flex flex-column gap-1 overflow-auto pe-1"
+              style={{ maxHeight: "160px" }}
+              data-testid="matching-blueprints-list"
+            >
+              {matchingBlueprints.slice(0, 10).map((bp) => (
+                <div
+                  key={bp.item_id}
+                  onClick={() => onSelect(owner, bp.is_original ? "bpo" : "bpc")}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") onSelect(owner, bp.is_original ? "bpo" : "bpc");
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  className={`d-flex align-items-center justify-content-between p-1 px-2 rounded bg-dark border border-secondary text-light small ${styles.matchingBlueprintItem}`}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="d-flex align-items-center gap-2 text-truncate me-2">
+                    <img
+                      src={imageServer(bp.is_original ? "bpo" : "bpc", bp.type_id, 32)}
+                      alt={bp.type_name}
+                      width={22}
+                      height={22}
+                      className="rounded flex-shrink-0"
+                    />
+                    <span className="text-truncate">{bp.type_name}</span>
+                  </div>
+                  <div className="d-flex align-items-center gap-1 flex-shrink-0">
+                    <span
+                      className={`badge ${bp.is_original ? "bg-primary" : "bg-info text-dark"}`}
+                    >
+                      {bp.is_original ? "BPO" : `BPC (${bp.runs})`}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {matchingBlueprints.length > 10 && (
+                <div className="text-center text-secondary small py-1">
+                  {t("+{{count}} more", { count: matchingBlueprints.length - 10 })}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </Card.Body>
 
       <Card.Footer className="bg-transparent border-0 p-3 pt-0">

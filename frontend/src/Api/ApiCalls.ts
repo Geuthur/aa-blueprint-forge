@@ -102,6 +102,20 @@ export async function loadCatalogBlueprints(
 export const loadShopBlueprints = loadCatalogBlueprints;
 export const loadOwnerBlueprints = loadCatalogBlueprints;
 
+export async function searchPublicBlueprints(
+  query: string,
+): Promise<components["schemas"]["BlueprintItemSchema"][]> {
+  const { data, error } = await apiClient.GET(`/${ProjectName}/api/blueprints/search/`, {
+    params: {
+      query: { q: query },
+    },
+  });
+  if (error || !data) {
+    throw new Error("Failed to search public blueprints");
+  }
+  return data;
+}
+
 export async function loadMyBlueprints(): Promise<components["schemas"]["BlueprintItemSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/my-blueprints/`);
   if (error || !data) {

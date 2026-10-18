@@ -13,9 +13,9 @@ import { initReactI18next } from "react-i18next";
 import { AppName, ProjectName } from "@/configuration";
 import { ErrorPage } from "@/Pages/404";
 import AuthBase from "@/Pages/Base";
+import OrdersPage from "@/Pages/BlueprintPage";
 import MainPage from "@/Pages/MainPage";
 import MyBlueprintsPage from "@/Pages/MyBlueprintsPage";
-import OrdersPage from "@/Pages/BlueprintPage";
 import SettingsPage from "@/Pages/SettingsPage";
 import SuperuserPage from "@/Pages/SuperuserPage";
 
@@ -52,6 +52,7 @@ function App() {
             <Routes>
               <Route path={`/${ProjectName}/`} element={<AuthBase />}>
                 <Route index element={<MainPage />} />
+                <Route path="overview/" element={<MainPage />} />
                 <Route path="my-blueprints/" element={<MyBlueprintsPage />} />
                 <Route path="orders/" element={<OrdersPage />} />
                 <Route path="settings/" element={<SettingsPage />} />

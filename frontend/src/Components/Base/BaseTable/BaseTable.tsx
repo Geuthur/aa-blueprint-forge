@@ -28,7 +28,7 @@ import {
   ChevronRight,
   ChevronUp,
 } from "lucide-react";
-import { Button, Form, Table } from "react-bootstrap";
+import { Button, Form, Spinner, Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -164,6 +164,18 @@ const BaseTable = <TData, TValue = unknown>({
                     {t("Something went wrong.")}
                   </td>
                 </tr>
+              ) : isFetching && rows.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={table.getVisibleLeafColumns().length}
+                    className="aa-table-message text-center py-5"
+                  >
+                    <div className="d-flex flex-column align-items-center justify-content-center gap-2">
+                      <Spinner animation="border" variant="primary" role="status" />
+                      <span className="text-secondary small">{t("Loading data...")}</span>
+                    </div>
+                  </td>
+                </tr>
               ) : rows.length === 0 ? (
                 <tr>
                   <td
@@ -219,18 +231,23 @@ const BaseTable = <TData, TValue = unknown>({
             </div>
 
             {totalCount > 0 && (
-              <span className="aa-table-count">
-                {pageSize >= 1000000
-                  ? t("Showing all {{total}} {{items}}", {
-                    total: totalCount,
-                    items: itemLabel ?? t("entries"),
-                  })
-                  : t("Showing {{start}}-{{end}} of {{total}} {{items}}", {
-                    start: pageIndex * pageSize + 1,
-                    end: Math.min((pageIndex + 1) * pageSize, totalCount),
-                    total: totalCount,
-                    items: itemLabel ?? t("entries"),
-                  })}
+              <span className="aa-table-count d-flex align-items-center gap-2">
+                {isFetching && (
+                  <Spinner animation="border" size="sm" variant="primary" role="status" />
+                )}
+                <span>
+                  {pageSize >= 1000000
+                    ? t("Showing all {{total}} {{items}}", {
+                      total: totalCount,
+                      items: itemLabel ?? t("entries"),
+                    })
+                    : t("Showing {{start}}-{{end}} of {{total}} {{items}}", {
+                      start: pageIndex * pageSize + 1,
+                      end: Math.min((pageIndex + 1) * pageSize, totalCount),
+                      total: totalCount,
+                      items: itemLabel ?? t("entries"),
+                    })}
+                </span>
               </span>
             )}
           </div>
@@ -316,6 +333,19 @@ const BaseTable = <TData, TValue = unknown>({
             <tr>
               <td className="text-center" colSpan={table.getVisibleLeafColumns().length}>
                 {t("No Data Available")}
+              </td>
+            </tr>
+          ) : isFetching && rows.length === 0 ? (
+            <tr>
+              <td className="text-center py-5" colSpan={table.getVisibleLeafColumns().length}>
+                <Spinner animation="border" variant="primary" role="status" />
+                <div className="text-secondary small mt-2">{t("Loading data...")}</div>
+              </td>
+            </tr>
+          ) : rows.length === 0 ? (
+            <tr>
+              <td className="text-center" colSpan={table.getVisibleLeafColumns().length}>
+                {emptyText ?? t("No Data Available")}
               </td>
             </tr>
           ) : (

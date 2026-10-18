@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { loadOrders, loadUserOwners } from "@/Api/ApiCalls";
 import type { components } from "@/Api/OpenApi";
 import { queryKeys } from "@/Api/query";
+import { ProjectName } from "@/configuration";
 
 export type MenuLinkItem = components["schemas"]["MenuLink"];
 
@@ -30,10 +31,19 @@ export interface ToPath {
     toPath: (link: string) => string;
 }
 
+const isLinkActive = (link: string | undefined | null, pathname: string) => {
+    const cleanLink = (link ?? "").replace(/^\/+|\/+$/g, "");
+    const cleanPath = pathname.replace(/^\/+|\/+$/g, "");
+    if (cleanLink === "" || cleanLink === "overview") {
+        return cleanPath === ProjectName || cleanPath === `${ProjectName}/overview`;
+    }
+    return cleanPath.endsWith(cleanLink);
+};
+
 export const OrdersMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
     const { t } = useTranslation();
     const path = useLocation();
-    const hit = path.pathname.endsWith(link.link ?? "");
+    const hit = isLinkActive(link.link, path.pathname);
 
     const { data: sellerOrders } = useQuery({
         queryKey: queryKeys.Orders("seller"),
@@ -52,7 +62,7 @@ export const OrdersMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath
         <Nav.Item as="li">
             <Nav.Link
                 as={Link}
-                to={{ pathname: toPath(link.link ?? ""), search: path.search }}
+                to={{ pathname: toPath(link.link ?? "") }}
                 id={link.name}
                 key={link.name}
                 active={hit}
@@ -75,7 +85,7 @@ export const OrdersMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath
 export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
     const { t } = useTranslation();
     const path = useLocation();
-    const hit = path.pathname.endsWith(link.link ?? "");
+    const hit = isLinkActive(link.link, path.pathname);
 
     const { data: owners } = useQuery({
         queryKey: queryKeys.UserOwners,
@@ -98,7 +108,7 @@ export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPa
         <Nav.Item as="li">
             <Nav.Link
                 as={Link}
-                to={{ pathname: toPath(link.link ?? ""), search: path.search }}
+                to={{ pathname: toPath(link.link ?? "") }}
                 id={link.name}
                 key={link.name}
                 active={hit}
@@ -114,13 +124,13 @@ export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPa
 export const SuperuserMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
     const { t } = useTranslation();
     const path = useLocation();
-    const hit = path.pathname.endsWith(link.link ?? "");
+    const hit = isLinkActive(link.link, path.pathname);
 
     return (
         <Nav.Item as="li">
             <Nav.Link
                 as={Link}
-                to={{ pathname: toPath(link.link ?? ""), search: path.search }}
+                to={{ pathname: toPath(link.link ?? "") }}
                 id={link.name}
                 key={link.name}
                 active={hit}
@@ -137,7 +147,7 @@ export const SuperuserMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToP
 export const MenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
     const { t } = useTranslation();
     const path = useLocation();
-    const hit = path.pathname.endsWith(link.link ?? "");
+    const hit = isLinkActive(link.link, path.pathname);
     const isExternal = Boolean(
         link.is_external ||
         link.link?.startsWith("http://") ||
@@ -189,7 +199,7 @@ export const MenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
         <Nav.Item as="li">
             <Nav.Link
                 as={Link}
-                to={{ pathname: toPath(link.link ?? ""), search: path.search }}
+                to={{ pathname: toPath(link.link ?? "") }}
                 id={link.name}
                 key={link.name}
                 active={hit}

@@ -1,5 +1,5 @@
 // React
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 // Third Party
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,7 +9,7 @@ import { Button, Form, Spinner, Alert } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { loadPublicCatalogs, loadCatalogBlueprints, createOrder } from "@/Api/ApiCalls";
+import { loadPublicCatalogs, loadCatalogBlueprints, createOrder, searchPublicBlueprints } from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
 import BaseSectionHeader from "@/Components/Base/BaseHeader";
 import { BlueprintTable } from "@/Components/Blueprint/BlueprintTable";
@@ -56,6 +56,30 @@ function MainPage() {
     queryFn: () => (activeCatalogId ? loadCatalogBlueprints(activeCatalogId) : Promise.resolve([])),
     enabled: Boolean(activeCatalogId),
   });
+
+  const trimmedSearch = searchTerm.trim();
+  const isSearchingBlueprints = trimmedSearch.length >= 2;
+
+  // Search blueprints across public catalogs when search term >= 2 characters
+  const {
+    data: searchResults = [],
+    isFetching: isSearchFetching,
+  } = useQuery({
+    queryKey: queryKeys.SearchPublicBlueprints(trimmedSearch),
+    queryFn: () => searchPublicBlueprints(trimmedSearch),
+    enabled: isSearchingBlueprints && !activeCatalogId,
+    staleTime: 10000,
+  });
+
+  const matchingByOwner = useMemo(() => {
+    const map = new Map<number, BlueprintItem[]>();
+    for (const bp of searchResults) {
+      const list = map.get(bp.owner_id) ?? [];
+      list.push(bp as BlueprintItem);
+      map.set(bp.owner_id, list);
+    }
+    return map;
+  }, [searchResults]);
 
   // Order submission mutation
   const orderMutation = useMutation({
@@ -126,9 +150,15 @@ function MainPage() {
     });
   };
 
-  const filteredShops = shops.filter((s) =>
-    s.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredShops = useMemo(() => {
+    if (!trimmedSearch) return shops;
+    const lower = trimmedSearch.toLowerCase();
+    return shops.filter((s) => {
+      const matchesOwnerName = s.name.toLowerCase().includes(lower);
+      const matchesBlueprints = matchingByOwner.has(s.id);
+      return matchesOwnerName || matchesBlueprints;
+    });
+  }, [shops, trimmedSearch, matchingByOwner]);
 
   return (
     <main className="d-flex flex-column gap-3">
@@ -199,14 +229,22 @@ function MainPage() {
                 {t("Browse authorized blueprint providers, inspect their available BPO and BPC catalogs, and place orders.")}
               </p>
             </div>
-            <div className={styles.catalogSearchInput}>
+            <div className={`${styles.catalogSearchInput} position-relative`}>
               <Form.Control
                 type="text"
-                placeholder={t("Search catalogs or owners...")}
+                placeholder={t("Search catalogs or blueprints...")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-dark text-light border-secondary"
+                className="bg-dark text-light border-secondary pe-5"
               />
+              {isSearchFetching && (
+                <div
+                  className="position-absolute end-0 top-50 translate-middle-y me-3"
+                  style={{ pointerEvents: "none" }}
+                >
+                  <Spinner animation="border" size="sm" variant="primary" />
+                </div>
+              )}
             </div>
           </div>
 
@@ -224,12 +262,14 @@ function MainPage() {
             </Alert>
           )}
 
-          {!isShopsLoading && !isShopsError && filteredShops.length === 0 && (
+          {!isShopsLoading && !isSearchFetching && !isShopsError && filteredShops.length === 0 && (
             <div className="aa-panel p-5 text-center text-secondary">
               <Store size={48} className="mb-2 opacity-50" />
               <div className="fs-5">{t("No public blueprints found.")}</div>
               <p className="small text-secondary mb-0">
-                {t("Currently no corporation or pilot has published their blueprints.")}
+                {trimmedSearch
+                  ? t("No public blueprints or catalogs matched \"{{query}}\".", { query: trimmedSearch })
+                  : t("Currently no corporation or pilot has published their blueprints.")}
               </p>
             </div>
           )}
@@ -239,6 +279,7 @@ function MainPage() {
               <div className="col-12 col-md-6 col-lg-4" key={owner.id}>
                 <OwnerCard
                   owner={owner}
+                  matchingBlueprints={matchingByOwner.get(owner.id)}
                   onSelect={(o, initialType) => {
                     setSelectedCatalogId(o.id);
                     setCatalogTypeFilter(initialType ?? "all");

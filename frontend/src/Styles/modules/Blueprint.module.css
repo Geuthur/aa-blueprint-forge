@@ -67,3 +67,12 @@
 .orderModalActionCol {
   width: 60px;
 }
+
+.matchingBlueprintItem {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.matchingBlueprintItem:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}

@@ -22,4 +22,15 @@ describe('queryKeys', () => {
         expect(rootKey).toEqual(['Orders']);
         expect(roleKey).toEqual(['Orders', 'manage']);
     });
+
+    it('provides SearchPublicBlueprints query key', () => {
+        // Test Data
+        const query = 'Rifter';
+
+        // Test Action
+        const key = queryKeys.SearchPublicBlueprints(query);
+
+        // Expected Result
+        expect(key).toEqual(['SearchPublicBlueprints', 'Rifter']);
+    });
 });

@@ -169,6 +169,72 @@ class TestApiShop(AuthTestCase):
         self.assertEqual(resp_selective_offered.status_code, HTTPStatus.OK)
         self.assertEqual(len(resp_selective_offered.json()), 1)
 
+    def test_search_public_blueprints_should_return_matching_items(self):
+        # Test Data
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/blueprints/search/?q=Rifter")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        data = response.json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["item_id"], self.bpo.item_id)
+        self.assertEqual(data[0]["type_name"], "Rifter Blueprint")
+        self.assertEqual(data[0]["owner_id"], self.public_owner.id)
+
+    def test_search_public_blueprints_should_respect_visibility_and_selective_bpo(self):
+        # Test Data
+        self.client.force_login(self.user)
+
+        # 1. Private owner blueprint should never be returned
+        response = self.client.get("/bpforge/api/blueprints/search/?q=Rifter")
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        items = response.json()
+        owner_ids = [item["owner_id"] for item in items]
+        self.assertIn(self.public_owner.id, owner_ids)
+        self.assertNotIn(self.private_owner.id, owner_ids)
+
+        # 2. When owner selective_bpo_enabled is True and is_offered is False, item is excluded
+        self.public_owner.selective_bpo_enabled = True
+        self.public_owner.save()
+        self.bpo.is_offered = False
+        self.bpo.save()
+
+        response_hidden = self.client.get("/bpforge/api/blueprints/search/?q=Rifter")
+        self.assertEqual(response_hidden.status_code, HTTPStatus.OK)
+        self.assertEqual(len(response_hidden.json()), 0)
+
+        # 3. When is_offered is True, item appears
+        self.bpo.is_offered = True
+        self.bpo.save()
+        response_shown = self.client.get("/bpforge/api/blueprints/search/?q=Rifter")
+        self.assertEqual(response_shown.status_code, HTTPStatus.OK)
+        self.assertEqual(len(response_shown.json()), 1)
+
+    def test_search_public_blueprints_should_return_empty_for_blank_query(self):
+        # Test Data
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/blueprints/search/?q=")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.json(), [])
+
+    def test_search_public_blueprints_should_deny_access_without_permission(self):
+        # Test Data
+        no_perm_user = UserMainFactory(permissions__=[])
+        self.client.force_login(no_perm_user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/blueprints/search/?q=Rifter")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
     def test_list_my_blueprints_should_return_only_current_user_blueprints(self):
         # Test Data
         self.client.force_login(self.char_owner_user)

@@ -494,6 +494,60 @@
         ]
       }
     },
+    "/bpforge/api/blueprints/search/": {
+      "get": {
+        "operationId": "bpforge_api_blueprints_search_public_blueprints",
+        "summary": "Search all public blueprints",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BlueprintItemSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shop"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/bpforge/api/blueprints/{owner_id}/": {
       "get": {
         "operationId": "bpforge_api_blueprints_list_owner_blueprints",

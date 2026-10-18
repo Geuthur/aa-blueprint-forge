@@ -25,6 +25,10 @@ class TestApiGeneral(AuthTestCase):
         self.assertIn("left_links", data)
         self.assertIn("right_links", data)
 
+        left_links = data["left_links"]
+        overview_link = next(item for item in left_links if item["name"] == "Overview")
+        self.assertEqual(overview_link["link"], "/overview/")
+
         right_links = data["right_links"]
         right_link_names = [item["name"] for item in right_links]
         self.assertIn("Add Character", right_link_names)

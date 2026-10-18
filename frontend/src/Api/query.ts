@@ -8,6 +8,7 @@ export const queryKeys = {
     UserCharacterStatuses: ["UserCharacterStatuses"] as const,
     PublicCatalogs: ["PublicCatalogs"] as const,
     PublicShops: ["PublicCatalogs"] as const,
+    SearchPublicBlueprints: (query: string) => ["SearchPublicBlueprints", query] as const,
     CatalogBlueprints: (ownerId: number) => ["CatalogBlueprints", ownerId] as const,
     ShopBlueprints: (ownerId: number) => ["CatalogBlueprints", ownerId] as const,
     MyBlueprints: ["MyBlueprints"] as const,

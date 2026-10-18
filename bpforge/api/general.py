@@ -187,7 +187,7 @@ class ApiEndpoints:
         )
         def get_menu(request):  # pylint: disable=unused-argument
             left_menu: list[schema.MenuLink] = []
-            left_menu.append(schema.MenuLink(name=_("Overview"), link="/"))
+            left_menu.append(schema.MenuLink(name=_("Overview"), link="/overview/"))
             left_menu.append(
                 schema.MenuLink(name=_("My Blueprints"), link="/my-blueprints/")
             )
