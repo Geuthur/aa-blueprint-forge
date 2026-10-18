@@ -190,7 +190,7 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
       {renderTooltip(
         t("Toggle public shop visibility"),
         <div
-          className={`${styles["public-row"]} border rounded`}
+          className={`${styles["public-row"]} border rounded bg-secondary`}
           role="button"
           tabIndex={0}
           onClick={() => {
@@ -287,7 +287,7 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
           </ButtonGroup>
 
           {owner.public_type !== "bpc" && (
-            <div className={styles["selective-row"]}>
+            <div className={`card-body border ${styles["selective-row"]}`}>
               <div className="d-flex flex-column">
                 <span className="small fw-medium">
                   {t("Selective BPOs")}

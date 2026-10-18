@@ -11,7 +11,6 @@ from allianceauth.authentication.models import User
 # AA Blueprint Forge
 from bpforge.models.blueprint import Blueprint
 from bpforge.models.helpers.core import RequestStatus
-from bpforge.thirdparty.discord import send_user_notification
 
 
 class Order(models.Model):
@@ -197,13 +196,3 @@ class Request(models.Model):
             return True
 
         return False
-
-    def notify_requester(self):
-        """Notify the requester of a change in status."""
-        msg = f"Your request for blueprint **{self.blueprint}** has been **{self.status}**."
-        send_user_notification(self.requesting_user, msg, "success")
-
-    def notify_assignee(self):
-        """Notify the assignee of a change in status."""
-        msg = f"Your request for blueprint **{self.blueprint}** has been **{self.status}**."
-        send_user_notification(self.assignee_user, msg, "success")

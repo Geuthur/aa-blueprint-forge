@@ -2,6 +2,7 @@
 import React from "react";
 
 // Third Party
+import { Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -26,7 +27,8 @@ export const MyBlueprintsKpiSection: React.FC<MyBlueprintsKpiSectionProps> = ({
   const { t } = useTranslation();
 
   return (
-    <section className="aa-panel bg-dark p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <Card className="bg-secondary text-light border-0 shadow-sm">
+      <Card.Body className="p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
       <div>
         <h4 className="mb-1 fw-bold">{t("Personal & Corporation Blueprints")}</h4>
         <p className="text-light small mb-0">
@@ -91,6 +93,7 @@ export const MyBlueprintsKpiSection: React.FC<MyBlueprintsKpiSectionProps> = ({
           </div>
         )}
       </div>
-    </section>
+      </Card.Body>
+    </Card>
   );
 };

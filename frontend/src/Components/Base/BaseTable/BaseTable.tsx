@@ -56,6 +56,7 @@ export interface BaseTableProps<TData, TValue = unknown> {
   pageSizeOptions?: number[];
   itemLabel?: string;
   getRowClassName?: (row: Row<TData>) => string;
+  onRowClick?: (row: Row<TData>) => void;
 }
 
 const BaseTable = <TData, TValue = unknown>({
@@ -75,6 +76,7 @@ const BaseTable = <TData, TValue = unknown>({
   pageSizeOptions = [10, 25, 50, 100],
   itemLabel,
   getRowClassName,
+  onRowClick,
 }: BaseTableProps<TData, TValue>) => {
   const location = useLocation();
   const { t } = useTranslation();
@@ -112,11 +114,11 @@ const BaseTable = <TData, TValue = unknown>({
 
     return (
       <div
-        className={`bg-secondary aa-table-shell ${isLight ? "aa-table-shell-light aa-table-light" : ""} ${className ?? ""}`}
+        className={`aa-table-shell ${isLight ? "aa-table-shell-light aa-table-light" : ""} ${className ?? ""}`}
       >
         <div className="aa-table-scroll">
           <table
-            className={`aa-table ${isLight ? "aa-table-light" : ""} ${tableClassName ?? ""}`}
+            className={`table ${tableClassName ?? ""}`}
           >
             <thead className="aa-table-head">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -189,6 +191,7 @@ const BaseTable = <TData, TValue = unknown>({
                 rows.map((row) => (
                   <tr
                     key={row.id}
+                    onClick={onRowClick ? () => onRowClick(row) : undefined}
                     className={`aa-table-row ${getRowClassName
                       ? getRowClassName(row)
                       : "aa-table-row-hover"

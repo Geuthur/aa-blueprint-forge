@@ -634,15 +634,6 @@ html[data-bs-theme="dark"] {
     overflow: visible;
 }
 
-.aa-table {
-    width: 100%;
-    border-collapse: collapse;
-    color: var(--aa-text-primary, var(--aa-text-tertiary));
-    font-family: var(--font-mono);
-    font-size: var(--aa-font-size);
-    text-align: left;
-}
-
 .aa-table-head {
     border-bottom: 1px solid var(--aa-panel-border, var(--aa-border-light));
     background-color: var(--aa-table-head-bg, var(--aa-color-body-dark));
@@ -812,10 +803,6 @@ html[data-bs-theme="dark"] {
 }
 
 /* Seamless fit inside aa-panel (e.g. nested in modals) */
-.aa-panel>.aa-table-shell-light,
-.aa-panel>.aa-table-shell.aa-table-light,
-.aa-panel .aa-table-shell-light,
-.aa-panel .aa-table-shell.aa-table-light,
 .modal-body .aa-table-shell-light,
 .modal-body .aa-table-shell.aa-table-light {
     margin-top: 0;

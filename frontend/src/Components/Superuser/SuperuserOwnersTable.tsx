@@ -12,7 +12,7 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { Alert, Button, ButtonGroup, Dropdown, Spinner } from "react-bootstrap";
+import { Alert, Button, ButtonGroup, Card, Dropdown, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -306,15 +306,15 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
   }, [t, updatingOwnerId, onInspect, onEdit, onTriggerUpdate]);
 
   return (
-    <section className="card shadow-sm">
-      <div className="card-header d-flex align-items-center justify-content-between bg-transparent py-3">
+    <Card className="bg-secondary text-light border-0 shadow-sm">
+      <Card.Header className="d-flex align-items-center justify-content-between bg-transparent py-3">
         <div className="d-flex align-items-center gap-2">
           <Users size={18} className="text-primary" />
           <h2 className="h5 mb-0">{t("All Blueprint Owners")}</h2>
         </div>
         <span className="badge bg-secondary">{owners?.length || 0}</span>
-      </div>
-      <div className="card-body p-0">
+      </Card.Header>
+      <Card.Body>
         {taskFeedback && (
           <div className="p-3 pb-0">
             <Alert
@@ -348,7 +348,7 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
             itemLabel={t("owners")}
           />
         )}
-      </div>
-    </section>
+      </Card.Body>
+    </Card>
   );
 };

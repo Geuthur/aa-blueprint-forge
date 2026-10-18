@@ -1,3 +1,6 @@
+// React
+import { MemoryRouter } from "react-router";
+
 // Third Party
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
@@ -30,7 +33,9 @@ const renderModal = (props: {
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <BpoSelectionModal {...props} />
+      <MemoryRouter>
+        <BpoSelectionModal {...props} />
+      </MemoryRouter>
     </QueryClientProvider>
   );
 };

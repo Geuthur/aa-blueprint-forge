@@ -3,7 +3,7 @@ import React from "react";
 
 // Third Party
 import { ArrowLeft, RefreshCw, ShoppingBag } from "lucide-react";
-import { Alert, Badge, Button } from "react-bootstrap";
+import { Alert, Badge, Button, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -66,71 +66,73 @@ export const CatalogDetailSection: React.FC<CatalogDetailSectionProps> = ({
     <section className="d-flex flex-column gap-3">
       {/* Selected Provider Header Banner */}
       {selectedOwner && (
-        <div className="aa-panel bg-dark p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
-          <div className="d-flex align-items-center gap-3">
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={onBackToDirectory}
-              className="d-flex align-items-center gap-1"
-              title={t("Back to all catalogs")}
-            >
-              <ArrowLeft size={16} />
-              <span className="d-none d-sm-inline">{t("All Catalogs")}</span>
-            </Button>
-            {selectedOwner.character_id ? (
-              <img
-                src={imageServer("characters", selectedOwner.character_id, 64)}
-                alt={selectedOwner.name}
-                width={44}
-                height={44}
-                className="rounded"
-              />
-            ) : selectedOwner.corporation_id ? (
-              <img
-                src={imageServer("corporations", selectedOwner.corporation_id, 64)}
-                alt={selectedOwner.name}
-                width={44}
-                height={44}
-                className="rounded"
-              />
-            ) : (
-              <div
-                className={`rounded d-flex align-items-center justify-content-center bg-secondary text-light ${styles.ownerCardAvatar}`}
-              >
-                <ShoppingBag size={20} />
-              </div>
-            )}
-            <div>
-              <div className="d-flex align-items-center gap-2">
-                <h4 className="mb-0 fw-bold">{selectedOwner.name}</h4>
-                <Badge bg={selectedOwner.is_corporation ? "info" : "secondary"}>
-                  {selectedOwner.is_corporation ? t("Corporation") : t("Personal")}
-                </Badge>
-              </div>
-              <p className="text-light small mb-0 mt-1">
-                {t(
-                  "Select blueprints to add them to your order. You can review quantities and copy runs before submitting."
-                )}
-              </p>
-            </div>
-          </div>
-
-          <div>
-            {renderTooltip(
-              t("Refresh catalog blueprints"),
+        <Card className="bg-dark text-light border-0 shadow-sm">
+          <Card.Body className="p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div className="d-flex align-items-center gap-3">
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={onRefetchBlueprints}
+                onClick={onBackToDirectory}
                 className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                title={t("Back to all catalogs")}
               >
-                <RefreshCw size={14} />
-                <span className="d-none d-sm-inline">{t("Refresh")}</span>
+                <ArrowLeft size={16} />
+                <span className="d-none d-sm-inline">{t("All Catalogs")}</span>
               </Button>
-            )}
-          </div>
-        </div>
+              {selectedOwner.character_id ? (
+                <img
+                  src={imageServer("characters", selectedOwner.character_id, 64)}
+                  alt={selectedOwner.name}
+                  width={44}
+                  height={44}
+                  className="rounded"
+                />
+              ) : selectedOwner.corporation_id ? (
+                <img
+                  src={imageServer("corporations", selectedOwner.corporation_id, 64)}
+                  alt={selectedOwner.name}
+                  width={44}
+                  height={44}
+                  className="rounded"
+                />
+              ) : (
+                <div
+                  className={`rounded d-flex align-items-center justify-content-center bg-secondary text-light ${styles.ownerCardAvatar}`}
+                >
+                  <ShoppingBag size={20} />
+                </div>
+              )}
+              <div>
+                <div className="d-flex align-items-center gap-2">
+                  <h4 className="mb-0 fw-bold">{selectedOwner.name}</h4>
+                  <Badge bg={selectedOwner.is_corporation ? "info" : "secondary"}>
+                    {selectedOwner.is_corporation ? t("Corporation") : t("Personal")}
+                  </Badge>
+                </div>
+                <p className="text-light small mb-0 mt-1">
+                  {t(
+                    "Select blueprints to add them to your order. You can review quantities and copy runs before submitting."
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              {renderTooltip(
+                t("Refresh catalog blueprints"),
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={onRefetchBlueprints}
+                  className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                >
+                  <RefreshCw size={14} />
+                  <span className="d-none d-sm-inline">{t("Refresh")}</span>
+                </Button>
+              )}
+            </div>
+          </Card.Body>
+        </Card>
       )}
 
       {!selectedOwner ? (

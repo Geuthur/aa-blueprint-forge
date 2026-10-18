@@ -26,10 +26,9 @@ Section Order:
 ### Removed
 -->
 
-### Changed
+<!-- AI Changes -->
 
-- Full theme compatibility for both Alliance Auth light (Flatly) and dark (Darkly) themes with adaptive tokens for panels, tables, controls, and headings.
-- Reorganized frontend component structure into page-aligned directories (`Main/`, `MyBlueprints/`, `Orders/`, `Settings/`, `BlueprintTable/`) for improved modularity and maintainability.
+<!-- Your changes go here -->
 
 ## [1.0.1] - 2026-10-18
 
@@ -44,6 +43,10 @@ Section Order:
 
 ### Changed
 
+- Full theme compatibility for both Alliance Auth light (Flatly) and dark (Darkly) themes with adaptive tokens for panels, tables, controls, and headings.
+- Reorganized frontend component structure into page-aligned directories (`Main/`, `MyBlueprints/`, `Orders/`, `Settings/`, `BlueprintTable/`) for improved modularity and maintainability.
+- Standardized page section containers, banners, and empty/error states to React-Bootstrap `Card` and `Card.Body` with `bg-secondary text-light` for consistent styling across all views.
+- Refactored `BpoSelectionModal` in settings to utilize `BaseTable` with pagination, sorting, and full row toggle support.
 - Improved menu navigation to route cleanly without persisting search filters across pages.
 - Migrated modals across the application to the standardized `BaseModal` design.
 - Synchronized order tab selection with URL query parameters.

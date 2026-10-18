@@ -4,6 +4,7 @@ import React, { useState } from "react";
 // Third Party
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Settings2 } from "lucide-react";
+import { Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -114,59 +115,63 @@ export const SettingsPage: React.FC = () => {
 
   if (isErrorSettings || !settings) {
     return (
-      <div className={`aa-panel bg-dark ${styles["error"]}`} role="alert">
-        {t("Failed to load settings. Please try refreshing the page.")}
-      </div>
+      <Card className="bg-secondary text-light border-0 shadow-sm" role="alert">
+        <Card.Body className={styles["error"]}>
+          {t("Failed to load settings. Please try refreshing the page.")}
+        </Card.Body>
+      </Card>
     );
   }
 
   return (
-    <main className={styles["page"]}>
-      {/* Page Header */}
-      <header className={styles["header"]}>
-        <Settings2 size={24} aria-hidden="true" />
-        <div>
-          <h1 className={styles["title"]}>{t("Settings")}</h1>
-          <p className={styles["description"]}>
-            {t(
-              "Manage notifications and configure blueprint shop visibility for your linked characters and corporations.",
-            )}
-          </p>
-        </div>
-      </header>
+    <Card className={`${styles["page"]}`}>
+      <Card.Body className="bg-dark">
+        {/* Page Header */}
+        <Card.Header className={styles["header"] + " bg-secondary"}>
+          <Settings2 size={24} aria-hidden="true" color="royalblue" />
+          <div>
+            <h1 className={styles["title"]}>{t("Settings")}</h1>
+            <p className={styles["description"] + " text-light"}>
+              {t(
+                "Manage notifications and configure blueprint shop visibility for your linked characters and corporations.",
+              )}
+            </p>
+          </div>
+        </Card.Header>
 
-      {/* User Notifications Card */}
-      <UserSettingsCard
-        disableNotifications={settings?.disable_notifications ?? false}
-        isPending={updateMutation.isPending}
-        isError={updateMutation.isError}
-        onToggleNotifications={(checked) =>
-          updateMutation.mutate({ disable_notifications: checked })
-        }
-      />
-
-      {/* Character & Corporation Update Status Section */}
-      <OwnerSettingsSection
-        owners={owners}
-        isLoading={isLoadingOwners}
-        isError={isErrorOwners}
-        isUpdating={updateOwnerMutation.isPending}
-        updateError={updateOwnerMutation.isError}
-        onUpdateOwner={(ownerId, payload) =>
-          updateOwnerMutation.mutate({ ownerId, payload })
-        }
-        onOpenBpoModal={(targetOwner) => setActiveBpoModalOwner(targetOwner)}
-      />
-
-      {activeBpoModalOwner && (
-        <BpoSelectionModal
-          show={activeBpoModalOwner !== null}
-          onHide={() => setActiveBpoModalOwner(null)}
-          ownerId={activeBpoModalOwner.id}
-          ownerName={activeBpoModalOwner.name}
+        {/* User Notifications Card */}
+        <UserSettingsCard
+          disableNotifications={settings?.disable_notifications ?? false}
+          isPending={updateMutation.isPending}
+          isError={updateMutation.isError}
+          onToggleNotifications={(checked) =>
+            updateMutation.mutate({ disable_notifications: checked })
+          }
         />
-      )}
-    </main>
+
+        {/* Character & Corporation Update Status Section */}
+        <OwnerSettingsSection
+          owners={owners}
+          isLoading={isLoadingOwners}
+          isError={isErrorOwners}
+          isUpdating={updateOwnerMutation.isPending}
+          updateError={updateOwnerMutation.isError}
+          onUpdateOwner={(ownerId, payload) =>
+            updateOwnerMutation.mutate({ ownerId, payload })
+          }
+          onOpenBpoModal={(targetOwner) => setActiveBpoModalOwner(targetOwner)}
+        />
+
+        {activeBpoModalOwner && (
+          <BpoSelectionModal
+            show={activeBpoModalOwner !== null}
+            onHide={() => setActiveBpoModalOwner(null)}
+            ownerId={activeBpoModalOwner.id}
+            ownerName={activeBpoModalOwner.name}
+          />
+        )}
+      </Card.Body>
+    </Card>
   );
 };
 
