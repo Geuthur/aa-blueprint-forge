@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AA Blueprint Forge\n"
 "Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-blueprint-forge/\n"
-"POT-Creation-Date: 2026-10-18 15:33+0200\n"
+"POT-Creation-Date: 2026-10-18 18:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: bpforge/api/blueprints.py:35 bpforge/api/blueprints.py:133
-#: bpforge/api/blueprints.py:186 bpforge/api/general.py:237
+#: bpforge/api/blueprints.py:187 bpforge/api/general.py:237
 #: bpforge/api/general.py:293 bpforge/api/general.py:311
 #: bpforge/api/general.py:331 bpforge/api/general.py:372
 #: bpforge/api/general.py:416 bpforge/api/general.py:446
@@ -32,7 +32,7 @@ msgstr ""
 msgid "Permission Denied."
 msgstr ""
 
-#: bpforge/api/blueprints.py:198
+#: bpforge/api/blueprints.py:199
 msgid "This blueprint catalog is private."
 msgstr ""
 
@@ -781,67 +781,67 @@ msgstr ""
 msgid "Locations"
 msgstr ""
 
-#: bpforge/models/request.py:28
+#: bpforge/models/request.py:27
 msgid "The shop/owner this order was placed with."
 msgstr ""
 
-#: bpforge/models/request.py:35
+#: bpforge/models/request.py:34
 msgid "The user who placed the order."
 msgstr ""
 
-#: bpforge/models/request.py:39
+#: bpforge/models/request.py:38
 msgid "The status of this order."
 msgstr ""
 
-#: bpforge/models/request.py:48
+#: bpforge/models/request.py:47
 msgid "Customer note or instructions for the order."
 msgstr ""
 
-#: bpforge/models/request.py:53
+#: bpforge/models/request.py:52
 msgid "The time this order was created."
 msgstr ""
 
-#: bpforge/models/request.py:58
+#: bpforge/models/request.py:57
 msgid "The time this order was last updated."
 msgstr ""
 
-#: bpforge/models/request.py:64
+#: bpforge/models/request.py:63
 msgid "The time this order was closed."
 msgstr ""
 
-#: bpforge/models/request.py:121
+#: bpforge/models/request.py:120
 msgid "The parent order for this blueprint item."
 msgstr ""
 
-#: bpforge/models/request.py:128
+#: bpforge/models/request.py:127
 msgid "The blueprint being requested."
 msgstr ""
 
-#: bpforge/models/request.py:135
+#: bpforge/models/request.py:134
 msgid "The user who made this request."
 msgstr ""
 
-#: bpforge/models/request.py:142
+#: bpforge/models/request.py:141
 msgid "The user assigned to this request."
 msgstr ""
 
-#: bpforge/models/request.py:149
+#: bpforge/models/request.py:148
 msgid "The quantity of copies/blueprints being requested."
 msgstr ""
 
-#: bpforge/models/request.py:155
+#: bpforge/models/request.py:154
 msgid "The number of runs being requested."
 msgstr ""
 
-#: bpforge/models/request.py:159
+#: bpforge/models/request.py:158
 msgid "The status of this request."
 msgstr ""
 
-#: bpforge/models/request.py:167
+#: bpforge/models/request.py:166
 msgid "The time this request was created."
 msgstr ""
 
-#: bpforge/models/request.py:173
+#: bpforge/models/request.py:172
 msgid "The time this request was closed."
 msgstr ""
 
