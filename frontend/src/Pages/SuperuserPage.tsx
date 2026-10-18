@@ -3,12 +3,13 @@ import React, { useState } from "react";
 
 // Third Party
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ShieldAlert } from "lucide-react";
-import { Card, CardBody } from "react-bootstrap";
+import { AlertTriangle, ShieldAlert, Trash2 } from "lucide-react";
+import { Button, Card, CardBody } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import {
+    deleteSuperuserOwner,
     loadSuperuserGroups,
     loadSuperuserOwnerBlueprints,
     loadSuperuserOwners,
@@ -22,6 +23,7 @@ import type {
     OwnerSettingSchema,
     SuperuserOwnerUpdateRequest,
 } from "@/Api/schema";
+import { BaseModal } from "@/Components/Base/BaseModal";
 import { GlobalNotificationSettingsCard } from "@/Components/Superuser/GlobalNotificationSettingsCard";
 import { SuperuserInspectionView } from "@/Components/Superuser/SuperuserInspectionView";
 import { SuperuserOwnerModal } from "@/Components/Superuser/SuperuserOwnerModal";
@@ -194,6 +196,38 @@ const SuperuserPage: React.FC = () => {
         taskMutation.mutate({ ownerId, forceRefresh });
     };
 
+    // Owner Deletion state & mutation
+    const [ownerToDelete, setOwnerToDelete] = useState<OwnerSettingSchema | null>(null);
+
+    const deleteOwnerMutation = useMutation({
+        mutationFn: (ownerId: number) => deleteSuperuserOwner(ownerId),
+        onSuccess: (res) => {
+            setTaskFeedback({
+                variant: "success",
+                message: res.message || t("Owner deleted successfully."),
+            });
+            queryClient.invalidateQueries({ queryKey: queryKeys.SuperuserOwners });
+            queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
+            queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
+            setOwnerToDelete(null);
+        },
+        onError: (err: unknown) => {
+            setTaskFeedback({
+                variant: "danger",
+                message:
+                    err instanceof Error
+                        ? err.message
+                        : t("Failed to delete owner."),
+            });
+            setOwnerToDelete(null);
+        },
+    });
+
+    const handleConfirmDelete = () => {
+        if (!ownerToDelete) return;
+        deleteOwnerMutation.mutate(ownerToDelete.id);
+    };
+
     // Owner Blueprints Inspection state
     const [inspectingOwner, setInspectingOwner] = useState<OwnerSettingSchema | null>(null);
 
@@ -273,6 +307,7 @@ const SuperuserPage: React.FC = () => {
                     onInspect={(owner) => setInspectingOwner(owner)}
                     onEdit={(owner) => openOwnerModal(owner)}
                     onTriggerUpdate={handleTriggerOwnerUpdate}
+                    onDelete={(owner) => setOwnerToDelete(owner)}
                 />
 
                 <SuperuserOwnerModal
@@ -284,6 +319,76 @@ const SuperuserPage: React.FC = () => {
                     onSave={handleSaveOwner}
                     onDismissError={() => setOwnerEditError(null)}
                 />
+
+                <BaseModal
+                    show={Boolean(ownerToDelete)}
+                    onHide={() => !deleteOwnerMutation.isPending && setOwnerToDelete(null)}
+                    centered
+                    title={
+                        <div className="d-flex align-items-center gap-2 text-danger">
+                            <Trash2 size={20} />
+                            <span>{t("Delete Owner")}</span>
+                        </div>
+                    }
+                    footer={
+                        <div className="d-flex align-items-center justify-content-end gap-2 w-100">
+                            <Button
+                                variant="secondary"
+                                onClick={() => setOwnerToDelete(null)}
+                                disabled={deleteOwnerMutation.isPending}
+                                className="aa-btn aa-btn-secondary"
+                            >
+                                {t("Cancel")}
+                            </Button>
+                            <Button
+                                variant="danger"
+                                onClick={handleConfirmDelete}
+                                disabled={deleteOwnerMutation.isPending}
+                                className="aa-btn aa-btn-danger d-flex align-items-center gap-1"
+                            >
+                                <Trash2 size={14} />
+                                <span>
+                                    {deleteOwnerMutation.isPending
+                                        ? t("Deleting...")
+                                        : t("Confirm Delete")}
+                                </span>
+                            </Button>
+                        </div>
+                    }
+                >
+                    <div className="p-3">
+                        <div className="d-flex align-items-start gap-3">
+                            <AlertTriangle className="text-danger flex-shrink-0 mt-1" size={24} />
+                            <div>
+                                <p className="fw-semibold mb-1">
+                                    {t("Are you sure you want to delete owner '{{name}}'?", {
+                                        name: ownerToDelete?.name,
+                                    })}
+                                </p>
+                                <p className="small text-muted mb-2">
+                                    {t(
+                                        "This will permanently delete this owner, removing all associated blueprints, update statuses, and related configurations. This action cannot be undone."
+                                    )}
+                                </p>
+                                {ownerToDelete && (
+                                    <div className="p-2 rounded border border-secondary-subtle small bg-body">
+                                        <div>
+                                            <strong>{t("Type:")}</strong>{" "}
+                                            {ownerToDelete.is_corporation
+                                                ? t("Corporation")
+                                                : t("Character")}
+                                        </div>
+                                        <div>
+                                            <strong>{t("Total Blueprints:")}</strong>{" "}
+                                            {ownerToDelete.blueprint_count ??
+                                                (ownerToDelete.bpo_count + ownerToDelete.bpc_count)}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </BaseModal>
             </CardBody>
         </Card>
     );

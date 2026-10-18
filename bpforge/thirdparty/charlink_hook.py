@@ -148,9 +148,7 @@ app_import = AppImport(
             check_permissions=lambda user: user.has_perm("bpforge.basic_access"),
             is_character_added=_is_character_added,
             is_character_added_annotation=Exists(
-                Owner.objects.filter(
-                    character__character__eve_character_id=OuterRef("pk")
-                )
+                Owner.objects.filter(character__character=OuterRef("pk"))
             ),
             get_users_with_perms=_users_with_perms_char,
         ),
@@ -164,9 +162,7 @@ app_import = AppImport(
             is_character_added=_is_character_added_corp,
             is_character_added_annotation=Exists(
                 Owner.objects.filter(
-                    corporation__eve_corporation__corporation_id=OuterRef(
-                        "corporation_id"
-                    )
+                    corporation__corporation_id=OuterRef("corporation_id")
                 )
             ),
             get_users_with_perms=_users_with_perms_corp,

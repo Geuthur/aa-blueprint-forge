@@ -283,3 +283,33 @@ class ApiEndpoints:
                     f"Update task queued for {owner_name} (force_refresh={force_refresh})."
                 ),
             )
+
+        @api.delete(
+            "superuser/owners/{int:owner_id}/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.NOT_FOUND: dict,
+            },
+            tags=self.tags,
+            summary="Delete an owner and all associated blueprints and configurations",
+        )
+        def delete_owner_by_superuser(request, owner_id: int):
+            if not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
+
+            owner = get_object_or_404(
+                Owner.objects.select_related("character__character", "corporation"),
+                id=owner_id,
+            )
+            owner_name = owner.name
+            owner.delete()
+
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=_(
+                    f"Owner {owner_name} and all associated data deleted successfully."
+                ),
+            )

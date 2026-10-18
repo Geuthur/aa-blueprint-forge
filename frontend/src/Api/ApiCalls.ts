@@ -329,4 +329,22 @@ export async function triggerSuperuserOwnerUpdate(
   return data;
 }
 
+export async function deleteSuperuserOwner(
+  ownerId: number,
+): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
+  const { data, error } = await apiClient.DELETE(
+    `/${ProjectName}/api/superuser/owners/{owner_id}/`,
+    {
+      params: {
+        path: { owner_id: ownerId },
+      },
+    },
+  );
+  if (error || !data) {
+    throw new Error("Failed to delete owner");
+  }
+  return data;
+}
+
+
 

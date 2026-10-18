@@ -442,6 +442,45 @@ describe('General API client functions', () => {
             );
         });
     });
+
+    describe('deleteSuperuserOwner', () => {
+        it('calls DELETE on superuser owner endpoint and returns response', async () => {
+            // Test Data
+            const mockResponse = { success: true, message: 'Owner deleted.' };
+            vi.spyOn(apiClient, 'DELETE').mockResolvedValueOnce({
+                data: mockResponse,
+                error: undefined,
+                response: new Response(),
+            } as never);
+
+            // Test Action
+            const result = await (await import('@/Api/ApiCalls')).deleteSuperuserOwner(42);
+
+            // Expected Result
+            expect(result).toEqual(mockResponse);
+            expect(apiClient.DELETE).toHaveBeenCalledWith(
+                `/${ProjectName}/api/superuser/owners/{owner_id}/`,
+                {
+                    params: { path: { owner_id: 42 } },
+                }
+            );
+        });
+
+        it('throws error when DELETE fails', async () => {
+            // Test Data
+            vi.spyOn(apiClient, 'DELETE').mockResolvedValueOnce({
+                data: undefined,
+                error: { status: 500 },
+                response: new Response(),
+            } as never);
+
+            // Test Action & Expected Result
+            await expect((await import('@/Api/ApiCalls')).deleteSuperuserOwner(42)).rejects.toThrow(
+                'Failed to delete owner'
+            );
+        });
+    });
 });
+
 
 

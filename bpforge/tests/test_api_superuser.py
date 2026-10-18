@@ -9,7 +9,7 @@ from unittest.mock import patch
 from django.contrib.auth.models import Group
 
 # AA Blueprint Forge
-from bpforge.models.blueprint import OwnerPublicType
+from bpforge.models.blueprint import Owner, OwnerPublicType
 from bpforge.models.general import GeneralNotificationSettings
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
@@ -306,6 +306,47 @@ class TestApiSuperuser(AuthTestCase):
             data=json.dumps({"force_refresh": False}),
             content_type="application/json",
         )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_delete_owner_should_delete_owner_for_superuser(self):
+        # Test Data
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.force_login(self.user)
+        owner_id = self.owner.id
+
+        # Test Action
+        response = self.client.delete(f"/bpforge/api/superuser/owners/{owner_id}/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        data = response.json()
+        self.assertTrue(data["success"])
+        self.assertFalse(Owner.objects.filter(id=owner_id).exists())
+
+    def test_delete_owner_should_return_forbidden_for_non_superuser(self):
+        # Test Data
+        self.user.is_superuser = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.delete(f"/bpforge/api/superuser/owners/{self.owner.id}/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertTrue(Owner.objects.filter(id=self.owner.id).exists())
+
+    def test_delete_owner_should_return_not_found_on_invalid_owner(self):
+        # Test Data
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.delete("/bpforge/api/superuser/owners/999999/")
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
