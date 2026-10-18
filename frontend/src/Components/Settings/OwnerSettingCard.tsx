@@ -11,6 +11,7 @@ import {
   Store,
   User,
 } from "lucide-react";
+import { Button, ButtonGroup } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -189,7 +190,7 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
       {renderTooltip(
         t("Toggle public shop visibility"),
         <div
-          className={styles["public-row"]}
+          className={`${styles["public-row"]} border rounded`}
           role="button"
           tabIndex={0}
           onClick={() => {
@@ -233,11 +234,16 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
 
       {/* Catalog & Selective BPO Controls (visible when public) */}
       {owner.is_public && (
-        <div className={styles["public-controls"]}>
-          <div className={styles["type-selector"]}>
-            <button
-              type="button"
-              className={`${styles["type-btn"]} ${(!owner.public_type || owner.public_type === "all") ? styles["type-btn-active"] : ""}`}
+        <div className="d-flex flex-column gap-2 mt-2">
+          <ButtonGroup size="sm" className="w-100">
+            <Button
+              variant="secondary"
+              size="sm"
+              className={`${styles.settingsTypeBtn} bg-secondary text-light border border-secondary ${(!owner.public_type || owner.public_type === "all")
+                ? "border-light shadow fw-bold"
+                : "opacity-75"
+                }`}
+              disabled={isUpdating}
               onClick={() => {
                 if (!isUpdating && owner.public_type !== "all") {
                   onUpdateOwner(owner.id, { public_type: "all" });
@@ -245,10 +251,15 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
               }}
             >
               {t("All")}
-            </button>
-            <button
-              type="button"
-              className={`${styles["type-btn"]} ${owner.public_type === "bpo" ? styles["type-btn-active"] : ""}`}
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              className={`${styles.settingsTypeBtn} bg-primary text-light border border-primary ${owner.public_type === "bpo"
+                ? "border-light shadow fw-bold"
+                : "opacity-75"
+                }`}
+              disabled={isUpdating}
               onClick={() => {
                 if (!isUpdating && owner.public_type !== "bpo") {
                   onUpdateOwner(owner.id, { public_type: "bpo" });
@@ -256,10 +267,15 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
               }}
             >
               {t("BPO Only")}
-            </button>
-            <button
-              type="button"
-              className={`${styles["type-btn"]} ${owner.public_type === "bpc" ? styles["type-btn-active"] : ""}`}
+            </Button>
+            <Button
+              variant="info"
+              size="sm"
+              className={`${styles.settingsTypeBtn} bg-info text-dark border border-info ${owner.public_type === "bpc"
+                ? "border-dark shadow fw-bold"
+                : "opacity-75"
+                }`}
+              disabled={isUpdating}
               onClick={() => {
                 if (!isUpdating && owner.public_type !== "bpc") {
                   onUpdateOwner(owner.id, { public_type: "bpc" });
@@ -267,8 +283,8 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
               }}
             >
               {t("BPC Only")}
-            </button>
-          </div>
+            </Button>
+          </ButtonGroup>
 
           {owner.public_type !== "bpc" && (
             <div className={styles["selective-row"]}>
@@ -284,15 +300,16 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
               </div>
               <div className="d-flex align-items-center gap-2">
                 {owner.selective_bpo_enabled && (
-                  <button
+                  <Button
+                    variant="primary"
                     type="button"
-                    className={`aa-btn aa-btn-primary btn-sm ${styles["bpo-btn"]}`}
+                    className={`aa-btn aa-btn-primary btn btn-sm ${styles["bpo-btn"]}`}
                     onClick={() =>
                       onOpenBpoModal({ id: owner.id, name: owner.name })
                     }
                   >
                     {t("Select BPOs...")}
-                  </button>
+                  </Button>
                 )}
                 {renderTooltip(
                   t("Toggle selective BPOs"),

@@ -1,0 +1,78 @@
+.searchWrapper {
+  min-width: 240px;
+  max-width: 400px;
+}
+
+.catalogSearchInput,
+.shopSearchInput {
+  min-width: 260px;
+}
+
+.catalogSelectDropdown,
+.shopSelectDropdown {
+  min-width: 200px;
+  max-width: 320px;
+}
+
+.locationCell {
+  max-width: 220px;
+}
+
+.cartFloatingBar {
+  min-width: 320px;
+  max-width: 500px;
+  width: 90%;
+}
+
+.ownerCardAvatar {
+  width: 54px;
+  height: 54px;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, filter 0.15s ease-in-out;
+}
+
+.clickable:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.clickable:active {
+  transform: translateY(0);
+}
+
+.kpiFilterCard {
+  cursor: pointer;
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, filter 0.15s ease-in-out, opacity 0.15s ease-in-out;
+}
+
+.kpiFilterCard:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  opacity: 1 !important;
+}
+
+.kpiFilterCard:active {
+  transform: translateY(0);
+}
+
+.orderModalQtyCol {
+  width: 120px;
+}
+
+.orderModalActionCol {
+  width: 60px;
+}
+
+.matchingBlueprintItem {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.matchingBlueprintItem:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}

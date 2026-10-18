@@ -9,4 +9,28 @@ describe('queryKeys', () => {
         expect(queryKeys.Menu).toEqual(['Menu']);
         expect(queryKeys.User).toEqual(['User']);
     });
+
+    it('provides parameterized orders query keys with prefix support', () => {
+        // Test Data
+        const role = 'manage';
+
+        // Test Action
+        const rootKey = queryKeys.Orders();
+        const roleKey = queryKeys.Orders(role);
+
+        // Expected Result
+        expect(rootKey).toEqual(['Orders']);
+        expect(roleKey).toEqual(['Orders', 'manage']);
+    });
+
+    it('provides SearchPublicBlueprints query key', () => {
+        // Test Data
+        const query = 'Rifter';
+
+        // Test Action
+        const key = queryKeys.SearchPublicBlueprints(query);
+
+        // Expected Result
+        expect(key).toEqual(['SearchPublicBlueprints', 'Rifter']);
+    });
 });

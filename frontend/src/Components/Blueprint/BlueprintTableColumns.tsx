@@ -7,7 +7,7 @@ import { Badge, Button } from "react-bootstrap";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
-import styles from "@/Styles/modules/Catalog.module.css";
+import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
@@ -47,7 +47,7 @@ export function getBlueprintColumns({
               loading="lazy"
             />
             <div>
-              <span className="fw-semibold text-light">{bp.type_name}</span>
+              <span className="text-light">{bp.type_name}</span>
               {bp.group_name && (
                 <div className="text-secondary small">{bp.group_name}</div>
               )}
@@ -63,11 +63,11 @@ export function getBlueprintColumns({
       cell: ({ getValue }) => {
         const isBpo = Boolean(getValue());
         return isBpo ? (
-          <Badge bg="primary" className="fw-semibold aa-bg-primary border border-primary">
+          <Badge bg="primary" className="aa-bg-primary border border-primary">
             {t("Original (BPO)")}
           </Badge>
         ) : (
-          <Badge bg="info" className="fw-semibold aa-bg-primary-light border border-info">
+          <Badge bg="info" className="aa-bg-primary-light border border-info">
             {t("Copy (BPC)")}
           </Badge>
         );
@@ -82,7 +82,7 @@ export function getBlueprintColumns({
         if (bp.is_original) {
           return <span className="text-secondary">∞ ({t("Unlimited")})</span>;
         }
-        return <span className="fw-semibold text-info">{bp.runs ?? 1}</span>;
+        return <span className="text-info">{bp.runs ?? 1}</span>;
       },
     }),
 
@@ -149,9 +149,9 @@ export function getBlueprintColumns({
               {renderTooltip(
                 isSelected ? t("In order cart") : t("Add to order"),
                 <Button
+                  variant={`${isSelected ? "success" : "primary"}`}
                   size="sm"
-                  variant={isSelected ? "success" : "outline-primary"}
-                  className="py-1 px-2 d-flex align-items-center gap-1"
+                  className={`py-1 px-2 d-flex align-items-center gap-1 ${isSelected ? "aa-btn-success aa-btn" : "aa-btn aa-btn-primary"}`}
                   onClick={() => onToggleSelect(bp)}
                 >
                   {isSelected ? <Check size={14} /> : <Plus size={14} />}

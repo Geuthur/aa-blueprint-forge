@@ -129,6 +129,7 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
 
             <div className="d-flex justify-content-end">
               <Button
+                variant="primary"
                 type="submit"
                 disabled={isSaving}
                 className="d-flex align-items-center gap-1 aa-btn aa-btn-primary"

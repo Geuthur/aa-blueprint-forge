@@ -11,8 +11,8 @@ import { useTranslation } from "react-i18next";
 import { loadMyBlueprints } from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
 import BaseSectionHeader from "@/Components/Base/BaseHeader";
-import { BlueprintTable } from "@/Components/Catalog/BlueprintTable";
-import styles from "@/Styles/modules/Catalog.module.css";
+import { BlueprintTable } from "@/Components/Blueprint/BlueprintTable";
+import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 
 export function MyBlueprintsPage() {
@@ -36,6 +36,7 @@ export function MyBlueprintsPage() {
     <main className="d-flex flex-column gap-3">
       <BaseSectionHeader name={t("My Blueprints")}>
         <Button
+          variant="secondary"
           size="sm"
           onClick={() => refetch()}
           className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
@@ -59,7 +60,8 @@ export function MyBlueprintsPage() {
             t("Show all blueprints"),
             <div
               aria-label={t("Show all blueprints")}
-              className={`px-3 py-2 rounded border text-center ${styles.kpiFilterCard} ${typeFilter === "all" ? "bg-primary border-primary shadow" : "bg-dark border-secondary"}`}
+              className={`px-3 py-2 rounded text-center bg-secondary text-light border ${styles.kpiFilterCard} ${typeFilter === "all" ? "border-2 border-light shadow" : "border-secondary opacity-75"
+                }`}
               role="button"
               tabIndex={0}
               onClick={() => setTypeFilter("all")}
@@ -67,15 +69,16 @@ export function MyBlueprintsPage() {
                 if (e.key === "Enter" || e.key === " ") setTypeFilter("all");
               }}
             >
-              <span className="text-light small d-block">{t("Total Blueprints")}</span>
-              <span className="fw-bold fs-5 text-light">{blueprints.length}</span>
+              <span className="small d-block opacity-75">{t("Total Blueprints")}</span>
+              <span className="fw-bold fs-5">{blueprints.length}</span>
             </div>
           )}
           {renderTooltip(
             t("Filter to show only Originals (BPO)"),
             <div
               aria-label={t("Filter to show only Originals (BPO)")}
-              className={`px-3 py-2 rounded border text-center ${styles.kpiFilterCard} ${typeFilter === "bpo" ? "bg-primary border-primary shadow" : "bg-dark border-primary-subtle"}`}
+              className={`px-3 py-2 rounded text-center bg-primary text-light border ${styles.kpiFilterCard} ${typeFilter === "bpo" ? "border-2 border-light shadow" : "border-primary opacity-75"
+                }`}
               role="button"
               tabIndex={0}
               onClick={() => setTypeFilter(typeFilter === "bpo" ? "all" : "bpo")}
@@ -83,15 +86,16 @@ export function MyBlueprintsPage() {
                 if (e.key === "Enter" || e.key === " ") setTypeFilter(typeFilter === "bpo" ? "all" : "bpo");
               }}
             >
-              <span className="text-light small d-block">{t("Originals (BPO)")}</span>
-              <span className="fw-bold fs-5 text-primary">{bpoCount}</span>
+              <span className="small d-block opacity-75">{t("Originals (BPO)")}</span>
+              <span className="fw-bold fs-5">{bpoCount}</span>
             </div>
           )}
           {renderTooltip(
             t("Filter to show only Copies (BPC)"),
             <div
               aria-label={t("Filter to show only Copies (BPC)")}
-              className={`px-3 py-2 rounded border text-center ${styles.kpiFilterCard} ${typeFilter === "bpc" ? "bg-info text-dark border-info shadow" : "bg-dark border-info-subtle"}`}
+              className={`px-3 py-2 rounded text-center bg-info text-dark border ${styles.kpiFilterCard} ${typeFilter === "bpc" ? "border-2 border-light shadow" : "border-info opacity-75"
+                }`}
               role="button"
               tabIndex={0}
               onClick={() => setTypeFilter(typeFilter === "bpc" ? "all" : "bpc")}
@@ -99,7 +103,7 @@ export function MyBlueprintsPage() {
                 if (e.key === "Enter" || e.key === " ") setTypeFilter(typeFilter === "bpc" ? "all" : "bpc");
               }}
             >
-              <span className="small d-block">{t("Copies (BPC)")}</span>
+              <span className="small d-block opacity-75">{t("Copies (BPC)")}</span>
               <span className="fw-bold fs-5">{bpcCount}</span>
             </div>
           )}

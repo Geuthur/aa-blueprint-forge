@@ -494,6 +494,60 @@
         ]
       }
     },
+    "/bpforge/api/blueprints/search/": {
+      "get": {
+        "operationId": "bpforge_api_blueprints_search_public_blueprints",
+        "summary": "Search all public blueprints",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BlueprintItemSchema"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shop"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/bpforge/api/blueprints/{owner_id}/": {
       "get": {
         "operationId": "bpforge_api_blueprints_list_owner_blueprints",
@@ -705,7 +759,7 @@
             }
           }
         },
-        "description": "Role can be 'buyer', 'seller', or 'all'.",
+        "description": "Role can be 'buyer', 'seller', 'manage', or 'all'.",
         "tags": [
           "Orders"
         ],
@@ -738,6 +792,65 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OrderSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "bpforge_api_orders_delete_order",
+        "summary": "Delete an order completely (Managers only)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "schema": {
+              "title": "Order Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTriggerResponseSchema"
                 }
               }
             }
@@ -1438,6 +1551,16 @@
           "is_admin": {
             "default": false,
             "title": "Is Admin",
+            "type": "boolean"
+          },
+          "can_manage_orders": {
+            "default": false,
+            "title": "Can Manage Orders",
+            "type": "boolean"
+          },
+          "is_global_order_manager": {
+            "default": false,
+            "title": "Is Global Order Manager",
             "type": "boolean"
           }
         },
@@ -2408,6 +2531,23 @@
         "title": "OrderItemCreateSchema",
         "type": "object"
       },
+      "TaskTriggerResponseSchema": {
+        "description": "Response schema for triggered async tasks.",
+        "properties": {
+          "success": {
+            "default": true,
+            "title": "Success",
+            "type": "boolean"
+          },
+          "message": {
+            "default": "",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "title": "TaskTriggerResponseSchema",
+        "type": "object"
+      },
       "OrderStatusUpdateRequest": {
         "description": "Payload to change an order status.",
         "properties": {
@@ -2532,23 +2672,6 @@
           }
         },
         "title": "SuperuserOwnerUpdateRequest",
-        "type": "object"
-      },
-      "TaskTriggerResponseSchema": {
-        "description": "Response schema for triggered async tasks.",
-        "properties": {
-          "success": {
-            "default": true,
-            "title": "Success",
-            "type": "boolean"
-          },
-          "message": {
-            "default": "",
-            "title": "Message",
-            "type": "string"
-          }
-        },
-        "title": "TaskTriggerResponseSchema",
         "type": "object"
       },
       "SuperuserUpdateOwnerTaskRequest": {

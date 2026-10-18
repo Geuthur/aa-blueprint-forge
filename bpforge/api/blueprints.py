@@ -35,7 +35,6 @@ class ApiEndpoints:
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             # Query public owners with blueprint counts
-            # pylint: disable=duplicate-code
             owners = (
                 Owner.objects.filter(is_public=True)
                 .select_related(
@@ -121,6 +120,58 @@ class ApiEndpoints:
             return HTTPStatus.OK, result
 
         @api.get(
+            "blueprints/search/",
+            response={
+                HTTPStatus.OK: list[schema.BlueprintItemSchema],
+                HTTPStatus.FORBIDDEN: dict,
+            },
+            tags=self.tags,
+            summary="Search all public blueprints",
+        )
+        def search_public_blueprints(request, q: str = ""):
+            if not request.user.has_perm("bpforge.basic_access"):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            query = q.strip()
+            if not query:
+                return HTTPStatus.OK, []
+
+            bpo_filter = Q(runs__isnull=True) | Q(runs=0)
+            bpc_filter = Q(runs__gt=0)
+
+            blueprint_qs = (
+                Blueprint.objects.with_api_relations()
+                .filter(owner__is_public=True)
+                .filter(
+                    Q(eve_type__name__icontains=query)
+                    | Q(eve_type__group__name__icontains=query)
+                )
+                .filter(
+                    (Q(owner__public_type="bpo") & bpo_filter)
+                    | (Q(owner__public_type="bpc") & bpc_filter)
+                    | (Q(owner__public_type="all") & (bpo_filter | bpc_filter))
+                )
+                .filter(
+                    ~Q(
+                        owner__selective_bpo_enabled=True,
+                        runs__isnull=True,
+                        is_offered=False,
+                    ),
+                    ~Q(
+                        owner__selective_bpo_enabled=True,
+                        runs=0,
+                        is_offered=False,
+                    ),
+                )
+                .order_by("eve_type__name")[:250]
+            )
+
+            result = [
+                schema.BlueprintItemSchema.from_blueprint(bp) for bp in blueprint_qs
+            ]
+            return HTTPStatus.OK, result
+
+        @api.get(
             "blueprints/{int:owner_id}/",
             response={
                 HTTPStatus.OK: list[schema.BlueprintItemSchema],
@@ -147,7 +198,7 @@ class ApiEndpoints:
                     "error": _("This blueprint catalog is private.")
                 }
 
-            blueprint_qs = Blueprint.objects.filter(owner=owner)
+            blueprint_qs = Blueprint.objects.with_api_relations().filter(owner=owner)
 
             # In the blueprint catalog, always filter by public_type & selective BPOs as configured by the owner
             if owner.public_type == "bpo":
@@ -158,44 +209,9 @@ class ApiEndpoints:
             if owner.selective_bpo_enabled:
                 blueprint_qs = blueprint_qs.filter(Q(runs__gt=0) | Q(is_offered=True))
 
-            blueprints = blueprint_qs.select_related(
-                "eve_type__group",
-                "location",
-                "owner__character__character",
-                "owner__corporation",
-            ).order_by("eve_type__name")
+            blueprints = blueprint_qs.order_by("eve_type__name")
 
-            # pylint: disable=duplicate-code
-            owner_name = (
-                owner.corporation.corporation_name
-                if owner.corporation
-                else (
-                    owner.character.character.character_name
-                    if owner.character
-                    else owner.user.username
-                )
-            )
-
-            # pylint: disable=duplicate-code
-            result: list[schema.BlueprintItemSchema] = []
-            for bp in blueprints:
-                result.append(
-                    schema.BlueprintItemSchema(
-                        item_id=bp.item_id,
-                        type_id=bp.eve_type_id,
-                        type_name=bp.eve_type.name,
-                        group_name=bp.eve_type.group.name if bp.eve_type.group else "",
-                        is_original=bp.is_original,
-                        is_corp_bp=bp.is_corp_bp,
-                        runs=bp.runs,
-                        quantity=bp.quantity,
-                        material_efficiency=bp.material_efficency,
-                        time_efficiency=bp.time_efficiency,
-                        location_id=bp.location_id,
-                        location_name=bp.location.name if bp.location else "",
-                        owner_id=owner.id,
-                        owner_name=owner_name,
-                    )
-                )
-
+            result = [
+                schema.BlueprintItemSchema.from_blueprint(bp) for bp in blueprints
+            ]
             return HTTPStatus.OK, result

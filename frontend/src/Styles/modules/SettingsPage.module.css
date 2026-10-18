@@ -264,18 +264,11 @@
     justify-content: space-between;
     gap: 8px;
     padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--aa-border-light, #333);
-    background-color: color-mix(in srgb, var(--aa-color-light, #27272a) 50%, transparent);
+    background-color: var(--aa-bg-light);
     cursor: pointer;
     user-select: none;
     transition: background-color 150ms ease, border-color 150ms ease;
     margin-top: 2px;
-}
-
-.public-row:hover {
-    background-color: color-mix(in srgb, var(--aa-color-light, #27272a) 90%, transparent);
-    border-color: var(--aa-border, #555);
 }
 
 .public-row:focus-visible {
@@ -372,6 +365,28 @@
 .type-buttons {
     display: flex;
     gap: 4px;
+}
+
+.settingsTypeBtn {
+    flex: 1;
+    padding: 3px 6px !important;
+    font-size: var(--aa-font-size-xs, 0.75rem) !important;
+    font-weight: 600;
+    line-height: 1.2 !important;
+    cursor: pointer;
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, filter 0.15s ease-in-out, opacity 0.15s ease-in-out;
+}
+
+.settingsTypeBtn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    opacity: 1 !important;
+    z-index: 2;
+}
+
+.settingsTypeBtn:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .type-btn {

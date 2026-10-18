@@ -102,6 +102,20 @@ export async function loadCatalogBlueprints(
 export const loadShopBlueprints = loadCatalogBlueprints;
 export const loadOwnerBlueprints = loadCatalogBlueprints;
 
+export async function searchPublicBlueprints(
+  query: string,
+): Promise<components["schemas"]["BlueprintItemSchema"][]> {
+  const { data, error } = await apiClient.GET(`/${ProjectName}/api/blueprints/search/`, {
+    params: {
+      query: { q: query },
+    },
+  });
+  if (error || !data) {
+    throw new Error("Failed to search public blueprints");
+  }
+  return data;
+}
+
 export async function loadMyBlueprints(): Promise<components["schemas"]["BlueprintItemSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/my-blueprints/`);
   if (error || !data) {
@@ -123,7 +137,7 @@ export async function createOrder(
 }
 
 export async function loadOrders(
-  role: "all" | "buyer" | "seller" = "all",
+  role: "all" | "buyer" | "seller" | "manage" = "all",
 ): Promise<components["schemas"]["OrderSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/orders/`, {
     params: {
@@ -162,6 +176,20 @@ export async function updateOrderStatus(
   });
   if (error || !data) {
     throw new Error("Failed to update order status");
+  }
+  return data;
+}
+
+export async function deleteOrder(
+  orderId: number,
+): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
+  const { data, error } = await apiClient.DELETE(`/${ProjectName}/api/orders/{order_id}/`, {
+    params: {
+      path: { order_id: orderId },
+    },
+  });
+  if (error || !data) {
+    throw new Error("Failed to delete order");
   }
   return data;
 }

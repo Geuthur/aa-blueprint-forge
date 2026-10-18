@@ -18,7 +18,11 @@ from bpforge.helpers.eveonline import (
     get_corporation_logo_url,
 )
 from bpforge.models.blueprint import Owner
-from bpforge.models.general import UserSettings
+from bpforge.models.general import (
+    UserSettings,
+    user_can_manage_orders,
+    user_is_global_order_manager,
+)
 from bpforge.models.helpers.update_manager import UpdateSection
 
 
@@ -183,7 +187,7 @@ class ApiEndpoints:
         )
         def get_menu(request):  # pylint: disable=unused-argument
             left_menu: list[schema.MenuLink] = []
-            left_menu.append(schema.MenuLink(name=_("Overview"), link="/"))
+            left_menu.append(schema.MenuLink(name=_("Overview"), link="/overview/"))
             left_menu.append(
                 schema.MenuLink(name=_("My Blueprints"), link="/my-blueprints/")
             )
@@ -258,6 +262,8 @@ class ApiEndpoints:
             )
 
             is_admin = bool(request.user.has_perm("bpforge.full_access"))
+            can_manage = user_can_manage_orders(request.user)
+            is_global_mgr = user_is_global_order_manager(request.user)
 
             return HTTPStatus.OK, schema.UserData(
                 user_id=request.user.id,
@@ -269,6 +275,8 @@ class ApiEndpoints:
                 alliance_name=alliance_name,
                 portrait=portrait_url,
                 is_admin=is_admin,
+                can_manage_orders=can_manage,
+                is_global_order_manager=is_global_mgr,
             )
 
         @api.get(

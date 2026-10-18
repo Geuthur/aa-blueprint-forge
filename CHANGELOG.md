@@ -26,7 +26,25 @@ Section Order:
 ### Removed
 -->
 
-<!-- Your changes go here -->
+### Added
+
+- Blueprint search in the overview catalog directory with quick access and direct preview on provider cards.
+- Loading animations for tables during data fetching.
+- Dedicated `/overview/` route for direct navigation and bookmarking.
+- Dedicated order management view for managers with overview, status tracking, and deletion.
+- Role-based manager permissions for order oversight (global and corporation-scoped).
+- Direct order links in Discord notifications for buyers, sellers, and managers.
+
+### Changed
+
+- Improved menu navigation to route cleanly without persisting search filters across pages.
+- Migrated modals across the application to the standardized `BaseModal` design.
+- Synchronized order tab selection with URL query parameters.
+- Refactored owner display name and blueprint serialization into reusable helpers to eliminate code duplication across API endpoints and Discord notifications.
+
+### Fixed
+
+- Cache invalidation and badge updates on order deletion and status changes.
 
 ## [1.0.0] - 2026-10-15
 

@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { BlueprintItemSchema, OwnerSettingSchema } from "@/Api/schema";
-import { BlueprintTable } from "@/Components/Catalog/BlueprintTable";
+import { BlueprintTable } from "@/Components/Blueprint/BlueprintTable";
 import styles from "@/Styles/modules/Superuser.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
@@ -56,6 +56,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
       <header className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center gap-3">
           <Button
+            variant="secondary"
             size="sm"
             onClick={onBack}
             className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
@@ -96,6 +97,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
             {renderTooltip(
               t("Trigger background update_owner task (normal)"),
               <Button
+                variant="warning"
                 size="sm"
                 onClick={() => onTriggerUpdate(inspectingOwner.id, false)}
                 disabled={updatingOwnerId === inspectingOwner.id}
@@ -112,6 +114,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
             {renderTooltip(
               t("More update options"),
               <Dropdown.Toggle
+                variant="warning"
                 split
                 size="sm"
                 aria-label={t("More update options")}
@@ -134,6 +137,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
             </Dropdown.Menu>
           </Dropdown>
           <Button
+            variant="secondary"
             size="sm"
             onClick={onRefetch}
             className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
@@ -168,7 +172,8 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
           {renderTooltip(
             t("Show all blueprints"),
             <div
-              className={`px-3 py-2 rounded border text-center ${styles.kpiCard} ${inspectionTypeFilter === "all" ? "bg-primary border-primary shadow" : "bg-dark border-secondary"}`}
+              className={`px-3 py-2 rounded text-center bg-secondary text-light border ${styles.kpiCard} ${inspectionTypeFilter === "all" ? "border-2 border-light shadow" : "border-secondary opacity-75"
+                }`}
               role="button"
               tabIndex={0}
               onClick={() => setInspectionTypeFilter("all")}
@@ -176,14 +181,15 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
                 if (e.key === "Enter" || e.key === " ") setInspectionTypeFilter("all");
               }}
             >
-              <span className="text-light small d-block">{t("Total Blueprints")}</span>
-              <span className="fw-bold fs-5 text-light">{ownerBlueprints.length}</span>
+              <span className="small d-block opacity-75">{t("Total Blueprints")}</span>
+              <span className="fw-bold fs-5">{ownerBlueprints.length}</span>
             </div>
           )}
           {renderTooltip(
             t("Filter to show only Originals (BPO)"),
             <div
-              className={`px-3 py-2 rounded border text-center ${styles.kpiCard} ${inspectionTypeFilter === "bpo" ? "bg-primary border-primary shadow" : "bg-dark border-primary-subtle"}`}
+              className={`px-3 py-2 rounded text-center bg-primary text-light border ${styles.kpiCard} ${inspectionTypeFilter === "bpo" ? "border-2 border-light shadow" : "border-primary opacity-75"
+                }`}
               role="button"
               tabIndex={0}
               onClick={() =>
@@ -194,14 +200,15 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
                   setInspectionTypeFilter(inspectionTypeFilter === "bpo" ? "all" : "bpo");
               }}
             >
-              <span className="text-light small d-block">{t("Originals (BPO)")}</span>
-              <span className="fw-bold fs-5 text-primary">{bpoCount}</span>
+              <span className="small d-block opacity-75">{t("Originals (BPO)")}</span>
+              <span className="fw-bold fs-5">{bpoCount}</span>
             </div>
           )}
           {renderTooltip(
             t("Filter to show only Copies (BPC)"),
             <div
-              className={`px-3 py-2 rounded border text-center ${styles.kpiCard} ${inspectionTypeFilter === "bpc" ? "bg-info text-dark border-info shadow" : "bg-dark border-info-subtle"}`}
+              className={`px-3 py-2 rounded text-center bg-info text-dark border ${styles.kpiCard} ${inspectionTypeFilter === "bpc" ? "border-2 border-dark shadow" : "border-info opacity-75"
+                }`}
               role="button"
               tabIndex={0}
               onClick={() =>
@@ -212,7 +219,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
                   setInspectionTypeFilter(inspectionTypeFilter === "bpc" ? "all" : "bpc");
               }}
             >
-              <span className="small d-block">{t("Copies (BPC)")}</span>
+              <span className="small d-block opacity-75">{t("Copies (BPC)")}</span>
               <span className="fw-bold fs-5">{bpcCount}</span>
             </div>
           )}

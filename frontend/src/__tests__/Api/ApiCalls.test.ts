@@ -399,6 +399,49 @@ describe('General API client functions', () => {
             });
         });
     });
+
+    describe('searchPublicBlueprints', () => {
+        it('calls search endpoint with query parameter and returns data', async () => {
+            // Test Data
+            const mockBlueprints = [
+                {
+                    item_id: 101,
+                    type_id: 587,
+                    type_name: 'Rifter Blueprint',
+                    owner_id: 1,
+                    is_original: true,
+                },
+            ];
+            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
+                data: mockBlueprints,
+                error: undefined,
+                response: new Response(),
+            } as never);
+
+            // Test Action
+            const result = await (await import('@/Api/ApiCalls')).searchPublicBlueprints('Rifter');
+
+            // Expected Result
+            expect(result).toEqual(mockBlueprints);
+            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/blueprints/search/`, {
+                params: { query: { q: 'Rifter' } },
+            });
+        });
+
+        it('throws error when search endpoint fails', async () => {
+            // Test Data
+            vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
+                data: undefined,
+                error: { status: 500 },
+                response: new Response(),
+            } as never);
+
+            // Test Action & Expected Result
+            await expect((await import('@/Api/ApiCalls')).searchPublicBlueprints('fail')).rejects.toThrow(
+                'Failed to search public blueprints'
+            );
+        });
+    });
 });
 
 

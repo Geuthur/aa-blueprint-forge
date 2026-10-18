@@ -288,5 +288,15 @@
   "{{count}} Blueprints_other": "{{count}} Blueprints",
   "{{count}} Rows": "{{count}} Rows",
   "{{count}} Rows_one": "{{count}} Rows",
-  "{{count}} Rows_other": "{{count}} Rows"
+  "{{count}} Rows_other": "{{count}} Rows",
+  "Delete": "Delete",
+  "Delete Order #{{id}}": "Delete Order #{{id}}",
+  "Are you sure you want to permanently delete this order?": "Are you sure you want to permanently delete this order?",
+  "This will permanently remove Order #{{id}} and all {{count}} blueprint item(s) from the system. This action cannot be undone._one": "This will permanently remove Order #{{id}} and all {{count}} blueprint item(s) from the system. This action cannot be undone.",
+  "This will permanently remove Order #{{id}} and all {{count}} blueprint item(s) from the system. This action cannot be undone._other": "This will permanently remove Order #{{id}} and all {{count}} blueprint item(s) from the system. This action cannot be undone.",
+  "Status:": "Status:",
+  "Deleting...": "Deleting...",
+  "Confirm Delete": "Confirm Delete",
+  "Order Management (Verwalter)": "Order Management (Verwalter)",
+  "No manageable orders found.": "No manageable orders found."
 }

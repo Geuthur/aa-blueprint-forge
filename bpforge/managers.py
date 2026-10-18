@@ -168,12 +168,23 @@ class OwnerManager(AccessManager["OwnerContext"]):
 
 
 class BlueprintQuerySet(AccessQuerySet):
-    pass
+    def with_api_relations(self):
+        """Preload related objects commonly needed for API representation."""
+        return self.select_related(
+            "eve_type__group",
+            "location",
+            "owner__character__character",
+            "owner__corporation",
+        )
 
 
 class BlueprintManager(AccessManager["BlueprintContext"]):
     def get_queryset(self) -> BlueprintQuerySet:
         return BlueprintQuerySet(self.model, using=self._db)
+
+    def with_api_relations(self):
+        """Preload related objects commonly needed for API representation."""
+        return self.get_queryset().with_api_relations()
 
     def update_or_create_blueprints(
         self, owner: "OwnerContext", force_refresh: bool = False

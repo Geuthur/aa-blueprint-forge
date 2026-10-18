@@ -2,15 +2,15 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
-import { Layers, Search } from "lucide-react";
-import { Button, Form, ButtonGroup } from "react-bootstrap";
+import { Layers, Search, ShoppingCart } from "lucide-react";
+import { Badge, Button, ButtonGroup, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import { BaseTable } from "@/Components/Base/BaseTable";
-import { getBlueprintColumns } from "@/Components/Catalog/BlueprintTableColumns";
-import type { BlueprintItem } from "@/Components/Catalog/BlueprintTableColumns";
-import styles from "@/Styles/modules/Catalog.module.css";
+import { getBlueprintColumns } from "@/Components/Blueprint/BlueprintTableColumns";
+import type { BlueprintItem } from "@/Components/Blueprint/BlueprintTableColumns";
+import styles from "@/Styles/modules/Blueprint.module.css";
 
 interface BlueprintTableProps {
   data: BlueprintItem[];
@@ -21,6 +21,7 @@ interface BlueprintTableProps {
   typeFilter?: "all" | "bpo" | "bpc";
   onTypeFilterChange?: (filter: "all" | "bpo" | "bpc") => void;
   showOwnerFilter?: boolean;
+  onOpenOrderModal?: () => void;
 }
 
 export const BlueprintTable: React.FC<BlueprintTableProps> = ({
@@ -31,6 +32,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
   showSelectColumn = true,
   typeFilter: typeFilterProp,
   onTypeFilterChange,
+  onOpenOrderModal,
 }) => {
   const { t } = useTranslation();
 
@@ -113,26 +115,42 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
               <Button
                 variant={activeTypeFilter === "all" ? "primary" : "outline-secondary"}
                 onClick={() => setTypeFilter("all")}
-                className={activeTypeFilter === "all" ? "aa-btn aa-btn-primary fw-semibold" : "aa-btn aa-btn-secondary"}
+                className={activeTypeFilter === "all" ? "aa-btn aa-btn-primary text-light" : "aa-btn aa-btn-secondary"}
               >
                 {t("All")}
               </Button>
               <Button
                 variant={activeTypeFilter === "bpo" ? "primary" : "outline-secondary"}
                 onClick={() => setTypeFilter("bpo")}
-                className={activeTypeFilter === "bpo" ? "aa-btn aa-bg-primary text-light fw-semibold" : "aa-btn aa-btn-secondary"}
+                className={activeTypeFilter === "bpo" ? "aa-btn aa-btn-primary text-light" : "aa-btn aa-btn-secondary"}
               >
                 {t("BPO (Original)")}
               </Button>
               <Button
                 variant={activeTypeFilter === "bpc" ? "info" : "outline-secondary"}
                 onClick={() => setTypeFilter("bpc")}
-                className={activeTypeFilter === "bpc" ? "aa-btn aa-bg-primary-light text-light fw-semibold" : "aa-btn aa-btn-secondary"}
+                className={activeTypeFilter === "bpc" ? "aa-btn aa-btn-info text-light" : "aa-btn aa-btn-secondary"}
               >
                 {t("BPC (Copy)")}
               </Button>
             </ButtonGroup>
           </div>
+
+          {/* Review Order Button next to Type filter when selection exists */}
+          {selectedBlueprints && selectedBlueprints.size > 0 && onOpenOrderModal && (
+            <Button
+              size="sm"
+              onClick={onOpenOrderModal}
+              className="d-flex align-items-center gap-2 aa-btn aa-btn-primary"
+              data-testid="top-review-order-btn"
+            >
+              <ShoppingCart size={15} />
+              <span>{t("Review Order")}</span>
+              <Badge pill bg="light" text="dark" className="ms-1">
+                {selectedBlueprints.size}
+              </Badge>
+            </Button>
+          )}
         </div>
       </div>
 

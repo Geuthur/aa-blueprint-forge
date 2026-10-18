@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { GroupSchema, OwnerSettingSchema, SuperuserOwnerUpdateRequest } from "@/Api/schema";
-import BaseModal from "@/Components/Base/BaseModal/BaseModal";
+import { BaseModal } from "@/Components/Base/BaseModal";
 import styles from "@/Styles/modules/Superuser.module.css";
 
 interface SuperuserOwnerModalProps {
@@ -68,6 +68,7 @@ const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
   const footer = (
     <div className="d-flex justify-content-between w-100">
       <Button
+        variant="secondary"
         className="aa-btn aa-btn-secondary"
         onClick={onClose}
         disabled={isSaving}
@@ -75,6 +76,7 @@ const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
         {t("Cancel")}
       </Button>
       <Button
+        variant="primary"
         className="aa-btn aa-btn-primary"
         onClick={handleSave}
         disabled={isSaving}
@@ -98,7 +100,7 @@ const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
     <BaseModal
       show
       onHide={onClose}
-      size="lg"
+      size="xl"
       centered
       backdrop="static"
       title={

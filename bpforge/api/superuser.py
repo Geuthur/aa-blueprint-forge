@@ -114,7 +114,6 @@ class ApiEndpoints:
                     "error": _("Superuser permission required.")
                 }
 
-            # pylint: disable=duplicate-code
             owners = (
                 Owner.objects.all()
                 .select_related(
@@ -165,7 +164,6 @@ class ApiEndpoints:
                     "error": _("Superuser permission required.")
                 }
 
-            # pylint: disable=duplicate-code
             owner = get_object_or_404(
                 Owner.objects.select_related(
                     "character__character",
@@ -240,47 +238,14 @@ class ApiEndpoints:
             )
 
             blueprints = (
-                Blueprint.objects.filter(owner=owner)
-                .select_related(
-                    "eve_type__group",
-                    "location",
-                    "owner__character__character",
-                    "owner__corporation",
-                )
+                Blueprint.objects.with_api_relations()
+                .filter(owner=owner)
                 .order_by("eve_type__name")
             )
 
-            # pylint: disable=duplicate-code
-            result: list[schema.BlueprintItemSchema] = []
-            for bp in blueprints:
-                owner_name = (
-                    owner.corporation.corporation_name
-                    if owner.corporation
-                    else (
-                        owner.character.character.character_name
-                        if owner.character
-                        else owner.user.username
-                    )
-                )
-                result.append(
-                    schema.BlueprintItemSchema(
-                        item_id=bp.item_id,
-                        type_id=bp.eve_type.id,
-                        type_name=bp.eve_type.name,
-                        group_id=bp.eve_type.group.id if bp.eve_type.group else 0,
-                        group_name=bp.eve_type.group.name if bp.eve_type.group else "",
-                        location_id=bp.location.location_id,
-                        location_name=bp.location.name,
-                        material_efficiency=bp.material_efficency or 0,
-                        time_efficiency=bp.time_efficiency or 0,
-                        runs=bp.runs or 0,
-                        quantity=bp.quantity,
-                        is_original=bp.is_original,
-                        is_corp_bp=bp.is_corp_bp,
-                        owner_id=owner.id,
-                        owner_name=owner_name,
-                    )
-                )
+            result = [
+                schema.BlueprintItemSchema.from_blueprint(bp) for bp in blueprints
+            ]
             return HTTPStatus.OK, result
 
         @api.post(
@@ -310,16 +275,7 @@ class ApiEndpoints:
             force_refresh = payload.force_refresh if payload else False
             update_owner.delay(owner_pk=owner.pk, force_refresh=force_refresh)
 
-            # pylint: disable=duplicate-code
-            owner_name = (
-                owner.corporation.corporation_name
-                if owner.corporation
-                else (
-                    owner.character.character.character_name
-                    if owner.character
-                    else owner.user.username
-                )
-            )
+            owner_name = owner.name
 
             return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
                 success=True,

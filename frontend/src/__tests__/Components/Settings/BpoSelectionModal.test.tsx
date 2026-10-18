@@ -105,4 +105,25 @@ describe("BpoSelectionModal", () => {
     });
     expect(onHide).toHaveBeenCalled();
   });
+
+  it("should call onHide when Cancel button is clicked", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    const onHide = vi.fn();
+    vi.mocked(ApiCalls.loadOwnerBpos).mockResolvedValue([]);
+
+    // Test Action
+    renderModal({
+      show: true,
+      onHide,
+      ownerId: 5,
+      ownerName: "Industrial Corp",
+    });
+
+    const cancelBtn = await screen.findByRole("button", { name: "Cancel" });
+    await user.click(cancelBtn);
+
+    // Expected Result
+    expect(onHide).toHaveBeenCalledTimes(1);
+  });
 });
