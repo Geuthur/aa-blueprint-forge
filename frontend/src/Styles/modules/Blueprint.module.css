@@ -73,6 +73,6 @@
 }
 
 .matchingBlueprintItem:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
+  background-color: var(--aa-table-row-hover, rgba(128, 128, 128, 0.15)) !important;
+  border-color: var(--bg-dark-border, rgba(128, 128, 128, 0.3)) !important;
 }

@@ -74,19 +74,19 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
   return (
     <>
-      <Card className="aa-panel border-0 shadow-sm mb-3">
+      <Card className="bg-dark border-0 shadow-sm mb-3">
         <Card.Body className="p-3">
           <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
             {/* Order Header / Meta */}
             <div className="d-flex align-items-center gap-3">
               <div>
                 <div className="d-flex align-items-center gap-2">
-                  <h5 className="mb-0 fw-bold text-light">
+                  <h5 className="mb-0 fw-bold">
                     {t("Order #{{id}}", { id: order.id })}
                   </h5>
                   {getStatusBadge(order.status)}
                 </div>
-                <div className="text-secondary small mt-1 d-flex flex-wrap align-items-center gap-2">
+                <div className="text-light small mt-1 d-flex flex-wrap align-items-center gap-2">
                   <span>
                     <strong>{t("Owner:")}</strong> {order.owner_name}
                   </span>
@@ -259,16 +259,16 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
           {/* Note if available */}
           {order.note && (
-            <div className="mt-2 p-2 bg-dark rounded border border-secondary-subtle small text-light-emphasis">
+            <div className="mt-2 p-2 rounded border border-secondary-subtle small bg-body-tertiary">
               <strong>{t("Customer Note:")}</strong> {order.note}
             </div>
           )}
 
           {/* Collapsible Items Table */}
           <Collapse in={expanded}>
-            <div className="mt-3 pt-3 border-top border-secondary">
-              <Table variant="dark" responsive hover size="sm" className="align-middle mb-0">
-                <thead className="table-secondary text-dark small">
+            <div className="mt-3 pt-3 border-top border-secondary-subtle">
+              <Table responsive hover size="sm" className="align-middle mb-0">
+                <thead className="small text-light">
                   <tr>
                     <th>{t("Blueprint")}</th>
                     <th>{t("Quantity")}</th>
@@ -289,14 +289,14 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                             height={24}
                             className="rounded"
                           />
-                          <span className="fw-semibold text-light">{item.type_name}</span>
+                          <span className="fw-semibold">{item.type_name}</span>
                         </div>
                       </td>
                       <td>
                         <span className="badge bg-secondary">{item.quantity}</span>
                       </td>
                       <td>
-                        <span className="text-secondary small">
+                        <span className="text-light small">
                           {item.runs ? `${item.runs} ${t("runs")}` : t("Standard")}
                         </span>
                       </td>
@@ -306,7 +306,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         </span>
                       </td>
                       <td>
-                        <span className="small text-secondary">{item.status}</span>
+                        <span className="small text-light">{item.status}</span>
                       </td>
                     </tr>
                   ))}
@@ -350,7 +350,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
           </div>
         }
       >
-        <div className="aa-panel p-3">
+        <div className="bg-dark p-3">
           <div className="d-flex align-items-start gap-3">
             <AlertTriangle className="text-danger flex-shrink-0 mt-1" size={24} />
             <div>
@@ -363,7 +363,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                   { id: order.id, count: order.items.length },
                 )}
               </p>
-              <div className="p-2 bg-dark rounded border border-secondary-subtle small">
+              <div className="p-2 rounded border border-secondary-subtle small bg-body-tertiary">
                 <div>
                   <strong>{t("Owner:")}</strong> {order.owner_name}
                 </div>

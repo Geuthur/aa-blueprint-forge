@@ -112,7 +112,7 @@ const BaseTable = <TData, TValue = unknown>({
 
     return (
       <div
-        className={`aa-table-shell ${isLight ? "aa-table-shell-light aa-table-light" : ""} ${className ?? ""}`}
+        className={`bg-secondary aa-table-shell ${isLight ? "aa-table-shell-light aa-table-light" : ""} ${className ?? ""}`}
       >
         <div className="aa-table-scroll">
           <table
@@ -172,7 +172,7 @@ const BaseTable = <TData, TValue = unknown>({
                   >
                     <div className="d-flex flex-column align-items-center justify-content-center gap-2">
                       <Spinner animation="border" variant="primary" role="status" />
-                      <span className="text-secondary small">{t("Loading data...")}</span>
+                      <span className="text-light small">{t("Loading data...")}</span>
                     </div>
                   </td>
                 </tr>
@@ -339,7 +339,7 @@ const BaseTable = <TData, TValue = unknown>({
             <tr>
               <td className="text-center py-5" colSpan={table.getVisibleLeafColumns().length}>
                 <Spinner animation="border" variant="primary" role="status" />
-                <div className="text-secondary small mt-2">{t("Loading data...")}</div>
+                <div className="text-light small mt-2">{t("Loading data...")}</div>
               </td>
             </tr>
           ) : rows.length === 0 ? (

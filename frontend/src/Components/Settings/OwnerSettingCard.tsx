@@ -93,7 +93,7 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
   };
 
   return (
-    <article className={`aa-panel ${styles["char-card"]} ${cardClass}`}>
+    <article className={`bg-dark ${styles["char-card"]} ${cardClass}`}>
       <div className={styles["char-header"]}>
         {avatarUrl ? (
           <img
@@ -210,7 +210,7 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
           <div className="d-flex align-items-center gap-2">
             <Store
               size={16}
-              className={owner.is_public ? "text-success" : "text-secondary"}
+              className={owner.is_public ? "text-success" : "text-light"}
             />
             <span className={styles["public-label"]}>
               {t("Public Shop")}
@@ -271,7 +271,7 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
             <Button
               variant="info"
               size="sm"
-              className={`${styles.settingsTypeBtn} bg-info text-dark border border-info ${owner.public_type === "bpc"
+              className={`${styles.settingsTypeBtn} bg-info border border-info ${owner.public_type === "bpc"
                 ? "border-dark shadow fw-bold"
                 : "opacity-75"
                 }`}
@@ -289,7 +289,7 @@ export const OwnerSettingCard: React.FC<OwnerSettingCardProps> = ({
           {owner.public_type !== "bpc" && (
             <div className={styles["selective-row"]}>
               <div className="d-flex flex-column">
-                <span className="small text-light fw-medium">
+                <span className="small fw-medium">
                   {t("Selective BPOs")}
                 </span>
                 <span className={`text-muted ${styles.selectiveSubtext}`}>

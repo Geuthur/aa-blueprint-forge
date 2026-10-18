@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 // Third Party
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Settings2, Users } from "lucide-react";
+import { Settings2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -16,7 +16,7 @@ import {
 import { queryKeys } from "@/Api/query";
 import type { OwnerSettingSchema, UserSettingsSchema } from "@/Api/schema";
 import { BpoSelectionModal } from "@/Components/Settings/BpoSelectionModal";
-import { OwnerSettingCard } from "@/Components/Settings/OwnerSettingCard";
+import { OwnerSettingsSection } from "@/Components/Settings/OwnerSettingsSection";
 import { UserSettingsCard } from "@/Components/Settings/UserSettingsCard";
 import styles from "@/Styles/modules/SettingsPage.module.css";
 
@@ -73,18 +73,18 @@ export const SettingsPage: React.FC = () => {
         old?.map((owner) =>
           owner.id === ownerId
             ? {
-                ...owner,
-                is_public:
-                  payload.is_public !== undefined && payload.is_public !== null
-                    ? payload.is_public
-                    : owner.is_public,
-                public_type: payload.public_type || owner.public_type,
-                selective_bpo_enabled:
-                  payload.selective_bpo_enabled !== undefined &&
+              ...owner,
+              is_public:
+                payload.is_public !== undefined && payload.is_public !== null
+                  ? payload.is_public
+                  : owner.is_public,
+              public_type: payload.public_type || owner.public_type,
+              selective_bpo_enabled:
+                payload.selective_bpo_enabled !== undefined &&
                   payload.selective_bpo_enabled !== null
-                    ? payload.selective_bpo_enabled
-                    : owner.selective_bpo_enabled,
-              }
+                  ? payload.selective_bpo_enabled
+                  : owner.selective_bpo_enabled,
+            }
             : owner,
         ),
       );
@@ -114,27 +114,30 @@ export const SettingsPage: React.FC = () => {
 
   if (isErrorSettings || !settings) {
     return (
-      <div className={`aa-panel ${styles["error"]}`} role="alert">
+      <div className={`aa-panel bg-dark ${styles["error"]}`} role="alert">
         {t("Failed to load settings. Please try refreshing the page.")}
       </div>
     );
   }
 
   return (
-    <main className={`aa-panel-light ${styles["page"]}`}>
+    <main className={styles["page"]}>
+      {/* Page Header */}
       <header className={styles["header"]}>
         <Settings2 size={24} aria-hidden="true" />
         <div>
           <h1 className={styles["title"]}>{t("Settings")}</h1>
           <p className={styles["description"]}>
-            {t("Manage your blueprint preferences and owner visibility.")}
+            {t(
+              "Manage notifications and configure blueprint shop visibility for your linked characters and corporations.",
+            )}
           </p>
         </div>
       </header>
 
-      {/* Notifications Section */}
+      {/* User Notifications Card */}
       <UserSettingsCard
-        disableNotifications={settings.disable_notifications}
+        disableNotifications={settings?.disable_notifications ?? false}
         isPending={updateMutation.isPending}
         isError={updateMutation.isError}
         onToggleNotifications={(checked) =>
@@ -143,69 +146,17 @@ export const SettingsPage: React.FC = () => {
       />
 
       {/* Character & Corporation Update Status Section */}
-      <section className={styles["section"]} aria-labelledby="char-status-heading">
-        <header className={styles["section-header"]}>
-          <div className={styles["section-title-wrap"]}>
-            <Users size={20} aria-hidden="true" />
-            <h2 id="char-status-heading" className={styles["section-title"]}>
-              {t("Character & Corporation Status")}
-            </h2>
-            {owners && (
-              <span className={styles["section-count"]}>
-                ({owners.length})
-              </span>
-            )}
-          </div>
-          <p className={styles["section-description"]}>
-            {t(
-              "ESI synchronization status and public visibility for your linked characters and corporations.",
-            )}
-          </p>
-        </header>
-
-        {isLoadingOwners && (
-          <div className="aa-loader-container">
-            <span className="spinner-border" />
-            <span>{t("Loading update statuses...")}</span>
-          </div>
-        )}
-
-        {isErrorOwners && (
-          <div className={`aa-panel ${styles["error"]}`} role="alert">
-            {t("Failed to load character & corporation update status.")}
-          </div>
-        )}
-
-        {updateOwnerMutation.isError && (
-          <p className={styles["error-message"]} role="alert">
-            {t("Could not update shop visibility. Please try again.")}
-          </p>
-        )}
-
-        {!isLoadingOwners && !isErrorOwners && owners && owners.length === 0 && (
-          <div className={`aa-panel ${styles["empty-state"]}`}>
-            {t(
-              "No characters or corporations have been linked yet. Use the menu above to link your characters or corporations.",
-            )}
-          </div>
-        )}
-
-        {!isLoadingOwners && !isErrorOwners && owners && owners.length > 0 && (
-          <div className={styles["characters-grid"]}>
-            {owners.map((owner) => (
-              <OwnerSettingCard
-                key={owner.id}
-                owner={owner}
-                isUpdating={updateOwnerMutation.isPending}
-                onUpdateOwner={(ownerId, payload) =>
-                  updateOwnerMutation.mutate({ ownerId, payload })
-                }
-                onOpenBpoModal={(targetOwner) => setActiveBpoModalOwner(targetOwner)}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+      <OwnerSettingsSection
+        owners={owners}
+        isLoading={isLoadingOwners}
+        isError={isErrorOwners}
+        isUpdating={updateOwnerMutation.isPending}
+        updateError={updateOwnerMutation.isError}
+        onUpdateOwner={(ownerId, payload) =>
+          updateOwnerMutation.mutate({ ownerId, payload })
+        }
+        onOpenBpoModal={(targetOwner) => setActiveBpoModalOwner(targetOwner)}
+      />
 
       {activeBpoModalOwner && (
         <BpoSelectionModal

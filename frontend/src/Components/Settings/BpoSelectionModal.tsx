@@ -181,7 +181,7 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
       }
       footer={footer}
     >
-      <div className="aa-panel p-3">
+      <div className="bg-dark p-3">
         <p className="text-muted small mb-3">
           {t(
             "Select individual Blueprint Originals (BPOs) that will be publicly offered in your shop. Unselected BPOs will remain hidden."

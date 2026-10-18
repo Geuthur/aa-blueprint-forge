@@ -112,7 +112,7 @@ const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
       }
       footer={footer}
     >
-      <div className="aa-panel">
+      <div className="bg-dark">
         {errorMsg && (
           <Alert variant="danger" onClose={onDismissError} dismissible>
             {errorMsg}
@@ -135,7 +135,6 @@ const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
           <Form.Select
             value={editPublicType}
             onChange={(e) => setEditPublicType(e.target.value as "all" | "bpo" | "bpc")}
-            className="bg-dark text-light border-secondary"
           >
             <option value="all">{t("All Blueprints (Originals & Copies)")}</option>
             <option value="bpo">{t("Only Originals (BPO)")}</option>
@@ -154,9 +153,9 @@ const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
           />
         </div>
 
-        <hr className="border-secondary my-4" />
+        <hr className="border-secondary-subtle my-4" />
 
-        <h3 className="h6 text-light fw-bold mb-2">
+        <h3 className="h6 fw-bold mb-2">
           {t("Owner-Specific Notification Groups")}
         </h3>
         <p className="text-muted small mb-3">
@@ -167,11 +166,11 @@ const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
 
         <div className="row g-3">
           <div className="col-md-6">
-            <Form.Label className="small fw-semibold text-light">
+            <Form.Label className="small fw-semibold">
               {t("Order Created Notification Groups")}
             </Form.Label>
             <div
-              className={`p-2 border border-secondary rounded bg-dark ${styles.ownerModalScrollBox}`}
+              className={`p-2 border border-secondary-subtle rounded ${styles.ownerModalScrollBox}`}
             >
               {groups?.map((g) => (
                 <Form.Check
@@ -188,11 +187,11 @@ const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
           </div>
 
           <div className="col-md-6">
-            <Form.Label className="small fw-semibold text-light">
+            <Form.Label className="small fw-semibold">
               {t("Order Status Change Notification Groups")}
             </Form.Label>
             <div
-              className={`p-2 border border-secondary rounded bg-dark ${styles.ownerModalScrollBox}`}
+              className={`p-2 border border-secondary-subtle rounded ${styles.ownerModalScrollBox}`}
             >
               {groups?.map((g) => (
                 <Form.Check

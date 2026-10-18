@@ -26,7 +26,10 @@ Section Order:
 ### Removed
 -->
 
-<!-- Your changes go here -->
+### Changed
+
+- Full theme compatibility for both Alliance Auth light (Flatly) and dark (Darkly) themes with adaptive tokens for panels, tables, controls, and headings.
+- Reorganized frontend component structure into page-aligned directories (`Main/`, `MyBlueprints/`, `Orders/`, `Settings/`, `BlueprintTable/`) for improved modularity and maintainability.
 
 ## [1.0.1] - 2026-10-18
 

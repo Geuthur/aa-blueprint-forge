@@ -44,10 +44,10 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
   const { t } = useTranslation();
 
   return (
-    <section className="card bg-dark border-secondary mb-4 shadow-sm">
-      <div className="card-header border-secondary d-flex align-items-center gap-2 bg-transparent py-3">
+    <section className="card mb-4 shadow-sm">
+      <div className="card-header d-flex align-items-center gap-2 bg-transparent py-3">
         <Bell size={18} className="text-primary" />
-        <h2 className="h5 mb-0 text-light">{t("Global Notification Groups")}</h2>
+        <h2 className="h5 mb-0">{t("Global Notification Groups")}</h2>
       </div>
       <div className="card-body">
         <p className="text-muted small mb-3">
@@ -78,15 +78,15 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
         ) : (
           <Form onSubmit={onSave}>
             <div className="row g-4 mb-3">
-              <div className="aa-panel col-md-6">
-                <Form.Label className="fw-semibold text-light">
+              <div className="bg-dark col-md-6">
+                <Form.Label className="fw-semibold">
                   {t("New Orders (Order Created)")}
                 </Form.Label>
                 <p className="text-muted small mb-2">
                   {t("Notify these groups whenever any new order is placed.")}
                 </p>
                 <div
-                  className={`p-2 border border-secondary rounded aa-bg-light ${styles.groupScrollBox}`}
+                  className={`p-2 border border-secondary-subtle rounded ${styles.groupScrollBox}`}
                 >
                   {groups?.map((g) => (
                     <Form.Check
@@ -102,15 +102,15 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
                 </div>
               </div>
 
-              <div className="aa-panel col-md-6">
-                <Form.Label className="fw-semibold text-light">
+              <div className="bg-dark col-md-6">
+                <Form.Label className="fw-semibold">
                   {t("Order Status Updates")}
                 </Form.Label>
                 <p className="text-muted small mb-2">
                   {t("Notify these groups whenever an order status changes.")}
                 </p>
                 <div
-                  className={`p-2 border border-secondary rounded aa-bg-light ${styles.groupScrollBox}`}
+                  className={`p-2 border border-secondary-subtle rounded ${styles.groupScrollBox}`}
                 >
                   {groups?.map((g) => (
                     <Form.Check

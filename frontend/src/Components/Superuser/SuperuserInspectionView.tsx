@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { BlueprintItemSchema, OwnerSettingSchema } from "@/Api/schema";
-import { BlueprintTable } from "@/Components/Blueprint/BlueprintTable";
+import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
 import styles from "@/Styles/modules/Superuser.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
@@ -52,7 +52,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
         : null);
 
   return (
-    <main className="aa-panel">
+    <main className="bg-dark">
       <header className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center gap-3">
           <Button
@@ -75,7 +75,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
           )}
           <div>
             <div className="d-flex align-items-center gap-2">
-              <h1 className="h4 mb-0 text-light fw-bold">{inspectingOwner.name}</h1>
+              <h1 className="h4 mb-0 fw-bold">{inspectingOwner.name}</h1>
               <Badge bg="warning" text="dark">
                 {t("Superuser Inspection")}
               </Badge>
@@ -85,7 +85,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
                 <Badge bg="secondary">{t("Private Shop")}</Badge>
               )}
             </div>
-            <p className="text-secondary small mb-0">
+            <p className="text-light small mb-0">
               {t(
                 "All raw blueprints owned by this character or corporation, identical to their personal view."
               )}
@@ -160,10 +160,10 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
       )}
 
       {/* Summary KPI Panel identical to MyBlueprintsPage */}
-      <section className="aa-panel p-3 d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+      <section className="bg-dark p-3 d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
         <div>
-          <h4 className="text-light mb-1 fw-bold">{t("Owner Blueprint Inventory")}</h4>
-          <p className="text-secondary small mb-0">
+          <h4 className="mb-1 fw-bold">{t("Owner Blueprint Inventory")}</h4>
+          <p className="text-light small mb-0">
             {t("Unfiltered inventory across all locations and containers.")}
           </p>
         </div>
@@ -207,7 +207,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
           {renderTooltip(
             t("Filter to show only Copies (BPC)"),
             <div
-              className={`px-3 py-2 rounded text-center bg-info text-dark border ${styles.kpiCard} ${inspectionTypeFilter === "bpc" ? "border-2 border-dark shadow" : "border-info opacity-75"
+              className={`px-3 py-2 rounded text-center bg-info border ${styles.kpiCard} ${inspectionTypeFilter === "bpc" ? "border-2 border-dark shadow" : "border-info opacity-75"
                 }`}
               role="button"
               tabIndex={0}
@@ -229,7 +229,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
       {isLoading && (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <div className="text-secondary mt-2">{t("Loading owner blueprints...")}</div>
+          <div className="text-light mt-2">{t("Loading owner blueprints...")}</div>
         </div>
       )}
 

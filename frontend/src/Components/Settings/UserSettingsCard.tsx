@@ -24,7 +24,7 @@ export const UserSettingsCard: React.FC<UserSettingsCardProps> = ({
   const { t } = useTranslation();
 
   return (
-    <section className={`aa-panel ${styles["setting-row"]}`}>
+    <section className={`aa-panel bg-dark ${styles["setting-row"]}`}>
       <div className={styles["setting-copy"]}>
         <div className={styles["setting-title"]}>
           <BellOff size={18} aria-hidden="true" />

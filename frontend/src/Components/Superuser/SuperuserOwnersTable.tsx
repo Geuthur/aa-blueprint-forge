@@ -92,7 +92,7 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
           const owner = row.original;
           return (
             <div>
-              <div className="fw-semibold text-light">{owner.name}</div>
+              <div className="fw-semibold">{owner.name}</div>
               {owner.corporation_ticker && (
                 <span className="text-muted small">[{owner.corporation_ticker}]</span>
               )}
@@ -191,7 +191,7 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
             t("Inspect All Blueprints"),
             <Button
               variant="link"
-              className="btn btn-link btn-sm p-0 text-decoration-none text-light"
+              className="btn btn-link btn-sm p-0 text-decoration-none"
               onClick={() => onInspect(owner)}
             >
               <span className="text-primary fw-semibold">{owner.bpo_count} BPO</span> •{" "}
@@ -285,7 +285,7 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
                   />
                 )}
                 <Dropdown.Menu
-                  className={`dropdown-menu-dark ${styles.dropdownMenu}`}
+                  className={styles.dropdownMenu}
                   align="end"
                 >
                   <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, false)}>
@@ -306,11 +306,11 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
   }, [t, updatingOwnerId, onInspect, onEdit, onTriggerUpdate]);
 
   return (
-    <section className="card bg-dark border-secondary shadow-sm">
-      <div className="card-header border-secondary d-flex align-items-center justify-content-between bg-transparent py-3">
+    <section className="card shadow-sm">
+      <div className="card-header d-flex align-items-center justify-content-between bg-transparent py-3">
         <div className="d-flex align-items-center gap-2">
           <Users size={18} className="text-primary" />
-          <h2 className="h5 mb-0 text-light">{t("All Blueprint Owners")}</h2>
+          <h2 className="h5 mb-0">{t("All Blueprint Owners")}</h2>
         </div>
         <span className="badge bg-secondary">{owners?.length || 0}</span>
       </div>

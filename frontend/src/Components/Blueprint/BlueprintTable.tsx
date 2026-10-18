@@ -92,11 +92,11 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
   return (
     <div className="d-flex flex-column gap-3">
       {/* Table Filter Controls */}
-      <div className="aa-panel p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div className="bg-dark p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
         {/* Search Input */}
         <div className={`flex-grow-1 ${styles.searchWrapper}`}>
           <div className="input-group">
-            <span className="input-group-text bg-dark border-secondary text-secondary">
+            <span className="input-group-text">
               <Search size={16} />
             </span>
             <Form.Control
@@ -108,7 +108,6 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
               }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-dark text-light border-secondary"
             />
           </div>
         </div>
@@ -117,7 +116,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
         <div className="d-flex flex-wrap align-items-center gap-3">
           {/* BPO / BPC Switch */}
           <div className="d-flex align-items-center gap-2">
-            <span className="text-secondary small d-flex align-items-center gap-1">
+            <span className="text-light small d-flex align-items-center gap-1">
               <Layers size={14} />
               {t("Type:")}
             </span>
