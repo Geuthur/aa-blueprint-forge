@@ -5,6 +5,7 @@ import { MemoryRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // AA bpforge
@@ -35,7 +36,9 @@ const renderPage = () => {
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
-        <SuperuserPage />
+        <NuqsTestingAdapter hasMemory>
+          <SuperuserPage />
+        </NuqsTestingAdapter>
       </MemoryRouter>
     </QueryClientProvider>
   );

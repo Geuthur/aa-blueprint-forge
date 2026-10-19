@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from "vitest";
 
 // AA bpforge
 import * as ApiCalls from "@/Api/ApiCalls";
-import OrdersPage from "@/Pages/BlueprintPage";
+import OrdersPage from "@/Pages/OrdersPage";
 
 describe("OrdersPage Component", () => {
   const queryClient = new QueryClient({

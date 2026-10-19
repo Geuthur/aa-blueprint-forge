@@ -1,9 +1,10 @@
 // React
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 // Third Party
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, ShieldAlert, Trash2 } from "lucide-react";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { Button, Card, CardBody } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
@@ -228,8 +229,12 @@ const SuperuserPage: React.FC = () => {
         deleteOwnerMutation.mutate(ownerToDelete.id);
     };
 
-    // Owner Blueprints Inspection state
-    const [inspectingOwner, setInspectingOwner] = useState<OwnerSettingSchema | null>(null);
+    // Owner Blueprints Inspection state via nuqs URL parameter
+    const [inspectOwnerId, setInspectOwnerId] = useQueryState("inspect", parseAsInteger);
+    const inspectingOwner = useMemo(
+        () => (inspectOwnerId ? owners?.find((o) => o.id === inspectOwnerId) ?? null : null),
+        [inspectOwnerId, owners]
+    );
 
     const {
         data: ownerBlueprints = [],
@@ -257,7 +262,7 @@ const SuperuserPage: React.FC = () => {
                 updatingOwnerId={updatingOwnerId}
                 taskFeedback={taskFeedback}
                 onDismissFeedback={() => setTaskFeedback(null)}
-                onBack={() => setInspectingOwner(null)}
+                onBack={() => setInspectOwnerId(null)}
                 onRefetch={() => refetchOwnerBlueprints()}
                 onTriggerUpdate={handleTriggerOwnerUpdate}
             />
@@ -304,7 +309,7 @@ const SuperuserPage: React.FC = () => {
                     updatingOwnerId={updatingOwnerId}
                     taskFeedback={taskFeedback}
                     onDismissFeedback={() => setTaskFeedback(null)}
-                    onInspect={(owner) => setInspectingOwner(owner)}
+                    onInspect={(owner) => setInspectOwnerId(owner.id)}
                     onEdit={(owner) => openOwnerModal(owner)}
                     onTriggerUpdate={handleTriggerOwnerUpdate}
                     onDelete={(owner) => setOwnerToDelete(owner)}
