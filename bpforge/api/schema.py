@@ -170,6 +170,7 @@ class OwnerPublicSchema(Schema):
     blueprint_count: int = 0
     bpo_count: int = 0
     bpc_count: int = 0
+    has_errors: bool = False
 
 
 class BlueprintItemSchema(Schema):

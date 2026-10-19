@@ -776,6 +776,11 @@ export interface components {
              * @default 0
              */
             bpc_count: number;
+            /**
+             * Has Errors
+             * @default false
+             */
+            has_errors: boolean;
         };
         /**
          * BlueprintItemSchema

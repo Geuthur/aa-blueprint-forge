@@ -15,6 +15,7 @@ describe('OwnerCard Component', () => {
     blueprint_count: 12,
     bpo_count: 5,
     bpc_count: 7,
+    has_errors: false,
   };
 
   const mockMatchingBlueprints: BlueprintItem[] = [
@@ -127,5 +128,22 @@ describe('OwnerCard Component', () => {
 
     // Expected Result
     expect(onSelect).toHaveBeenCalledWith(mockOwner, 'bpc');
+  });
+
+  it('renders pulsing warning indicator on Browse Blueprints button when owner has sync errors', () => {
+    // Test Data
+    const onSelect = vi.fn();
+    const ownerWithErrors = {
+      ...mockOwner,
+      has_errors: true,
+    };
+
+    // Test Action
+    render(<OwnerCard owner={ownerWithErrors} onSelect={onSelect} />);
+
+    // Expected Result
+    const browseButton = screen.getByRole('button', { name: /browse blueprints/i });
+    expect(browseButton).toHaveClass('aa-btn-pulse');
+    expect(browseButton.querySelector('.aa-pending-dot-container')).toBeInTheDocument();
   });
 });

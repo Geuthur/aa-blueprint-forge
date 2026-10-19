@@ -66,6 +66,13 @@ class ApiEndpoints:
                 )
             )
 
+            error_owner_ids = set(
+                Owner.objects.filter(
+                    Q(bpforge_update_status__is_success=False)
+                    | Q(bpforge_update_status__has_token_error=True)
+                ).values_list("id", flat=True)
+            )
+
             result: list[schema.OwnerPublicSchema] = []
             for owner in owners:
                 if owner.corporation:
@@ -119,6 +126,7 @@ class ApiEndpoints:
                         blueprint_count=effective_bpo + effective_bpc,
                         bpo_count=effective_bpo,
                         bpc_count=effective_bpc,
+                        has_errors=(owner.id in error_owner_ids),
                     )
                 )
 

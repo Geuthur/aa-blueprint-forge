@@ -193,10 +193,20 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
 
       <Card.Footer className="bg-transparent border-0 p-3 pt-0">
         <Button
-          variant="primary"
-          className="w-100 d-flex align-items-center justify-content-center gap-2 aa-btn aa-btn-primary"
+          variant={owner.has_errors ? "warning" : "primary"}
+          className={`w-100 d-flex align-items-center justify-content-center gap-2 aa-btn ${
+            owner.has_errors
+              ? "aa-btn-warning aa-btn-pulse text-dark"
+              : "aa-btn-primary"
+          }`}
           onClick={() => onSelect(owner)}
         >
+          {owner.has_errors && (
+            <span className="aa-pending-dot-container me-1">
+              <span className="aa-pending-dot-ping" />
+              <span className="aa-pending-dot-core" />
+            </span>
+          )}
           <ShoppingBag size={16} />
           {t("Browse Blueprints")}
         </Button>
