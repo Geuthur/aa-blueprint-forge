@@ -327,7 +327,6 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
           <Users size={18} className="text-primary" />
           <h2 className="h5 mb-0">{t("All Blueprint Owners")}</h2>
         </div>
-        <span className="badge bg-secondary">{owners?.length || 0}</span>
       </Card.Header>
       <Card.Body>
         {taskFeedback && (

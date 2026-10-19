@@ -1,8 +1,8 @@
 // React
-import React from "react";
+import React, { useState } from "react";
 
 // Third Party
-import { Bell, Check, Save } from "lucide-react";
+import { Bell, Check, ChevronDown, ChevronUp, Save } from "lucide-react";
 import { Alert, Button, Card, Form, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
@@ -42,14 +42,34 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
     onDismissError,
 }) => {
     const { t } = useTranslation();
+    const [showPanel, setShowPanel] = useState(false);
 
     return (
         <Card className="bg-secondary text-light border-0 shadow-sm mb-4">
-            <Card.Header className="d-flex align-items-center gap-2 bg-transparent py-3">
-                <Bell size={18} className="text-primary" />
-                <h2 className="h5 mb-0">{t("Global Notification Groups")}</h2>
+            <Card.Header
+                className={`d-flex align-items-center justify-content-between bg-transparent py-2 ${styles.cursorPointer}`}
+                onClick={() => setShowPanel((prev) => !prev)}
+            >
+                <div className="d-flex align-items-center gap-2">
+                    <Bell size={18} className="text-primary" />
+                    <h2 className="h5 mb-0">{t("Global Notification Groups")}</h2>
+                </div>
+                <Button
+                    variant="link"
+                    size="sm"
+                    className="p-0 text-muted"
+                    aria-label={t("Toggle Notification Groups")}
+                    data-testid="toggle-notification-panel"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setShowPanel((prev) => !prev);
+                    }}
+                >
+                    {showPanel ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </Button>
             </Card.Header>
-            <Card.Body className="m-2">
+            {showPanel && (
+                <Card.Body className="m-2">
                 <p className="text-muted small mb-3">
                     {t(
                         "Members of these Alliance Auth groups will receive notifications for all blueprint orders across the system in addition to the respective shop owners.",
@@ -144,6 +164,7 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
                     </Form>
                 )}
             </Card.Body>
+            )}
         </Card>
     );
 };

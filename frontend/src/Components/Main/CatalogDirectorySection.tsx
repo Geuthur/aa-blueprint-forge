@@ -51,7 +51,7 @@ export const CatalogDirectorySection: React.FC<CatalogDirectorySectionProps> = (
 
   return (
     <section className="d-flex flex-column gap-3">
-      <Card className="bg-secondary text-light border-0 shadow-sm">
+      <Card className="bg-secondary border-0 shadow-sm">
         <Card.Body className="p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
           <div>
             <h4 className="mb-1 fw-bold">{t("Public Blueprint Catalog")}</h4>

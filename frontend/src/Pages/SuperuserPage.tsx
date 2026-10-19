@@ -3,9 +3,19 @@ import React, { useMemo, useState } from "react";
 
 // Third Party
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, ShieldAlert, Trash2 } from "lucide-react";
+import {
+    AlertTriangle,
+    Building2,
+    ChevronDown,
+    ChevronUp,
+    RefreshCw,
+    Shield,
+    ShieldAlert,
+    Trash2,
+    User,
+} from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { Button, Card, CardBody } from "react-bootstrap";
+import { Badge, Button, ButtonGroup, Card, CardBody, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -15,6 +25,7 @@ import {
     loadSuperuserOwnerBlueprints,
     loadSuperuserOwners,
     loadSuperuserSettings,
+    triggerSuperuserGlobalUpdate,
     triggerSuperuserOwnerUpdate,
     updateSuperuserOwner,
     updateSuperuserSettings,
@@ -29,6 +40,7 @@ import { GlobalNotificationSettingsCard } from "@/Components/Superuser/GlobalNot
 import { SuperuserInspectionView } from "@/Components/Superuser/SuperuserInspectionView";
 import { SuperuserOwnerModal } from "@/Components/Superuser/SuperuserOwnerModal";
 import { SuperuserOwnersTable } from "@/Components/Superuser/SuperuserOwnersTable";
+import styles from "@/Styles/modules/Superuser.module.css";
 
 const SuperuserPage: React.FC = () => {
     const { t } = useTranslation();
@@ -60,6 +72,10 @@ const SuperuserPage: React.FC = () => {
         queryKey: queryKeys.SuperuserOwners,
         queryFn: loadSuperuserOwners,
     });
+
+    // Filter and search state
+    const [typeFilter, setTypeFilter] = useState<"all" | "character" | "corporation" | "issues">("all");
+    const [searchTerm, setSearchTerm] = useState("");
 
     // Global settings state
     const [userCreatedGroupIds, setUserCreatedGroupIds] = useState<number[] | null>(null);
@@ -197,6 +213,39 @@ const SuperuserPage: React.FC = () => {
         taskMutation.mutate({ ownerId, forceRefresh });
     };
 
+    // Global Force Refresh & Queue Update Mutation
+    const [showTaskPanel, setShowTaskPanel] = useState(false);
+    const [forceRefreshGlobal, setForceRefreshGlobal] = useState(false);
+    const globalQueueMutation = useMutation({
+        mutationFn: ({
+            target,
+            forceRefresh,
+        }: {
+            target: "characters" | "corporations";
+            forceRefresh: boolean;
+        }) =>
+            triggerSuperuserGlobalUpdate({
+                target,
+                forceRefresh,
+            }),
+        onSuccess: (data) => {
+            setTaskFeedback({
+                variant: "success",
+                message: data.message || t("Global update tasks queued successfully."),
+            });
+            queryClient.invalidateQueries({ queryKey: queryKeys.SuperuserOwners });
+        },
+        onError: (err: unknown) => {
+            setTaskFeedback({
+                variant: "danger",
+                message:
+                    err instanceof Error
+                        ? err.message
+                        : t("Failed to trigger global update tasks."),
+            });
+        },
+    });
+
     // Owner Deletion state & mutation
     const [ownerToDelete, setOwnerToDelete] = useState<OwnerSettingSchema | null>(null);
 
@@ -236,6 +285,43 @@ const SuperuserPage: React.FC = () => {
         [inspectOwnerId, owners]
     );
 
+    // Filter metrics
+    const totalCount = owners?.length ?? 0;
+    const charCount = owners?.filter((o) => !o.is_corporation).length ?? 0;
+    const corpCount = owners?.filter((o) => o.is_corporation).length ?? 0;
+    const issuesCount =
+        owners?.filter((o) => o.has_error || o.status === "error" || o.status === "token_error").length ?? 0;
+
+    // Filtered owners
+    const filteredOwners = useMemo(() => {
+        if (!owners) return [];
+        return owners.filter((owner) => {
+            if (typeFilter === "character" && owner.is_corporation) {
+                return false;
+            }
+            if (typeFilter === "corporation" && !owner.is_corporation) {
+                return false;
+            }
+            if (
+                typeFilter === "issues" &&
+                !owner.has_error &&
+                owner.status !== "error" &&
+                owner.status !== "token_error"
+            ) {
+                return false;
+            }
+            if (searchTerm.trim()) {
+                const query = searchTerm.toLowerCase();
+                const matchesName = owner.name?.toLowerCase().includes(query);
+                const matchesChar = owner.character_name?.toLowerCase().includes(query);
+                const matchesCorp = owner.corporation_name?.toLowerCase().includes(query);
+                const matchesTicker = owner.corporation_ticker?.toLowerCase().includes(query);
+                return Boolean(matchesName || matchesChar || matchesCorp || matchesTicker);
+            }
+            return true;
+        });
+    }, [owners, typeFilter, searchTerm]);
+
     const {
         data: ownerBlueprints = [],
         isLoading: isLoadingOwnerBlueprints,
@@ -273,7 +359,7 @@ const SuperuserPage: React.FC = () => {
         <Card className="bg-dark d-flex flex-column gap-3">
             <CardBody>
                 <header className="d-flex align-items-center gap-3 mb-4">
-                    <div className="p-2 rounded bg-warning-subtle text-warning border border-warning-subtle">
+                    <div className="p-2 rounded bg-danger-subtle text-danger border border-danger-subtle">
                         <ShieldAlert size={28} />
                     </div>
                     <div>
@@ -285,6 +371,72 @@ const SuperuserPage: React.FC = () => {
                         </p>
                     </div>
                 </header>
+
+                {/* Metrics Row */}
+                <Row className="g-3 mt-1 mb-3">
+                    <Col xs={12} sm={6} md={3}>
+                        <Card className="bg-body border-secondary h-100 shadow-sm">
+                            <Card.Body className="p-3 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span className="text-muted small fw-semibold">{t("Total Owners")}</span>
+                                    <h4 className="mb-0 text-light fw-bold">{totalCount}</h4>
+                                </div>
+                                <div className="p-2 rounded-3 bg-secondary bg-opacity-25 text-light">
+                                    <Shield size={24} />
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col xs={12} sm={6} md={3}>
+                        <Card className="bg-body border-secondary h-100 shadow-sm">
+                            <Card.Body className="p-3 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span className="text-muted small fw-semibold">{t("Characters")}</span>
+                                    <h4 className="mb-0 text-primary fw-bold">{charCount}</h4>
+                                </div>
+                                <div className="p-2 rounded-3 bg-primary bg-opacity-10 text-primary">
+                                    <User size={24} />
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col xs={12} sm={6} md={3}>
+                        <Card className="bg-body border-secondary h-100 shadow-sm">
+                            <Card.Body className="p-3 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span className="text-muted small fw-semibold">{t("Corporations")}</span>
+                                    <h4 className="mb-0 text-secondary fw-bold">{corpCount}</h4>
+                                </div>
+                                <div className="p-2 rounded-3 bg-secondary bg-opacity-10 text-secondary">
+                                    <Building2 size={24} />
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col xs={12} sm={6} md={3}>
+                        <Card className="bg-body border-secondary h-100 shadow-sm">
+                            <Card.Body className="p-3 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span className="text-muted small fw-semibold">{t("Sync Issues")}</span>
+                                    <h4 className={`mb-0 fw-bold ${issuesCount > 0 ? "text-danger" : "text-success"}`}>
+                                        {issuesCount}
+                                    </h4>
+                                </div>
+                                <div
+                                    className={`p-2 rounded-3 ${issuesCount > 0
+                                        ? "bg-danger bg-opacity-10 text-danger"
+                                        : "bg-success bg-opacity-10 text-success"
+                                        }`}
+                                >
+                                    {issuesCount > 0 ? <AlertTriangle size={24} /> : <Shield size={24} />}
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
 
                 <GlobalNotificationSettingsCard
                     groups={groups}
@@ -302,8 +454,162 @@ const SuperuserPage: React.FC = () => {
                     onDismissError={() => setGlobalErrorMsg(null)}
                 />
 
+                {/* Global Task Update Panel (Collapsible) */}
+                <Card className="bg-dark border-secondary mb-4 shadow-sm">
+                    <Card.Header
+                        className={`border-secondary d-flex align-items-center justify-content-between py-2 ${styles.cursorPointer}`}
+                        onClick={() => setShowTaskPanel((prev) => !prev)}
+                    >
+                        <div className="d-flex align-items-center gap-2">
+                            <RefreshCw size={16} className="text-primary" />
+                            <span className="fw-semibold text-light">{t("Global Task Administration")}</span>
+                        </div>
+                        <Button
+                            variant="link"
+                            size="sm"
+                            className="p-0 text-muted"
+                            aria-label={t("Toggle Task Administration")}
+                            data-testid="toggle-task-panel"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowTaskPanel((prev) => !prev);
+                            }}
+                        >
+                            {showTaskPanel ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </Button>
+                    </Card.Header>
+
+                    {showTaskPanel && (
+                        <Card.Body className="p-3">
+                            <Form.Group className="mb-3">
+                                <Form.Check
+                                    type="switch"
+                                    id="global-force-refresh"
+                                    label={<span className="small text-muted">{t("Force Refresh ESI")}</span>}
+                                    checked={forceRefreshGlobal}
+                                    onChange={(e) => setForceRefreshGlobal(e.target.checked)}
+                                />
+                            </Form.Group>
+
+                            <Row className="g-3">
+                                <Col md={6}>
+                                    <Card className="bg-dark border-secondary h-100">
+                                        <Card.Header className="border-secondary py-2">
+                                            <h6 className="mb-0 text-light">{t("Characters")}</h6>
+                                        </Card.Header>
+                                        <Card.Body className="d-flex flex-column justify-content-between p-3">
+                                            <p className="text-muted small">
+                                                {t("Queue background tasks to synchronize all active character owners.")}
+                                            </p>
+                                            <Button
+                                                variant="primary"
+                                                size="sm"
+                                                disabled={globalQueueMutation.isPending}
+                                                onClick={() =>
+                                                    globalQueueMutation.mutate({
+                                                        target: "characters",
+                                                        forceRefresh: forceRefreshGlobal,
+                                                    })
+                                                }
+                                                className="w-100 d-flex align-items-center justify-content-center gap-1 aa-btn aa-btn-primary"
+                                                data-testid="update-all-characters-btn"
+                                            >
+                                                {globalQueueMutation.isPending ? (
+                                                    <Spinner size="sm" animation="border" />
+                                                ) : (
+                                                    <User size={14} />
+                                                )}
+                                                {t("Update All Characters")}
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+
+                                <Col md={6}>
+                                    <Card className="bg-dark border-secondary h-100">
+                                        <Card.Header className="border-secondary py-2">
+                                            <h6 className="mb-0 text-light">{t("Corporations")}</h6>
+                                        </Card.Header>
+                                        <Card.Body className="d-flex flex-column justify-content-between p-3">
+                                            <p className="text-muted small">
+                                                {t("Queue background tasks to synchronize all active corporation owners.")}
+                                            </p>
+                                            <Button
+                                                variant="primary"
+                                                size="sm"
+                                                disabled={globalQueueMutation.isPending}
+                                                onClick={() =>
+                                                    globalQueueMutation.mutate({
+                                                        target: "corporations",
+                                                        forceRefresh: forceRefreshGlobal,
+                                                    })
+                                                }
+                                                className="w-100 d-flex align-items-center justify-content-center gap-1 aa-btn aa-btn-primary"
+                                                data-testid="update-all-corporations-btn"
+                                            >
+                                                {globalQueueMutation.isPending ? (
+                                                    <Spinner size="sm" animation="border" />
+                                                ) : (
+                                                    <Building2 size={14} />
+                                                )}
+                                                {t("Update All Corporations")}
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    )}
+                </Card>
+
+                {/* Filter and Search Bar */}
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4 mb-2">
+                    <ButtonGroup size="sm">
+                        <Button
+                            variant={typeFilter === "all" ? "primary" : "secondary"}
+                            onClick={() => setTypeFilter("all")}
+                            className={`aa-btn ${typeFilter === "all" ? "aa-btn-primary" : "aa-btn-secondary"}`}
+                        >
+                            {t("All")} <Badge bg="secondary" className="ms-1">{totalCount}</Badge>
+                        </Button>
+                        <Button
+                            variant={typeFilter === "character" ? "primary" : "secondary"}
+                            onClick={() => setTypeFilter("character")}
+                            className={`aa-btn ${typeFilter === "character" ? "aa-btn-primary" : "aa-btn-secondary"}`}
+                        >
+                            {t("Characters")} <Badge bg="secondary" className="ms-1">{charCount}</Badge>
+                        </Button>
+                        <Button
+                            variant={typeFilter === "corporation" ? "primary" : "secondary"}
+                            onClick={() => setTypeFilter("corporation")}
+                            className={`aa-btn ${typeFilter === "corporation" ? "aa-btn-primary" : "aa-btn-secondary"}`}
+                        >
+                            {t("Corporations")} <Badge bg="secondary" className="ms-1">{corpCount}</Badge>
+                        </Button>
+                        <Button
+                            variant={typeFilter === "issues" ? "primary" : "secondary"}
+                            onClick={() => setTypeFilter("issues")}
+                            className={`aa-btn ${typeFilter === "issues" ? "aa-btn-primary" : "aa-btn-secondary"}`}
+                        >
+                            {t("Issues")} <Badge bg="secondary" className="ms-1">{issuesCount}</Badge>
+                        </Button>
+                    </ButtonGroup>
+
+                    <div style={{ maxWidth: "300px", width: "100%" }}>
+                        <Form.Control
+                            type="search"
+                            placeholder={t("Search by name or corporation...")}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            size="sm"
+                            className="bg-dark text-light border-secondary"
+                            aria-label={t("Search owners")}
+                        />
+                    </div>
+                </div>
+
                 <SuperuserOwnersTable
-                    owners={owners}
+                    owners={filteredOwners}
                     isLoading={isLoadingOwners}
                     isError={isErrorOwners}
                     updatingOwnerId={updatingOwnerId}

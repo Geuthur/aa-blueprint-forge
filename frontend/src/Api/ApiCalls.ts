@@ -346,5 +346,24 @@ export async function deleteSuperuserOwner(
   return data;
 }
 
+export async function triggerSuperuserGlobalUpdate(params: {
+  target: "all" | "characters" | "corporations";
+  forceRefresh?: boolean;
+}): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
+  const { data, error } = await apiClient.POST(
+    `/${ProjectName}/api/superuser/tasks/queue/`,
+    {
+      body: {
+        target: params.target,
+        force_refresh: params.forceRefresh ?? false,
+      },
+    },
+  );
+  if (error || !data) {
+    throw new Error("Failed to trigger global update task");
+  }
+  return data;
+}
+
 
 

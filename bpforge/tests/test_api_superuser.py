@@ -350,3 +350,49 @@ class TestApiSuperuser(AuthTestCase):
 
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    @patch("bpforge.api.superuser.update_all_blueprints.delay")
+    def test_trigger_global_update_should_queue_task_for_superuser(self, mock_delay):
+        # Test Data
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.force_login(self.user)
+
+        # Test Action 1: Target characters with force_refresh
+        response_char = self.client.post(
+            "/bpforge/api/superuser/tasks/queue/",
+            data=json.dumps({"target": "characters", "force_refresh": True}),
+            content_type="application/json",
+        )
+
+        # Expected Result 1
+        self.assertEqual(response_char.status_code, HTTPStatus.OK)
+        self.assertTrue(response_char.json()["success"])
+        mock_delay.assert_called_with(force_refresh=True, target="characters")
+
+        # Test Action 2: Target corporations
+        response_corp = self.client.post(
+            "/bpforge/api/superuser/tasks/queue/",
+            data=json.dumps({"target": "corporations", "force_refresh": False}),
+            content_type="application/json",
+        )
+
+        # Expected Result 2
+        self.assertEqual(response_corp.status_code, HTTPStatus.OK)
+        mock_delay.assert_called_with(force_refresh=False, target="corporations")
+
+    def test_trigger_global_update_should_return_forbidden_for_non_superuser(self):
+        # Test Data
+        self.user.is_superuser = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.post(
+            "/bpforge/api/superuser/tasks/queue/",
+            data=json.dumps({"target": "characters", "force_refresh": False}),
+            content_type="application/json",
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)

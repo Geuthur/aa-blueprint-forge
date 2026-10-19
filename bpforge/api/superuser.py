@@ -17,12 +17,13 @@ from bpforge.api import schema
 from bpforge.api.general import _build_owner_setting_schema
 from bpforge.models.blueprint import Blueprint, Owner
 from bpforge.models.general import GeneralNotificationSettings
-from bpforge.tasks import update_owner
+from bpforge.tasks import update_all_blueprints, update_owner
 
 
 class ApiEndpoints:
     tags = ["Superuser"]
 
+    # pylint: disable=too-many-statements
     def __init__(self, api: NinjaAPI):
         @api.get(
             "superuser/groups/",
@@ -312,4 +313,41 @@ class ApiEndpoints:
                 message=_(
                     f"Owner {owner_name} and all associated data deleted successfully."
                 ),
+            )
+
+        @api.post(
+            "superuser/tasks/queue/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+            },
+            tags=self.tags,
+            summary="Trigger global update tasks for all owners or characters/corporations",
+        )
+        def trigger_global_update(
+            request, payload: schema.SuperuserGlobalTaskRequest | None = None
+        ):
+            if not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
+
+            target = payload.target if payload else "all"
+            force_refresh = payload.force_refresh if payload else False
+
+            update_all_blueprints.delay(
+                force_refresh=force_refresh,
+                target=target,
+            )
+
+            if target == "characters":
+                msg = _("Queued Update All Characters")
+            elif target == "corporations":
+                msg = _("Queued Update All Corporations")
+            else:
+                msg = _("Queued Update All Owners")
+
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=msg,
             )

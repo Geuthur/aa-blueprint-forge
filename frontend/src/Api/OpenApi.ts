@@ -353,6 +353,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/bpforge/api/superuser/tasks/queue/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Trigger global update tasks for all owners or characters/corporations */
+        post: operations["bpforge_api_superuser_trigger_global_update"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -944,6 +961,22 @@ export interface components {
          * @description Payload to trigger update_owner Celery task.
          */
         SuperuserUpdateOwnerTaskRequest: {
+            /**
+             * Force Refresh
+             * @default false
+             */
+            force_refresh: boolean;
+        };
+        /**
+         * SuperuserGlobalTaskRequest
+         * @description Payload to trigger global owner update task.
+         */
+        SuperuserGlobalTaskRequest: {
+            /**
+             * Target
+             * @default all
+             */
+            target: string;
             /**
              * Force Refresh
              * @default false
@@ -1946,6 +1979,41 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    bpforge_api_superuser_trigger_global_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SuperuserGlobalTaskRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskTriggerResponseSchema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

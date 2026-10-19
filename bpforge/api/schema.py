@@ -323,6 +323,13 @@ class SuperuserUpdateOwnerTaskRequest(Schema):
     force_refresh: bool = False
 
 
+class SuperuserGlobalTaskRequest(Schema):
+    """Payload to trigger global owner update task."""
+
+    target: str = "all"
+    force_refresh: bool = False
+
+
 class TaskTriggerResponseSchema(Schema):
     """Response schema for triggered async tasks."""
 

@@ -1417,6 +1417,62 @@
           }
         ]
       }
+    },
+    "/bpforge/api/superuser/tasks/queue/": {
+      "post": {
+        "operationId": "bpforge_api_superuser_trigger_global_update",
+        "summary": "Trigger global update tasks for all owners or characters/corporations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTriggerResponseSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Superuser"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/SuperuserGlobalTaskRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "required": false
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -2743,6 +2799,23 @@
           }
         },
         "title": "SuperuserUpdateOwnerTaskRequest",
+        "type": "object"
+      },
+      "SuperuserGlobalTaskRequest": {
+        "description": "Payload to trigger global owner update task.",
+        "properties": {
+          "target": {
+            "default": "all",
+            "title": "Target",
+            "type": "string"
+          },
+          "force_refresh": {
+            "default": false,
+            "title": "Force Refresh",
+            "type": "boolean"
+          }
+        },
+        "title": "SuperuserGlobalTaskRequest",
         "type": "object"
       }
     },

@@ -39,10 +39,16 @@ TASK_DEFAULTS_ONCE_OWNER = {
 
 
 @shared_task(**TASK_DEFAULTS_ONCE)
-def update_all_blueprints(force_refresh=False):
-    """Fetch all blueprints for all owners from ESI."""
+def update_all_blueprints(force_refresh=False, target="all"):
+    """Fetch all blueprints for all owners or filtered by target from ESI."""
+    qs = Owner.objects.all()
+    if target == "characters":
+        qs = qs.filter(character__isnull=False)
+    elif target == "corporations":
+        qs = qs.filter(corporation__isnull=False)
+
     queued_pks = set()
-    for owner in Owner.objects.all():
+    for owner in qs:
         result = update_owner.apply_async(
             kwargs={
                 "owner_pk": owner.pk,
@@ -50,7 +56,7 @@ def update_all_blueprints(force_refresh=False):
             },
         )
         queued_pks.add(result.id)
-    logger.info("Queued %s Owner Updates", len(queued_pks))
+    logger.info("Queued %s Owner Updates (target=%s)", len(queued_pks), target)
 
 
 @shared_task(**TASK_DEFAULTS_ONCE_OWNER)

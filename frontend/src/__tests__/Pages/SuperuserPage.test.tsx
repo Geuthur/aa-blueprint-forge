@@ -27,6 +27,7 @@ vi.mock("@/Api/ApiCalls", () => ({
   updateSuperuserOwner: vi.fn(),
   loadSuperuserOwnerBlueprints: vi.fn(),
   triggerSuperuserOwnerUpdate: vi.fn(),
+  triggerSuperuserGlobalUpdate: vi.fn(),
 }));
 
 const renderPage = () => {
@@ -75,6 +76,10 @@ describe("SuperuserPage", () => {
     // Expected Result
     expect(await screen.findByText("Superuser Administration")).toBeInTheDocument();
     expect(screen.getByText("Global Notification Groups")).toBeInTheDocument();
+
+    // Expand notification panel
+    const toggleNotificationBtn = screen.getByTestId("toggle-notification-panel");
+    await user.click(toggleNotificationBtn);
 
     const group1Checkboxes = await screen.findAllByLabelText("Industry Leaders");
     const group1Checkbox = group1Checkboxes[0];
@@ -427,6 +432,139 @@ describe("SuperuserPage", () => {
     expect(
       await screen.findByText("Owner Enterprise Industrialists and all associated data deleted successfully.")
     ).toBeInTheDocument();
+  });
+
+  it("should filter owners by search term and filter button group", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    const mockMultiOwners = [
+      {
+        id: 1,
+        name: "Character Crafter",
+        is_corporation: false,
+        character_id: 101,
+        character_name: "Character Crafter",
+        corporation_id: 98000001,
+        corporation_name: "Crafter Corp",
+        corporation_ticker: "CRFT",
+        status: "ok",
+        has_error: false,
+        sections: [],
+        is_public: true,
+        public_type: "all",
+        selective_bpo_enabled: false,
+        blueprint_count: 5,
+        bpo_count: 3,
+        bpc_count: 2,
+        notify_order_created_group_ids: [],
+        notify_order_status_group_ids: [],
+      },
+      {
+        id: 2,
+        name: "Broken Corp",
+        is_corporation: true,
+        corporation_id: 98000002,
+        corporation_name: "Broken Corp",
+        corporation_ticker: "BRKN",
+        status: "error",
+        has_error: true,
+        error_message: "Token expired",
+        sections: [],
+        is_public: false,
+        public_type: "all",
+        selective_bpo_enabled: false,
+        blueprint_count: 0,
+        bpo_count: 0,
+        bpc_count: 0,
+        notify_order_created_group_ids: [],
+        notify_order_status_group_ids: [],
+      },
+    ];
+
+    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+      order_created_group_ids: [],
+      order_status_group_ids: [],
+    });
+    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue(mockMultiOwners);
+
+    // Test Action
+    renderPage();
+    expect(await screen.findByText("Character Crafter")).toBeInTheDocument();
+    expect(screen.getByText("Broken Corp")).toBeInTheDocument();
+
+    // Search filter
+    const searchInput = screen.getByRole("searchbox", { name: "Search owners" });
+    await user.type(searchInput, "Broken");
+
+    // Expected Result
+    expect(screen.getByText("Broken Corp")).toBeInTheDocument();
+    expect(screen.queryByText("Character Crafter")).not.toBeInTheDocument();
+
+    // Clear search and click Issues filter
+    await user.clear(searchInput);
+    const issuesFilterBtn = screen.getByRole("button", { name: /Issues/i });
+    await user.click(issuesFilterBtn);
+
+    // Expected Result
+    expect(screen.getByText("Broken Corp")).toBeInTheDocument();
+    expect(screen.queryByText("Character Crafter")).not.toBeInTheDocument();
+  });
+
+  it("should trigger global update tasks for characters and corporations with force refresh", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+      order_created_group_ids: [],
+      order_status_group_ids: [],
+    });
+    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue([]);
+    vi.mocked(ApiCalls.triggerSuperuserGlobalUpdate).mockResolvedValue({
+      success: true,
+      message: "Queued Update All Characters",
+    });
+
+    // Test Action
+    renderPage();
+    expect(await screen.findByText("Global Task Administration")).toBeInTheDocument();
+    expect(screen.getByText("Sync Issues")).toBeInTheDocument();
+
+    // Expand collapsible panel
+    const togglePanelBtn = screen.getByTestId("toggle-task-panel");
+    await user.click(togglePanelBtn);
+
+    // Toggle switch
+    const switchEl = screen.getByLabelText(/Force Refresh ESI/i);
+    await user.click(switchEl);
+
+    // Click Update All Characters
+    const updateCharsBtn = screen.getByTestId("update-all-characters-btn");
+    await user.click(updateCharsBtn);
+
+    // Expected Result 1
+    await waitFor(() => {
+      expect(ApiCalls.triggerSuperuserGlobalUpdate).toHaveBeenCalledWith({
+        target: "characters",
+        forceRefresh: true,
+      });
+    });
+
+    // Click Update All Corporations
+    vi.mocked(ApiCalls.triggerSuperuserGlobalUpdate).mockResolvedValue({
+      success: true,
+      message: "Queued Update All Corporations",
+    });
+    const updateCorpsBtn = screen.getByTestId("update-all-corporations-btn");
+    await user.click(updateCorpsBtn);
+
+    // Expected Result 2
+    await waitFor(() => {
+      expect(ApiCalls.triggerSuperuserGlobalUpdate).toHaveBeenCalledWith({
+        target: "corporations",
+        forceRefresh: true,
+      });
+    });
   });
 });
 
