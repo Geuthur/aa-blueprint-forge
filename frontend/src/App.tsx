@@ -13,9 +13,9 @@ import { initReactI18next } from "react-i18next";
 import { AppName, ProjectName } from "@/configuration";
 import { ErrorPage } from "@/Pages/404";
 import AuthBase from "@/Pages/Base";
-import OrdersPage from "@/Pages/OrdersPage";
 import MainPage from "@/Pages/MainPage";
 import MyBlueprintsPage from "@/Pages/MyBlueprintsPage";
+import OrdersPage from "@/Pages/OrdersPage";
 import SettingsPage from "@/Pages/SettingsPage";
 import SuperuserPage from "@/Pages/SuperuserPage";
 
