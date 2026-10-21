@@ -100,7 +100,8 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete owner and associated data from blueprint forge */
+        delete: operations["bpforge_api_general_delete_owner_settings"];
         options?: never;
         head?: never;
         /** Update public status of an owner */
@@ -119,6 +120,40 @@ export interface paths {
         put?: never;
         /** Update offered BPOs for an owner */
         post: operations["bpforge_api_general_update_owner_bpos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/bpforge/api/settings/owners/update-all/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Trigger update tasks for all owners of the current user */
+        post: operations["bpforge_api_general_trigger_update_all_user_owners"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/bpforge/api/settings/owners/{owner_id}/update/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Trigger update task for a specific owner in settings */
+        post: operations["bpforge_api_general_trigger_owner_update_settings"];
         delete?: never;
         options?: never;
         head?: never;
@@ -396,6 +431,11 @@ export interface components {
              * @default false
              */
             is_external: boolean;
+            /**
+             * Has Errors
+             * @default false
+             */
+            has_errors: boolean;
         };
         /**
          * MenuModalSchema
@@ -709,6 +749,22 @@ export interface components {
             selective_bpo_enabled?: boolean | null;
         };
         /**
+         * TaskTriggerResponseSchema
+         * @description Response schema for triggered async tasks.
+         */
+        TaskTriggerResponseSchema: {
+            /**
+             * Success
+             * @default true
+             */
+            success: boolean;
+            /**
+             * Message
+             * @default
+             */
+            message: string;
+        };
+        /**
          * OwnerBpoItemSchema
          * @description BPO item representation for selective offering in settings.
          */
@@ -743,6 +799,17 @@ export interface components {
         OwnerBpoSelectionUpdateRequest: {
             /** Offered Item Ids */
             offered_item_ids: number[];
+        };
+        /**
+         * OwnerUpdateRequest
+         * @description Payload to trigger update_owner Celery task.
+         */
+        OwnerUpdateRequest: {
+            /**
+             * Force Refresh
+             * @default false
+             */
+            force_refresh: boolean;
         };
         /**
          * OwnerPublicSchema
@@ -900,22 +967,6 @@ export interface components {
             quantity: number;
             /** Runs */
             runs?: number | null;
-        };
-        /**
-         * TaskTriggerResponseSchema
-         * @description Response schema for triggered async tasks.
-         */
-        TaskTriggerResponseSchema: {
-            /**
-             * Success
-             * @default true
-             */
-            success: boolean;
-            /**
-             * Message
-             * @default
-             */
-            message: string;
         };
         /**
          * OrderStatusUpdateRequest
@@ -1176,6 +1227,50 @@ export interface operations {
             };
         };
     };
+    bpforge_api_general_delete_owner_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                owner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskTriggerResponseSchema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     bpforge_api_general_update_owner_setting: {
         parameters: {
             query?: never;
@@ -1292,6 +1387,89 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    bpforge_api_general_trigger_update_all_user_owners: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["OwnerUpdateRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskTriggerResponseSchema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    bpforge_api_general_trigger_owner_update_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                owner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["OwnerUpdateRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskTriggerResponseSchema"];
                 };
             };
             /** @description Forbidden */

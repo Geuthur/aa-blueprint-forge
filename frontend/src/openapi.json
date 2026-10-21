@@ -313,6 +313,65 @@
             "SessionAuth": []
           }
         ]
+      },
+      "delete": {
+        "operationId": "bpforge_api_general_delete_owner_settings",
+        "summary": "Delete owner and associated data from blueprint forge",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_id",
+            "schema": {
+              "title": "Owner Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTriggerResponseSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
       }
     },
     "/bpforge/api/settings/owners/{owner_id}/bpos/": {
@@ -443,6 +502,140 @@
             }
           },
           "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/settings/owners/update-all/": {
+      "post": {
+        "operationId": "bpforge_api_general_trigger_update_all_user_owners",
+        "summary": "Trigger update tasks for all owners of the current user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTriggerResponseSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/OwnerUpdateRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "required": false
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/bpforge/api/settings/owners/{owner_id}/update/": {
+      "post": {
+        "operationId": "bpforge_api_general_trigger_owner_update_settings",
+        "summary": "Trigger update task for a specific owner in settings",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "owner_id",
+            "schema": {
+              "title": "Owner Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskTriggerResponseSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "General"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/OwnerUpdateRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "required": false
         },
         "security": [
           {
@@ -1493,6 +1686,11 @@
             "default": false,
             "title": "Is External",
             "type": "boolean"
+          },
+          "has_errors": {
+            "default": false,
+            "title": "Has Errors",
+            "type": "boolean"
           }
         },
         "required": [
@@ -2197,6 +2395,23 @@
         "title": "OwnerSettingUpdateRequest",
         "type": "object"
       },
+      "TaskTriggerResponseSchema": {
+        "description": "Response schema for triggered async tasks.",
+        "properties": {
+          "success": {
+            "default": true,
+            "title": "Success",
+            "type": "boolean"
+          },
+          "message": {
+            "default": "",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "title": "TaskTriggerResponseSchema",
+        "type": "object"
+      },
       "OwnerBpoItemSchema": {
         "description": "BPO item representation for selective offering in settings.",
         "properties": {
@@ -2273,6 +2488,18 @@
           "offered_item_ids"
         ],
         "title": "OwnerBpoSelectionUpdateRequest",
+        "type": "object"
+      },
+      "OwnerUpdateRequest": {
+        "description": "Payload to trigger update_owner Celery task.",
+        "properties": {
+          "force_refresh": {
+            "default": false,
+            "title": "Force Refresh",
+            "type": "boolean"
+          }
+        },
+        "title": "OwnerUpdateRequest",
         "type": "object"
       },
       "OwnerPublicSchema": {
@@ -2649,23 +2876,6 @@
           "blueprint_id"
         ],
         "title": "OrderItemCreateSchema",
-        "type": "object"
-      },
-      "TaskTriggerResponseSchema": {
-        "description": "Response schema for triggered async tasks.",
-        "properties": {
-          "success": {
-            "default": true,
-            "title": "Success",
-            "type": "boolean"
-          },
-          "message": {
-            "default": "",
-            "title": "Message",
-            "type": "string"
-          }
-        },
-        "title": "TaskTriggerResponseSchema",
         "type": "object"
       },
       "OrderStatusUpdateRequest": {

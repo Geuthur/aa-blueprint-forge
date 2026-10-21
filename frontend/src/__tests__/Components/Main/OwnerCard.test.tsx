@@ -130,7 +130,7 @@ describe('OwnerCard Component', () => {
     expect(onSelect).toHaveBeenCalledWith(mockOwner, 'bpc');
   });
 
-  it('renders pulsing warning indicator on Browse Blueprints button when owner has sync errors', () => {
+  it('does not render pulsing indicator on Browse Blueprints button on overview even when owner has sync errors', () => {
     // Test Data
     const onSelect = vi.fn();
     const ownerWithErrors = {
@@ -143,7 +143,7 @@ describe('OwnerCard Component', () => {
 
     // Expected Result
     const browseButton = screen.getByRole('button', { name: /browse blueprints/i });
-    expect(browseButton).toHaveClass('aa-btn-pulse');
-    expect(browseButton.querySelector('.aa-pending-dot-container')).toBeInTheDocument();
+    expect(browseButton).not.toHaveClass('aa-btn-pulse');
+    expect(browseButton.querySelector('.aa-pending-dot-container')).toBeNull();
   });
 });

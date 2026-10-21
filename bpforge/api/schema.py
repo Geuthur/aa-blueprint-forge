@@ -120,6 +120,7 @@ class MenuLink(Schema):
     name: str
     link: str = ""
     is_external: bool = False
+    has_errors: bool = False
 
 
 class MenuCategory(MenuLink):
@@ -316,6 +317,12 @@ class SuperuserOwnerUpdateRequest(Schema):
     selective_bpo_enabled: bool | None = None
     notify_order_created_group_ids: list[int] | None = None
     notify_order_status_group_ids: list[int] | None = None
+
+
+class OwnerUpdateRequest(Schema):
+    """Payload to trigger update_owner Celery task."""
+
+    force_refresh: bool = False
 
 
 class SuperuserUpdateOwnerTaskRequest(Schema):

@@ -1,11 +1,13 @@
 # Standard Library
 import json
 from http import HTTPStatus
+from unittest.mock import patch
 
 # Django
 from django.urls import reverse
 
 # AA Blueprint Forge
+from bpforge.models.blueprint import Owner
 from bpforge.models.helpers.update_manager import UpdateSection
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
@@ -14,6 +16,8 @@ from bpforge.tests.testdata.bpforge import (
     OwnerFactory,
     OwnerUpdateStatusFactory,
 )
+from bpforge.tests.testdata.factory import EveCharacterFactory
+from bpforge.tests.testdata.utils import add_character_to_user
 
 
 class TestApiGeneral(AuthTestCase):
@@ -250,5 +254,91 @@ class TestApiGeneral(AuthTestCase):
             (item for item in data if item["character_id"] == main_char.character_id),
             None,
         )
-        self.assertIsNotNone(char_entry)
         self.assertEqual(char_entry["character_name"], main_char.character_name)
+
+    @patch("bpforge.api.general.update_owner.delay")
+    def test_trigger_owner_update_settings_should_queue_task(self, mock_delay):
+        # Test Data
+        self.client.force_login(self.user)
+        owner = OwnerFactory(user=self.user)
+
+        # Test Action
+        response = self.client.post(
+            f"/bpforge/api/settings/owners/{owner.id}/update/",
+            data=json.dumps({"force_refresh": True}),
+            content_type="application/json",
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        data = response.json()
+        self.assertTrue(data["success"])
+        mock_delay.assert_called_once_with(owner_pk=owner.pk, force_refresh=True)
+
+    def test_trigger_owner_update_settings_for_other_user_should_return_forbidden(
+        self,
+    ):
+        # Test Data
+        self.client.force_login(self.user)
+        other_user = UserMainFactory()
+        owner_other = OwnerFactory(user=other_user)
+
+        # Test Action
+        response = self.client.post(
+            f"/bpforge/api/settings/owners/{owner_other.id}/update/",
+            data=json.dumps({}),
+            content_type="application/json",
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    @patch("bpforge.api.general.update_owner.delay")
+    def test_trigger_update_all_user_owners_should_queue_tasks(self, mock_delay):
+        # Test Data
+        self.client.force_login(self.user)
+        OwnerFactory(user=self.user)
+        alt_ownership = add_character_to_user(
+            user=self.user, character=EveCharacterFactory(), is_main=False
+        )
+        OwnerFactory(user=self.user, character=alt_ownership)
+        other_user = UserMainFactory()
+        OwnerFactory(user=other_user)
+
+        # Test Action
+        response = self.client.post(
+            "/bpforge/api/settings/owners/update-all/",
+            data=json.dumps({"force_refresh": False}),
+            content_type="application/json",
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        data = response.json()
+        self.assertTrue(data["success"])
+        self.assertGreaterEqual(mock_delay.call_count, 2)
+
+    def test_delete_owner_settings_should_delete_owner(self):
+        # Test Data
+        self.client.force_login(self.user)
+        owner = OwnerFactory(user=self.user)
+        owner_id = owner.id
+
+        # Test Action
+        response = self.client.delete(f"/bpforge/api/settings/owners/{owner_id}/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertFalse(Owner.objects.filter(id=owner_id).exists())
+
+    def test_delete_owner_settings_for_other_user_should_return_forbidden(self):
+        # Test Data
+        self.client.force_login(self.user)
+        other_user = UserMainFactory()
+        owner_other = OwnerFactory(user=other_user)
+
+        # Test Action
+        response = self.client.delete(f"/bpforge/api/settings/owners/{owner_other.id}/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)

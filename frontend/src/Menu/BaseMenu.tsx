@@ -94,14 +94,14 @@ export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPa
         staleTime: 15000,
     });
 
-    // Has issue if any owner's update status is not ok or has_error is true
+    // Has issue if any owner's update status has error or token_error
     const hasStatusIssue = Boolean(
-        owners &&
+        (owners &&
         owners.length > 0 &&
         owners.some((o) => {
             const status = (o.status || "").toLowerCase();
-            return status !== "ok" || Boolean(o.has_error);
-        })
+            return status === "error" || status === "token_error" || Boolean(o.has_error);
+        })) || Boolean(link.has_errors)
     );
 
     return (
@@ -115,6 +115,12 @@ export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPa
                 className={hasStatusIssue ? "aa-order-nav-pulse" : ""}
                 data-testid="settings-nav-link"
             >
+                {hasStatusIssue && (
+                    <span className="aa-pending-dot-container me-1" aria-hidden="true">
+                        <span className="aa-danger-dot-ping" />
+                        <span className="aa-danger-dot-core" />
+                    </span>
+                )}
                 {t(link.name)}
             </Nav.Link>
         </Nav.Item>

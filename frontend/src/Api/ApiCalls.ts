@@ -76,6 +76,61 @@ export async function updateOwnerSetting(params: {
   return data;
 }
 
+export async function triggerOwnerUpdate(
+  ownerId: number,
+  forceRefresh: boolean = false,
+): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
+  const { data, error } = await apiClient.POST(
+    `/${ProjectName}/api/settings/owners/{owner_id}/update/`,
+    {
+      params: {
+        path: { owner_id: ownerId },
+      },
+      body: {
+        force_refresh: forceRefresh,
+      },
+    },
+  );
+  if (error || !data) {
+    throw new Error("Failed to trigger owner update task");
+  }
+  return data;
+}
+
+export async function deleteOwner(
+  ownerId: number,
+): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
+  const { data, error } = await apiClient.DELETE(
+    `/${ProjectName}/api/settings/owners/{owner_id}/`,
+    {
+      params: {
+        path: { owner_id: ownerId },
+      },
+    },
+  );
+  if (error || !data) {
+    throw new Error("Failed to delete owner");
+  }
+  return data;
+}
+
+export async function triggerUpdateAllUserOwners(
+  forceRefresh: boolean = false,
+): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
+  const { data, error } = await apiClient.POST(
+    `/${ProjectName}/api/settings/owners/update-all/`,
+    {
+      body: {
+        force_refresh: forceRefresh,
+      },
+    },
+  );
+  if (error || !data) {
+    throw new Error("Failed to trigger update all owners");
+  }
+  return data;
+}
+
 export async function loadPublicCatalogs(): Promise<components["schemas"]["OwnerPublicSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/blueprints/`);
   if (error || !data) {

@@ -24,6 +24,7 @@ from bpforge.models.general import (
     user_is_global_order_manager,
 )
 from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.tasks import update_owner
 
 
 # pylint: disable=too-many-locals, too-many-statements
@@ -185,14 +186,30 @@ class ApiEndpoints:
             tags=self.tags,
             summary="Get AA Blueprint Shop navigation menu",
         )
-        def get_menu(request):  # pylint: disable=unused-argument
+        def get_menu(request):
+            has_errors = False
+            if request.user.is_authenticated:
+                user_owners = Owner.objects.filter(user=request.user)
+                for o in user_owners:
+                    if o.bpforge_update_status.filter(
+                        Q(has_token_error=True) | Q(is_success=False)
+                    ).exists():
+                        has_errors = True
+                        break
+
             left_menu: list[schema.MenuLink] = []
             left_menu.append(schema.MenuLink(name=_("Overview"), link="/overview/"))
             left_menu.append(
                 schema.MenuLink(name=_("My Blueprints"), link="/my-blueprints/")
             )
             left_menu.append(schema.MenuLink(name=_("Orders"), link="/orders/"))
-            left_menu.append(schema.MenuLink(name=_("Settings"), link="/settings/"))
+            left_menu.append(
+                schema.MenuLink(
+                    name=_("Settings"),
+                    link="/settings/",
+                    has_errors=has_errors,
+                )
+            )
 
             right_menu: list[schema.MenuLink] = []
             if request.user.has_perm("bpforge.basic_access"):
@@ -546,3 +563,102 @@ class ApiEndpoints:
                 bpos.filter(item_id__in=to_disable_ids).update(is_offered=False)
 
             return HTTPStatus.OK, {"success": True, "count": len(offered_set)}
+
+        @api.post(
+            "settings/owners/update-all/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+            },
+            tags=self.tags,
+            summary="Trigger update tasks for all owners of the current user",
+        )
+        def trigger_update_all_user_owners(
+            request,
+            payload: schema.OwnerUpdateRequest | None = None,
+        ):
+            if not request.user.has_perm("bpforge.basic_access"):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            force_refresh = payload.force_refresh if payload else False
+            owners = Owner.objects.filter(user=request.user)
+            count = 0
+            for owner in owners:
+                update_owner.delay(owner_pk=owner.pk, force_refresh=force_refresh)
+                count += 1
+
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=_("Queued updates for %(count)d owner(s).") % {"count": count},
+            )
+
+        @api.post(
+            "settings/owners/{int:owner_id}/update/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.NOT_FOUND: dict,
+            },
+            tags=self.tags,
+            summary="Trigger update task for a specific owner in settings",
+        )
+        def trigger_owner_update_settings(
+            request,
+            owner_id: int,
+            payload: schema.OwnerUpdateRequest | None = None,
+        ):
+            if not request.user.has_perm("bpforge.basic_access"):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            owner = get_object_or_404(
+                Owner.objects.select_related("character__character", "corporation"),
+                id=owner_id,
+            )
+            is_owner = owner.user == request.user
+            is_admin = request.user.has_perm("bpforge.full_access")
+            if not (is_owner or is_admin):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            force_refresh = payload.force_refresh if payload else False
+            update_owner.delay(owner_pk=owner.pk, force_refresh=force_refresh)
+
+            owner_name = owner.name
+
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=_(
+                    f"Update task queued for {owner_name} (force_refresh={force_refresh})."
+                ),
+            )
+
+        @api.delete(
+            "settings/owners/{int:owner_id}/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.NOT_FOUND: dict,
+            },
+            tags=self.tags,
+            summary="Delete owner and associated data from blueprint forge",
+        )
+        def delete_owner_settings(request, owner_id: int):
+            if not request.user.has_perm("bpforge.basic_access"):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            owner = get_object_or_404(
+                Owner.objects.select_related("character__character", "corporation"),
+                id=owner_id,
+            )
+            is_owner = owner.user == request.user
+            is_admin = request.user.has_perm("bpforge.full_access")
+            if not (is_owner or is_admin):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            owner_name = owner.name
+            owner.delete()
+
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=_("Owner %(name)s and associated data deleted.")
+                % {"name": owner_name},
+            )

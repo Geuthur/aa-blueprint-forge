@@ -185,6 +185,7 @@ describe('AuthLeftMenu', () => {
         const settingsLink = await screen.findByTestId('settings-nav-link');
         expect(settingsLink).toBeDefined();
         await waitFor(() => {
+            expect(settingsLink.querySelector('.aa-danger-dot-core')).toBeInTheDocument();
             expect(settingsLink.classList.contains('aa-order-nav-pulse')).toBe(true);
         });
     });
