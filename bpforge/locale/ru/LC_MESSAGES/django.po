@@ -7,8 +7,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AA Blueprint Forge\n"
-"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-blueprint-forge/\n"
-"POT-Creation-Date: 2026-10-18 18:46+0200\n"
+"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-"
+"blueprint-forge/\n"
+"POT-Creation-Date: 2026-10-18 20:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,857 +20,637 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
-#: bpforge/api/blueprints.py:35 bpforge/api/blueprints.py:133
-#: bpforge/api/blueprints.py:187 bpforge/api/general.py:237
-#: bpforge/api/general.py:293 bpforge/api/general.py:311
-#: bpforge/api/general.py:331 bpforge/api/general.py:372
-#: bpforge/api/general.py:416 bpforge/api/general.py:446
-#: bpforge/api/general.py:476 bpforge/api/general.py:482
-#: bpforge/api/general.py:521 bpforge/api/general.py:527
-#: bpforge/api/my_blueprints.py:32 bpforge/api/orders.py:48
-#: bpforge/api/orders.py:143 bpforge/api/orders.py:160
-#: bpforge/api/orders.py:163 bpforge/api/orders.py:185
-#: bpforge/api/orders.py:202 bpforge/api/orders.py:221
-#: bpforge/api/orders.py:275
+
 msgid "Permission Denied."
 msgstr ""
 
-#: bpforge/api/blueprints.py:199
 msgid "This blueprint catalog is private."
 msgstr ""
 
-#: bpforge/api/general.py:190
 msgid "Overview"
 msgstr ""
 
-#: bpforge/api/general.py:192
 msgid "My Blueprints"
 msgstr ""
 
-#: bpforge/api/general.py:194
 msgid "Orders"
 msgstr ""
 
-#: bpforge/api/general.py:195
 msgid "Settings"
 msgstr ""
 
-#: bpforge/api/general.py:201
 msgid "Add Character"
 msgstr ""
 
-#: bpforge/api/general.py:208
 msgid "Add Corporation"
 msgstr ""
 
-#: bpforge/api/general.py:217
 msgid "Superuser"
 msgstr ""
 
-#: bpforge/api/orders.py:52
 msgid "Order must contain at least one blueprint item."
 msgstr ""
 
-#: bpforge/api/orders.py:64
 msgid "Cannot order from a private shop."
 msgstr ""
 
-#: bpforge/api/orders.py:76
 msgid "One or more blueprints are invalid or do not belong to this shop."
 msgstr ""
 
-#: bpforge/api/orders.py:88
 msgid "This shop only offers blueprint originals (BPO)."
 msgstr ""
 
-#: bpforge/api/orders.py:94
 msgid "This shop only offers blueprint copies (BPC)."
 msgstr ""
 
-#: bpforge/api/orders.py:102
 msgid "One or more selected BPOs are not offered by this shop."
 msgstr ""
 
-#: bpforge/api/orders.py:236
 #, python-brace-format
 msgid "Invalid status. Must be one of: {valid_statuses}"
 msgstr ""
 
-#: bpforge/api/orders.py:250
 msgid "You are not authorized to set this order status."
 msgstr ""
 
-#: bpforge/api/orders.py:289
 msgid "You are not authorized to delete this order."
 msgstr ""
 
-#: bpforge/api/orders.py:295
 msgid "Order has been deleted successfully."
 msgstr ""
 
-#: bpforge/api/superuser.py:39 bpforge/api/superuser.py:59
-#: bpforge/api/superuser.py:86 bpforge/api/superuser.py:114
-#: bpforge/api/superuser.py:164 bpforge/api/superuser.py:232
-#: bpforge/api/superuser.py:268
 msgid "Superuser permission required."
 msgstr ""
 
-#: bpforge/api/superuser.py:283
 #, python-brace-format
 msgid "Update task queued for {owner_name} (force_refresh={force_refresh})."
 msgstr ""
 
-#: bpforge/models/blueprint.py:64
 msgid "All (Originals & Copies)"
 msgstr ""
 
-#: bpforge/models/blueprint.py:65
 msgid "Only Originals (BPO)"
 msgstr ""
 
-#: bpforge/models/blueprint.py:66
 msgid "Only Copies (BPC)"
 msgstr ""
 
-#: bpforge/models/blueprint.py:89
 msgid "The character that owns this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:102
 msgid "The corporation that owns this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:107
 msgid "Whether this owner's blueprints are public."
 msgstr ""
 
-#: bpforge/models/blueprint.py:114
 msgid "Which types of blueprints are public for this owner."
 msgstr ""
 
-#: bpforge/models/blueprint.py:119
 msgid "Whether only explicitly selected BPOs are offered."
 msgstr ""
 
-#: bpforge/models/blueprint.py:126
 msgid "Groups to notify when a new order is created for this owner."
 msgstr ""
 
-#: bpforge/models/blueprint.py:133
 msgid "Groups to notify when an order status changes for this owner."
 msgstr ""
 
-#: bpforge/models/blueprint.py:229
 msgid "The Eve ID of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:236
 msgid "The owner of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:243
 msgid "The Eve type of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:250
 msgid "The location of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:254
 msgid "The flag of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:260
 msgid "The quantity of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:267
 msgid "The number of runs for this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:272
 msgid "The material efficiency of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:278
 msgid "The time efficiency of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:284
 msgid "Whether this blueprint is offered when selective BPO mode is enabled."
 msgstr ""
 
-#: bpforge/models/blueprint.py:312
 msgid "The Eve ID of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:317
 msgid "The name of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:327
 msgid "The parent location of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:337
 msgid "The solar system of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:347
 msgid "The Eve type of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:357
 msgid "The owner of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:392
 msgid "The Eve ID of this entity."
 msgstr ""
 
-#: bpforge/models/blueprint.py:397
 msgid "The name of this entity."
 msgstr ""
 
-#: bpforge/models/blueprint.py:402
 msgid "The category of this entity."
 msgstr ""
 
-#: bpforge/models/general.py:20
 msgid "Can access this app"
 msgstr ""
 
-#: bpforge/models/general.py:21
 msgid "Can manage"
 msgstr ""
 
-#: bpforge/models/general.py:22
 msgid "Full access"
 msgstr ""
 
-#: bpforge/models/general.py:45 bpforge/models/general.py:46
 msgid "Notification Settings"
 msgstr ""
 
-#: bpforge/models/general.py:52
 msgid "Groups to notify globally when a new order is created."
 msgstr ""
 
-#: bpforge/models/general.py:59
 msgid "Groups to notify globally when an order status changes."
 msgstr ""
 
-#: bpforge/models/helpers/core.py:9
 msgid "Asset Safety"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:10
 msgid "Auto Fit"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:11
 msgid "Bonus"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:12
 msgid "Booster"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:13
 msgid "Booster Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:14
 msgid "Capsule"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:15
 msgid "Cargo"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:16
 msgid "Corp Deliveries"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:17
 msgid "Corp Security Access Group 1"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:18
 msgid "Corp Security Access Group 2"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:19
 msgid "Corp Security Access Group 3"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:20
 msgid "Corp Security Access Group 4"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:21
 msgid "Corp Security Access Group 5"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:22
 msgid "Corp Security Access Group 6"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:23
 msgid "Corp Security Access Group 7"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:24
 msgid "Crate Loot"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:25
 msgid "Deliveries"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:26
 msgid "Drone Bay"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:27
 msgid "Dust Battle"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:28
 msgid "Dust Databank"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:29
 msgid "Fighter Bay"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:30
 msgid "Fighter Tube 0"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:31
 msgid "Fighter Tube 1"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:32
 msgid "Fighter Tube 2"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:33
 msgid "Fighter Tube 3"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:34
 msgid "Fighter Tube 4"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:35
 msgid "Fleet Hangar"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:36
 msgid "Frigate escape bay Hangar"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:37
 msgid "Hangar"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:38
 msgid "Hangar All"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:39
 msgid "High power slot 1"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:40
 msgid "High power slot 2"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:41
 msgid "High power slot 3"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:42
 msgid "High power slot 4"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:43
 msgid "High power slot 5"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:44
 msgid "High power slot 6"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:45
 msgid "High power slot 7"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:46
 msgid "High power slot 8"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:47
 msgid "Hidden Modifiers"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:48
 msgid "Implant"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:49
 msgid "Impounded"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:51
 msgid "This item was put into a junkyard through reprocessing."
 msgstr ""
 
-#: bpforge/models/helpers/core.py:54
 msgid "This item was put into a junkyard through being trashed by its owner."
 msgstr ""
 
-#: bpforge/models/helpers/core.py:56
 msgid "Low power slot 1"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:57
 msgid "Low power slot 2"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:58
 msgid "Low power slot 3"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:59
 msgid "Low power slot 4"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:60
 msgid "Low power slot 5"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:61
 msgid "Low power slot 6"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:62
 msgid "Low power slot 7"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:63
 msgid "Low power slot 8"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:64
 msgid "Locked item, can not be moved unless unlocked"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:65
 msgid "Medium power slot 1"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:66
 msgid "Medium power slot 2"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:67
 msgid "Medium power slot 3"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:68
 msgid "Medium power slot 4"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:69
 msgid "Medium power slot 5"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:70
 msgid "Medium power slot 6"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:71
 msgid "Medium power slot 7"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:72
 msgid "Medium power slot 8"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:73
 msgid "Office Folder"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:74
 msgid "Pilot"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:75
 msgid "Planet Surface"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:76
 msgid "Quafe Bay"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:77
 msgid "Quantum Core Room"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:78
 msgid "Reward"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:79
 msgid "Rig power slot 1"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:80
 msgid "Rig power slot 2"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:81
 msgid "Rig power slot 3"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:82
 msgid "Rig power slot 4"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:83
 msgid "Rig power slot 5"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:84
 msgid "Rig power slot 6"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:85
 msgid "Rig power slot 7"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:86
 msgid "Rig power slot 8"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:87
 msgid "Secondary Storage"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:88
 msgid "Service Slot 0"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:89
 msgid "Service Slot 1"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:90
 msgid "Service Slot 2"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:91
 msgid "Service Slot 3"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:92
 msgid "Service Slot 4"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:93
 msgid "Service Slot 5"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:94
 msgid "Service Slot 6"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:95
 msgid "Service Slot 7"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:96
 msgid "Ship Hangar"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:97
 msgid "Ship Offline"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:98
 msgid "Skill"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:99
 msgid "Skill In Training"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:100
 msgid "Specialized Ammo Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:102
 msgid "Specialized Command Center Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:104
 msgid "Specialized Fuel Bay"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:105
 msgid "Specialized Gas Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:107
 msgid "Specialized Industrial Ship Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:110
 msgid "Specialized Large Ship Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:112
 msgid "Specialized Material Bay"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:114
 msgid "Specialized Medium Ship Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:116
 msgid "Specialized Mineral Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:117
 msgid "Specialized Ore Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:119
 msgid "Specialized Planetary Commodities Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:121
 msgid "Specialized Salvage Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:122
 msgid "Specialized Ship Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:124
 msgid "Specialized Small Ship Hold"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:126
 msgid "Structure Active"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:127
 msgid "Structure Fuel"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:128
 msgid "Structure Inactive"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:129
 msgid "Structure Offline"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:130
 msgid "Sub System Bay"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:131
 msgid "Sub System Slot 0"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:132
 msgid "Sub System Slot 1"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:133
 msgid "Sub System Slot 2"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:134
 msgid "Sub System Slot 3"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:135
 msgid "Sub System Slot 4"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:136
 msgid "Sub System Slot 5"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:137
 msgid "Sub System Slot 6"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:138
 msgid "Sub System Slot 7"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:139
 msgid "Unlocked item, can be moved"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:140
 msgid "Wallet"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:141
 msgid "Wardrobe"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:142
 msgid "undefined"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:154
 msgid "Pending"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:155
 msgid "Accepted"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:156
 msgid "Cancelled"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:157
 msgid "Delivered"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:158
 msgid "Declined"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:127
 msgid "Disabled"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:128
 msgid "Token Error"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:129
 msgid "Error"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:130
 msgid "OK"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:131
 msgid "Incomplete"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:132
 msgid "In Progress"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:136
 msgid "Blueprints"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:137
 msgid "Locations"
 msgstr ""
 
-#: bpforge/models/request.py:27
 msgid "The shop/owner this order was placed with."
 msgstr ""
 
-#: bpforge/models/request.py:34
 msgid "The user who placed the order."
 msgstr ""
 
-#: bpforge/models/request.py:38
 msgid "The status of this order."
 msgstr ""
 
-#: bpforge/models/request.py:47
 msgid "Customer note or instructions for the order."
 msgstr ""
 
-#: bpforge/models/request.py:52
 msgid "The time this order was created."
 msgstr ""
 
-#: bpforge/models/request.py:57
 msgid "The time this order was last updated."
 msgstr ""
 
-#: bpforge/models/request.py:63
 msgid "The time this order was closed."
 msgstr ""
 
-#: bpforge/models/request.py:120
 msgid "The parent order for this blueprint item."
 msgstr ""
 
-#: bpforge/models/request.py:127
 msgid "The blueprint being requested."
 msgstr ""
 
-#: bpforge/models/request.py:134
 msgid "The user who made this request."
 msgstr ""
 
-#: bpforge/models/request.py:141
 msgid "The user assigned to this request."
 msgstr ""
 
-#: bpforge/models/request.py:148
 msgid "The quantity of copies/blueprints being requested."
 msgstr ""
 
-#: bpforge/models/request.py:154
 msgid "The number of runs being requested."
 msgstr ""
 
-#: bpforge/models/request.py:158
 msgid "The status of this request."
 msgstr ""
 
-#: bpforge/models/request.py:166
 msgid "The time this request was created."
 msgstr ""
 
-#: bpforge/models/request.py:172
 msgid "The time this request was closed."
 msgstr ""
 
-#: bpforge/thirdparty/charlink_hook.py:145
 msgid "Character"
 msgstr ""
 
-#: bpforge/thirdparty/charlink_hook.py:160
 msgid "Corporation"
 msgstr ""
 
-#: bpforge/views.py:50
 msgid "Cannot add NPC Corporation to Blueprint Forge"
 msgstr ""
 
-#: bpforge/views.py:60 bpforge/views.py:101
 #, python-brace-format
 msgid "{character.character_name} is not linked to your account"
 msgstr ""
 
-#: bpforge/views.py:84
 #, python-brace-format
-msgid "{owner.corporation.corporation_name} has been added with {character.character_name} as sync character."
+msgid ""
+"{owner.corporation.corporation_name} has been added with "
+"{character.character_name} as sync character."
 msgstr ""
 
-#: bpforge/views.py:115
 #, python-brace-format
 msgid "{character.character_name} has been added as personal owner."
 msgstr ""
