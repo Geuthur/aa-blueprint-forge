@@ -207,7 +207,7 @@ class ApiEndpoints:
 
             # Check visibility: public or owned by user or full_access admin
             is_owner = owner.user == request.user
-            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
+            is_admin = General.has_administration_access(request.user)
             if not (owner.is_public or is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("This blueprint catalog is private.")

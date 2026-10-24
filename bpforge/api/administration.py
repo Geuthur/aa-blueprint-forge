@@ -35,7 +35,7 @@ class ApiEndpoints:
             summary="List all Alliance Auth groups for notification configuration",
         )
         def list_groups(request):
-            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
+            if not General.has_administration_access(request.user):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Administration permission required.")
                 }
@@ -55,7 +55,7 @@ class ApiEndpoints:
             summary="Get global notification settings for administrators",
         )
         def get_notification_settings(request):
-            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
+            if not General.has_administration_access(request.user):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Administration permission required.")
                 }
@@ -82,7 +82,7 @@ class ApiEndpoints:
         def update_notification_settings(
             request, payload: schema.AdministrationNotificationSettingsSchema
         ):
-            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
+            if not General.has_administration_access(request.user):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Administration permission required.")
                 }
@@ -110,7 +110,7 @@ class ApiEndpoints:
             summary="List all owners across the entire system for administration management",
         )
         def list_all_owners(request):
-            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
+            if not General.has_administration_access(request.user):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Administration permission required.")
                 }
@@ -160,7 +160,7 @@ class ApiEndpoints:
         def update_owner_by_administration(
             request, owner_id: int, payload: schema.AdministrationOwnerUpdateRequest
         ):
-            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
+            if not General.has_administration_access(request.user):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Administration permission required.")
                 }
@@ -228,7 +228,7 @@ class ApiEndpoints:
             summary="List all blueprints for a specific owner for administration inspection",
         )
         def list_owner_blueprints_for_administration(request, owner_id: int):
-            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
+            if not General.has_administration_access(request.user):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Administration permission required.")
                 }
@@ -264,7 +264,7 @@ class ApiEndpoints:
             owner_id: int,
             payload: schema.AdministrationUpdateOwnerTaskRequest | None = None,
         ):
-            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
+            if not General.has_administration_access(request.user):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Administration permission required.")
                 }
@@ -300,7 +300,7 @@ class ApiEndpoints:
             summary="Delete an owner and all associated blueprints and configurations",
         )
         def delete_owner_by_administration(request, owner_id: int):
-            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
+            if not General.has_administration_access(request.user):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Administration permission required.")
                 }

@@ -54,7 +54,7 @@ class AccessQuerySet(models.QuerySet[T], Generic[T]):
 
     def visible_to(self, user):
         """Get all objects visible to the user."""
-        if General.has_perm(user, General.Permission.FULL_ACCESS):
+        if General.has_administration_access(user):
             logger.debug("Returning all objects for admin user %s.", user)
             return self
 
@@ -76,7 +76,7 @@ class AccessQuerySet(models.QuerySet[T], Generic[T]):
 
     def manage_to(self, user):
         """Get QuerySet of objects that the user can manage."""
-        if General.has_perm(user, General.Permission.FULL_ACCESS):
+        if General.has_administration_access(user):
             logger.debug("Returning all manageable queries for admin user %s.", user)
             return self
 
@@ -117,7 +117,7 @@ class AccessManager(models.Manager[T], Generic[T]):
     @staticmethod
     def visible_eve_characters(user):
         qs = EveCharacter.objects.get_queryset()
-        if General.has_perm(user, General.Permission.FULL_ACCESS):
+        if General.has_administration_access(user):
             logger.debug("Returning all characters for %s.", user)
             return qs.all()
 

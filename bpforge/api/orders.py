@@ -14,12 +14,7 @@ from django.utils.translation import gettext as _
 # AA Blueprint Forge
 from bpforge.api import schema
 from bpforge.models.blueprint import Blueprint, Owner
-from bpforge.models.general import (
-    General,
-    get_manageable_orders_filter,
-    user_can_manage_order,
-    user_can_manage_orders,
-)
+from bpforge.models.general import General
 from bpforge.models.helpers.core import RequestStatus
 from bpforge.models.request import Order, Request
 from bpforge.thirdparty.discord import (
@@ -59,7 +54,7 @@ class ApiEndpoints:
             if (
                 not owner.is_public
                 and owner.user != request.user
-                and not General.has_perm(request.user, General.Permission.FULL_ACCESS)
+                and not General.has_administration_access(request.user)
             ):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Cannot order from a private shop.")
@@ -80,7 +75,7 @@ class ApiEndpoints:
 
             if not (
                 owner.user == request.user
-                or General.has_perm(request.user, General.Permission.FULL_ACCESS)
+                or General.has_administration_access(request.user)
             ):
                 if owner.public_type == "bpo" and any(
                     bp.runs and bp.runs > 0 for bp in blueprints
@@ -157,9 +152,9 @@ class ApiEndpoints:
             elif role == "seller":
                 queryset = queryset.filter(owner__user=request.user)
             elif role == "manage":
-                if not user_can_manage_orders(request.user):
+                if not General.can_manage_orders(request.user):
                     return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-                manage_filter = get_manageable_orders_filter(request.user)
+                manage_filter = General.get_manageable_orders_filter(request.user)
                 if manage_filter is None:
                     return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
                 queryset = queryset.filter(manage_filter)
@@ -197,7 +192,7 @@ class ApiEndpoints:
 
             is_buyer = order.requesting_user == request.user
             is_seller = order.owner.user == request.user
-            is_manager = user_can_manage_order(request.user, order)
+            is_manager = General.can_manage_order(request.user, order)
 
             if not (is_buyer or is_seller or is_manager):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
@@ -237,7 +232,7 @@ class ApiEndpoints:
                     "error": _(f"Invalid status. Must be one of: {valid_statuses}")
                 }
 
-            can_edit = user_can_manage_order(request.user, order)
+            can_edit = General.can_manage_order(request.user, order)
 
             old_status = order.status
             success = order.handle_status(
@@ -285,7 +280,7 @@ class ApiEndpoints:
                 id=order_id,
             )
 
-            if not user_can_manage_order(request.user, order):
+            if not General.can_manage_order(request.user, order):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("You are not authorized to delete this order.")
                 }

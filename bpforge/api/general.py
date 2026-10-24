@@ -18,12 +18,7 @@ from bpforge.helpers.eveonline import (
     get_corporation_logo_url,
 )
 from bpforge.models.blueprint import Owner
-from bpforge.models.general import (
-    General,
-    UserSettings,
-    user_can_manage_orders,
-    user_is_global_order_manager,
-)
+from bpforge.models.general import General, UserSettings
 from bpforge.models.helpers.update_manager import UpdateSection
 from bpforge.tasks import update_owner
 
@@ -229,7 +224,7 @@ class ApiEndpoints:
                     )
                 )
 
-            if General.has_perm(request.user, General.Permission.FULL_ACCESS):
+            if General.has_administration_access(request.user):
                 right_menu.append(
                     schema.MenuLink(
                         name=_("Administration"),
@@ -279,11 +274,9 @@ class ApiEndpoints:
                 else None
             )
 
-            is_admin = bool(
-                General.has_perm(request.user, General.Permission.FULL_ACCESS)
-            )
-            can_manage = user_can_manage_orders(request.user)
-            is_global_mgr = user_is_global_order_manager(request.user)
+            is_admin = bool(General.has_administration_access(request.user))
+            can_manage = General.can_manage_orders(request.user)
+            is_global_mgr = General.is_global_order_manager(request.user)
 
             return HTTPStatus.OK, schema.UserData(
                 user_id=request.user.id,
@@ -462,7 +455,7 @@ class ApiEndpoints:
             )
 
             is_owner = owner.user == request.user
-            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
+            is_admin = General.has_administration_access(request.user)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -498,7 +491,7 @@ class ApiEndpoints:
 
             owner = get_object_or_404(Owner, id=owner_id)
             is_owner = owner.user == request.user
-            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
+            is_admin = General.has_administration_access(request.user)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -543,7 +536,7 @@ class ApiEndpoints:
 
             owner = get_object_or_404(Owner, id=owner_id)
             is_owner = owner.user == request.user
-            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
+            is_admin = General.has_administration_access(request.user)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -619,7 +612,7 @@ class ApiEndpoints:
                 id=owner_id,
             )
             is_owner = owner.user == request.user
-            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
+            is_admin = General.has_administration_access(request.user)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -654,7 +647,7 @@ class ApiEndpoints:
                 id=owner_id,
             )
             is_owner = owner.user == request.user
-            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
+            is_admin = General.has_administration_access(request.user)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 

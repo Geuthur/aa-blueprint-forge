@@ -61,7 +61,7 @@ def _add_character_corp(request, token):
 
 
 def _check_perms_corp(user: User):
-    return any(user.has_perm(perm) for perm in _corp_perms)
+    return General.has_perm(user, General.Permission.MANAGE_ACCESS)
 
 
 def _is_character_added(character: EveCharacter):
