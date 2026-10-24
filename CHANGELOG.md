@@ -63,6 +63,7 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] Use the typographic ellipsis (`…`) instead of three dots in loading texts and placeholders; the translation keys changed accordingly.
 - [CHANGE] Removed pulse and warning dot indicator from Overview `OwnerCard` `Browse Blueprints` button; the pulse notification is restricted to the `Settings` navigation item when user's own owner is affected.
 - [CHANGE] Settings navigation item displays a pulsating red dot and pulse animation (`aa-order-nav-pulse`) when an ESI error or token error is present.
 - [CHANGE] Refactored `SettingsPage` to use modular `BaseOwnerSettingsSection` and `BaseOwnerCard` for unified owner settings management.

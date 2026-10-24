@@ -64,7 +64,7 @@ export const CatalogDirectorySection: React.FC<CatalogDirectorySectionProps> = (
           <div className={`${styles.catalogSearchInput} position-relative`}>
             <Form.Control
               type="text"
-              placeholder={t("Search catalogs or blueprints...")}
+              placeholder={t("Search catalogs or blueprints…")}
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pe-5"
@@ -84,7 +84,7 @@ export const CatalogDirectorySection: React.FC<CatalogDirectorySectionProps> = (
       {isLoading && (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <div className="text-light mt-2">{t("Loading public catalogs...")}</div>
+          <div className="text-light mt-2">{t("Loading public catalogs…")}</div>
         </div>
       )}
 

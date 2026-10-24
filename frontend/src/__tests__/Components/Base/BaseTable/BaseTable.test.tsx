@@ -35,7 +35,7 @@ describe('BaseTable Component', () => {
 
     // Expected Result
     expect(screen.getByRole('status')).toBeInTheDocument();
-    expect(screen.getByText('Loading data...')).toBeInTheDocument();
+    expect(screen.getByText('Loading data…')).toBeInTheDocument();
     expect(screen.queryByText('No items found')).not.toBeInTheDocument();
   });
 

@@ -84,7 +84,7 @@ const AdministrationOwnerModalDialog: React.FC<AdministrationOwnerModalDialogPro
                 {isSaving ? (
                     <>
                         <Spinner size="sm" animation="border" className="me-2" />
-                        {t("Saving...")}
+                        {t("Saving…")}
                     </>
                 ) : (
                     <>

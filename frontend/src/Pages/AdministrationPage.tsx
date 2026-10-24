@@ -609,7 +609,7 @@ const AdministrationPage: React.FC = () => {
                     <div style={{ maxWidth: "300px", width: "100%" }}>
                         <Form.Control
                             type="search"
-                            placeholder={t("Search by name or corporation...")}
+                            placeholder={t("Search by name or corporation…")}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             size="sm"
@@ -672,7 +672,7 @@ const AdministrationPage: React.FC = () => {
                                 <Trash2 size={14} />
                                 <span>
                                     {deleteOwnerMutation.isPending
-                                        ? t("Deleting...")
+                                        ? t("Deleting…")
                                         : t("Confirm Delete")}
                                 </span>
                             </Button>

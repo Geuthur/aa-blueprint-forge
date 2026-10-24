@@ -394,7 +394,7 @@ export const SettingsPage: React.FC = () => {
                         setActiveBpoModalOwner({ id: owner.id, name: owner.name })
                       }
                     >
-                      {t("Select BPOs...")}
+                      {t("Select BPOs…")}
                     </Button>
                   )}
                   {renderTooltip(
@@ -428,7 +428,7 @@ export const SettingsPage: React.FC = () => {
     return (
       <div className="aa-loader-container">
         <span className="spinner-border" />
-        <span>{t("Loading settings...")}</span>
+        <span>{t("Loading settings…")}</span>
       </div>
     );
   }

@@ -258,7 +258,7 @@ describe("MainPage Component", () => {
       </QueryClientProvider>
     );
 
-    const searchInput = screen.getByPlaceholderText("Search catalogs or blueprints...");
+    const searchInput = screen.getByPlaceholderText("Search catalogs or blueprints…");
     fireEvent.change(searchInput, { target: { value: "Rifter" } });
 
     // Expected Result

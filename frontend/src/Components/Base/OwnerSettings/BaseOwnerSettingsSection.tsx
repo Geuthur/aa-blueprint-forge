@@ -120,7 +120,7 @@ export function BaseOwnerSettingsSection<
         {isLoading && (
           <div className="aa-loader-container">
             <span className="spinner-border" />
-            <span>{t("Loading update statuses...")}</span>
+            <span>{t("Loading update statuses…")}</span>
           </div>
         )}
 
@@ -205,7 +205,7 @@ export function BaseOwnerSettingsSection<
                   className="aa-btn aa-btn-danger d-flex align-items-center gap-1"
                 >
                   <Trash2 size={14} />
-                  <span>{isDeleting ? t("Deleting...") : t("Confirm Delete")}</span>
+                  <span>{isDeleting ? t("Deleting…") : t("Confirm Delete")}</span>
                 </Button>
               </div>
             }
