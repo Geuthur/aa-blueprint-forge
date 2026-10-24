@@ -242,7 +242,7 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
                 {saveMutation.isPending ? (
                     <>
                         <Spinner size="sm" animation="border" className="me-2" />
-                        {t("Saving...")}
+                        {t("Saving…")}
                     </>
                 ) : (
                     <>
@@ -291,7 +291,7 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
                         </span>
                         <Form.Control
                             type="text"
-                            placeholder={t("Search blueprints...")}
+                            placeholder={t("Search blueprints…")}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />

@@ -103,8 +103,8 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
               type="text"
               placeholder={
                 showLocationColumn
-                  ? t("Search by blueprint, group, or location...")
-                  : t("Search by blueprint or group...")
+                  ? t("Search by blueprint, group, or location…")
+                  : t("Search by blueprint or group…")
               }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

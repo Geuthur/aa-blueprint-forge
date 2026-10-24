@@ -345,7 +345,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               className="aa-btn aa-btn-danger d-flex align-items-center gap-1"
             >
               <Trash2 size={14} />
-              <span>{isDeleting ? t("Deleting...") : t("Confirm Delete")}</span>
+              <span>{isDeleting ? t("Deleting…") : t("Confirm Delete")}</span>
             </Button>
           </div>
         }

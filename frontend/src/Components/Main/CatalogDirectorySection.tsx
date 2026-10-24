@@ -51,7 +51,7 @@ export const CatalogDirectorySection: React.FC<CatalogDirectorySectionProps> = (
 
   return (
     <section className="d-flex flex-column gap-3">
-      <Card className="bg-secondary text-light border-0 shadow-sm">
+      <Card className="bg-secondary border-0 shadow-sm">
         <Card.Body className="p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
           <div>
             <h4 className="mb-1 fw-bold">{t("Public Blueprint Catalog")}</h4>
@@ -64,7 +64,7 @@ export const CatalogDirectorySection: React.FC<CatalogDirectorySectionProps> = (
           <div className={`${styles.catalogSearchInput} position-relative`}>
             <Form.Control
               type="text"
-              placeholder={t("Search catalogs or blueprints...")}
+              placeholder={t("Search catalogs or blueprints…")}
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pe-5"
@@ -84,7 +84,7 @@ export const CatalogDirectorySection: React.FC<CatalogDirectorySectionProps> = (
       {isLoading && (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <div className="text-light mt-2">{t("Loading public catalogs...")}</div>
+          <div className="text-light mt-2">{t("Loading public catalogs…")}</div>
         </div>
       )}
 

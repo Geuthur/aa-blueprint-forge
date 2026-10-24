@@ -14,10 +14,11 @@ from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 # AA Blueprint Forge
 from bpforge.app_settings import BPFORGE_APP_NAME
 from bpforge.models.blueprint import Owner
+from bpforge.models.general import General
 from bpforge.tasks import update_owner
 
 _corp_perms = [
-    "bpforge.manage_access",
+    General.get_perm(General.Permission.MANAGE_ACCESS),
 ]
 
 
@@ -60,7 +61,7 @@ def _add_character_corp(request, token):
 
 
 def _check_perms_corp(user: User):
-    return any(user.has_perm(perm) for perm in _corp_perms)
+    return General.has_perm(user, General.Permission.MANAGE_ACCESS)
 
 
 def _is_character_added(character: EveCharacter):
@@ -145,7 +146,9 @@ app_import = AppImport(
             field_label=_("Character") + " " + BPFORGE_APP_NAME,
             add_character=_add_character,
             scopes=Owner.get_character_scopes(),
-            check_permissions=lambda user: user.has_perm("bpforge.basic_access"),
+            check_permissions=lambda user: General.has_perm(
+                user, General.Permission.BASIC_ACCESS
+            ),
             is_character_added=_is_character_added,
             is_character_added_annotation=Exists(
                 Owner.objects.filter(character__character=OuterRef("pk"))

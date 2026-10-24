@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 // AA bpforge
 import * as ApiCalls from '@/Api/ApiCalls';
-import { ProjectName } from '@/configuration';
+import { ProjectName } from '@/constants';
 import AuthLeftMenu from '@/Menu/AuthLeftMenu';
 
 vi.mock('react-i18next', async (importOriginal) => {
@@ -185,13 +185,14 @@ describe('AuthLeftMenu', () => {
         const settingsLink = await screen.findByTestId('settings-nav-link');
         expect(settingsLink).toBeDefined();
         await waitFor(() => {
+            expect(settingsLink.querySelector('.aa-danger-dot-core')).toBeInTheDocument();
             expect(settingsLink.classList.contains('aa-order-nav-pulse')).toBe(true);
         });
     });
 
-    it('should render Superuser link with red danger styling', async () => {
+    it('should render Administration link with red danger styling', async () => {
         // Test Data
-        const testData = [{ name: 'Superuser', link: '/superuser/' }];
+        const testData = [{ name: 'Administration', link: '/administration/' }];
 
         // Test Action
         render(
@@ -203,9 +204,9 @@ describe('AuthLeftMenu', () => {
         );
 
         // Expected Result
-        const superuserLink = await screen.findByTestId('superuser-nav-link');
-        expect(superuserLink).toBeDefined();
-        expect(superuserLink.classList.contains('aa-nav-danger')).toBe(true);
-        expect(superuserLink.textContent).toContain('Superuser');
+        const administrationLink = await screen.findByTestId('administration-nav-link');
+        expect(administrationLink).toBeDefined();
+        expect(administrationLink.classList.contains('aa-nav-danger')).toBe(true);
+        expect(administrationLink.textContent).toContain('Administration');
     });
 });

@@ -28,21 +28,56 @@ Section Order:
 
 <!-- AI Changes -->
 
-### Changed
-
-- [CHANGE] Integrated `nuqs` URL query parameter (`?inspect=<ownerId>`) for the Superuser inspection view, enabling native browser back/forward navigation.
-
-<!-- Your changes go here -->
-
 ### Added
 
+- [ADD] Owner manual update endpoint `POST /bpforge/api/settings/owners/{owner_id}/update/` with Celery task queueing.
+
+- [ADD] Owner deletion endpoint `DELETE /bpforge/api/settings/owners/{owner_id}/` with cascade deletion.
+
+- [ADD] Batch update endpoint `POST /bpforge/api/settings/owners/update-all/` for all linked owners of the user.
+
+- [ADD] Header `Update All` button with 60s cooldown timer in `OwnerSettingsSection`.
+
+- [ADD] Row-level `Update` button and `Delete` button with `BaseModal` confirmation dialog on `OwnerSettingCard`.
+
+- **Superuser View Unification**: Implemented 4 standardized KPI metric cards (`bg-body border-secondary h-100 shadow-sm`) with dynamic "Sync Issues" indicator (Green Shield when 0 issues, Red AlertTriangle with count badge).
+
+- **Collapsible Global Task Administration**: Added collapsible Global Task Administration panel with global update task and Force Refresh switch (`data-testid="toggle-task-panel"`).
+
+- **Collapsible Global Notification Groups**: Converted Global Notification Groups into a collapsible card panel with toggle button (`data-testid="toggle-notification-panel"`).
+
+- **Search & ButtonGroup Filters**: Added unified owner search and ButtonGroup filters (`All`, `Characters`, `Corporations`, `Sync Issues`) in Superuser view.
+
+- **Pulsing Error Indicator**: Added `has_errors` detection to `OwnerPublicSchema` and rendered pulsing warning indicator (`aa-btn-warning aa-btn-pulse` with `aa-pending-dot-container`) on `Browse Blueprints` in `OwnerCard` when an owner has active sync errors.
+
 - Django Admin view for `Owner` model (`bpforge/admin.py`) with force update actions (bypassing cache), normal updates, inline update status inspection, and permission controls.
+
 - Superuser API endpoint `DELETE /bpforge/api/superuser/owners/{owner_id}/` to allow superusers to delete owners and cascade associated blueprints/settings.
+
 - Frontend Superuser Owner deletion action in `SuperuserOwnersTable` and `SuperuserPage` with a confirmation modal (`BaseModal`) before deletion is executed.
 
 ### Fixed
 
+- [FIX] Removed plain translation keys that duplicated their plural forms (`_one`/`_other`) in the English and German translation files, which caused Weblate "duplicate string in file" warnings.
 - Fixed invalid ORM field lookups in `bpforge.thirdparty.charlink_hook` (`character__character` and `corporation__corporation_id` in `is_character_added_annotation`).
+
+### Changed
+
+- [CHANGE] Use the typographic ellipsis (`…`) instead of three dots in loading texts and placeholders; the translation keys changed accordingly.
+- [CHANGE] Removed pulse and warning dot indicator from Overview `OwnerCard` `Browse Blueprints` button; the pulse notification is restricted to the `Settings` navigation item when user's own owner is affected.
+- [CHANGE] Settings navigation item displays a pulsating red dot and pulse animation (`aa-order-nav-pulse`) when an ESI error or token error is present.
+- [CHANGE] Refactored `SettingsPage` to use modular `BaseOwnerSettingsSection` and `BaseOwnerCard` for unified owner settings management.
+- [CHANGE] Integrated `nuqs` URL query parameter (`?inspect=<ownerId>`) for the Superuser inspection view, enabling native browser back/forward navigation.
+- [CHANGE] Centralized permission handling in `General.Permission` (`TextChoices`) with `General.get_perm`, `General.has_perm` and `General.has_any_perm`; permission codenames are unchanged (migration only updates model options).
+- [CHANGE] Renamed the "Superuser" area to "Administration": API paths `superuser/...` -> `administration/...`, `api/superuser.py` -> `api/administration.py`, `Superuser*` schemas/pages/components/query keys -> `Administration*`, menu link `/administration/`.
+- [CHANGE] Administration endpoints and the menu entry are now guarded by the `bpforge.full_access` permission instead of `is_superuser`; only the global update queue (`POST administration/tasks/queue/`) and `force_refresh` remain superuser-only (`force_refresh` by non-superusers returns 403).
+- [CHANGE] Removed redundant `is_superuser` branches from `AccessQuerySet`/`AccessManager` and `user_is_global_order_manager`; the permission system decides.
+- [CHANGE] `UserData` exposes `is_superuser`; the global task panel and the Force Refresh actions are only shown to superusers.
+- [CHANGE] Aligned the frontend entry files with `aa-ledger`: `main.tsx` -> `Main.tsx`, `App.tsx` -> `Routing.tsx`, `configuration.ts` -> `src/constants.ts`, `index.css` -> `Styles/index.css`; i18n initialisation moved to `Main.tsx`.
+- [CHANGE] The ESI status badge in the Administration owners table opens the new `AdministrationErrorModal` with the full error message when the owner has an error or a `token_error`; owners without errors keep a plain badge. `SettingsPage` is unchanged.
+- [CHANGE] Moved all backend permission and order access logic into the `General` model (`has_administration_access`, `is_global_order_manager`, `is_corp_order_manager`, `can_manage_orders`, `can_manage_order`, `get_manageable_orders_filter`, `get_user_corporation_ids`); the loose module functions in `bpforge.models.general` were removed and all API endpoints, managers and hooks call the `General` methods. Behaviour is unchanged.
+
+<!-- Your changes go here -->
 
 ## [1.0.2] - 2026-10-18
 

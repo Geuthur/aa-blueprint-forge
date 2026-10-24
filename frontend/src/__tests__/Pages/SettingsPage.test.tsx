@@ -16,6 +16,9 @@ vi.mock("@/Api/ApiCalls", () => ({
   updateUserSettings: vi.fn(),
   loadUserOwners: vi.fn(),
   updateOwnerSetting: vi.fn(),
+  triggerOwnerUpdate: vi.fn(),
+  deleteOwner: vi.fn(),
+  triggerUpdateAllUserOwners: vi.fn(),
 }));
 
 const renderPage = () => {
@@ -307,5 +310,155 @@ describe("SettingsPage", () => {
       { ownerId: 1, payload: { public_type: "bpo" } },
       expect.any(Object),
     );
+  });
+
+  it("should trigger update all owners when Update All button is clicked", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
+      disable_notifications: false,
+    });
+    const mockOwners = [
+      {
+        id: 1,
+        name: "Test Character",
+        is_corporation: false,
+        character_id: 12345,
+        character_name: "Test Character",
+        corporation_id: 54321,
+        corporation_name: "Test Corp",
+        corporation_ticker: "TC",
+        alliance_id: null,
+        portrait_url: null,
+        is_public: true,
+        public_type: "all",
+        selective_bpo_enabled: false,
+        notify_order_created_group_ids: [],
+        notify_order_status_group_ids: [],
+        blueprint_count: 5,
+        bpo_count: 2,
+        bpc_count: 3,
+        status: "ok",
+        has_error: false,
+        last_sync: "2026-10-14 18:20",
+        error_message: null,
+        sections: [],
+      },
+    ];
+    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.triggerUpdateAllUserOwners).mockResolvedValue({
+      success: true,
+      message: "Queued updates for 1 owner(s).",
+    });
+
+    // Test Action
+    renderPage();
+    const updateAllBtn = await screen.findByRole("button", { name: /^Update All/i });
+    expect(updateAllBtn).toBeInTheDocument();
+    await user.click(updateAllBtn);
+
+    // Expected Result
+    expect(ApiCalls.triggerUpdateAllUserOwners).toHaveBeenCalledWith(false);
+  });
+
+  it("should trigger single owner update when Update button on card is clicked", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
+      disable_notifications: false,
+    });
+    const mockOwners = [
+      {
+        id: 42,
+        name: "Test Pilot 42",
+        is_corporation: false,
+        character_id: 4242,
+        character_name: "Test Pilot 42",
+        corporation_id: 54321,
+        corporation_name: "Test Corp",
+        corporation_ticker: "TC",
+        alliance_id: null,
+        portrait_url: null,
+        is_public: true,
+        public_type: "all",
+        selective_bpo_enabled: false,
+        notify_order_created_group_ids: [],
+        notify_order_status_group_ids: [],
+        blueprint_count: 5,
+        bpo_count: 2,
+        bpc_count: 3,
+        status: "ok",
+        has_error: false,
+        last_sync: "2026-10-14 18:20",
+        error_message: null,
+        sections: [],
+      },
+    ];
+    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.triggerOwnerUpdate).mockResolvedValue({
+      success: true,
+      message: "Update task queued.",
+    });
+
+    // Test Action
+    renderPage();
+    const updateBtn = await screen.findByRole("button", { name: "Update Owner" });
+    expect(updateBtn).toBeInTheDocument();
+    await user.click(updateBtn);
+
+    // Expected Result
+    expect(ApiCalls.triggerOwnerUpdate).toHaveBeenCalledWith(42, false);
+  });
+
+  it("should open delete modal and call deleteOwner when confirmed", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
+      disable_notifications: false,
+    });
+    const mockOwners = [
+      {
+        id: 99,
+        name: "Delete Me Pilot",
+        is_corporation: false,
+        character_id: 9999,
+        character_name: "Delete Me Pilot",
+        corporation_id: 54321,
+        corporation_name: "Test Corp",
+        corporation_ticker: "TC",
+        alliance_id: null,
+        portrait_url: null,
+        is_public: true,
+        public_type: "all",
+        selective_bpo_enabled: false,
+        notify_order_created_group_ids: [],
+        notify_order_status_group_ids: [],
+        blueprint_count: 5,
+        bpo_count: 2,
+        bpc_count: 3,
+        status: "ok",
+        has_error: false,
+        last_sync: "2026-10-14 18:20",
+        error_message: null,
+        sections: [],
+      },
+    ];
+    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.deleteOwner).mockResolvedValue({
+      success: true,
+      message: "Owner deleted.",
+    });
+
+    // Test Action
+    renderPage();
+    const deleteBtn = await screen.findByRole("button", { name: "Delete Owner" });
+    await user.click(deleteBtn);
+
+    const confirmBtn = await screen.findByRole("button", { name: "Confirm Delete" });
+    expect(confirmBtn).toBeInTheDocument();
+    await user.click(confirmBtn);
+
+    // Expected Result
+    expect(ApiCalls.deleteOwner).toHaveBeenCalledWith(99);
   });
 });
