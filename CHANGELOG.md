@@ -60,12 +60,13 @@ Section Order:
 
 - [FIX] Removed plain translation keys that duplicated their plural forms (`_one`/`_other`) in the English and German translation files, which caused Weblate "duplicate string in file" warnings.
 - Fixed invalid ORM field lookups in `bpforge.thirdparty.charlink_hook` (`character__character` and `corporation__corporation_id` in `is_character_added_annotation`).
+- [FIX] Fixed the `import-headings` ESLint rule duplicating comments above the first import on every `--fix` pass, which could grow a file exponentially; added a unit test (`eslint-rules/import-headings.test.mjs`).
 
 ### Changed
 
 - [CHANGE] Use the typographic ellipsis (`…`) instead of three dots in loading texts and placeholders; the translation keys changed accordingly.
 - [CHANGE] Removed pulse and warning dot indicator from Overview `OwnerCard` `Browse Blueprints` button; the pulse notification is restricted to the `Settings` navigation item when user's own owner is affected.
-- [CHANGE] Settings navigation item displays a pulsating red dot and pulse animation (`aa-order-nav-pulse`) when an ESI error or token error is present.
+- [CHANGE] Settings navigation item displays a pulsing red issue count badge (`aa-menu-badge-pulse`) instead of a dot when an ESI error or token error is present.
 - [CHANGE] Refactored `SettingsPage` to use modular `BaseOwnerSettingsSection` and `BaseOwnerCard` for unified owner settings management.
 - [CHANGE] Integrated `nuqs` URL query parameter (`?inspect=<ownerId>`) for the Superuser inspection view, enabling native browser back/forward navigation.
 - [CHANGE] Centralized permission handling in `General.Permission` (`TextChoices`) with `General.get_perm`, `General.has_perm` and `General.has_any_perm`; permission codenames are unchanged (migration only updates model options).
@@ -76,6 +77,8 @@ Section Order:
 - [CHANGE] Aligned the frontend entry files with `aa-ledger`: `main.tsx` -> `Main.tsx`, `App.tsx` -> `Routing.tsx`, `configuration.ts` -> `src/constants.ts`, `index.css` -> `Styles/index.css`; i18n initialisation moved to `Main.tsx`.
 - [CHANGE] The ESI status badge in the Administration owners table opens the new `AdministrationErrorModal` with the full error message when the owner has an error or a `token_error`; owners without errors keep a plain badge. `SettingsPage` is unchanged.
 - [CHANGE] Moved all backend permission and order access logic into the `General` model (`has_administration_access`, `is_global_order_manager`, `is_corp_order_manager`, `can_manage_orders`, `can_manage_order`, `get_manageable_orders_filter`, `get_user_corporation_ids`); the loose module functions in `bpforge.models.general` were removed and all API endpoints, managers and hooks call the `General` methods. Behaviour is unchanged.
+- [CHANGE] Consolidated the frontend formatting helpers in `Utils/format.ts` (`formatNumber`, `formatCompactNumber`, `formatIsk`, `formatDate`, `formatRelativeTime`, `formatEta`) with a single `en` locale fallback; `renderTooltip` now lives only in `Utils/bootsTrap.tsx` and `renderHtml` in `Utils/general.tsx`.
+- [CHANGE] Replaced `BaseTable` with the shared implementation from `aa-ledger` (new toolbar, `variant` is now `default` or `light`, table styles moved to `Styles/table.css`); `onRowClick` is kept. Owner type badges in the settings use the `aa-ledger` colors (`primary` / `info`). Frontend imports use `react-router` instead of `react-router-dom`.
 
 <!-- Your changes go here -->
 

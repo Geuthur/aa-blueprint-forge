@@ -370,5 +370,11 @@
   "Show error details for {{name}}": "Show error details for {{name}}",
   "Administration": "Administration",
   "Global Task Management": "Global Task Management",
-  "Toggle Task Management": "Toggle Task Management"
+  "Toggle Task Management": "Toggle Task Management",
+  "Reset": "Reset",
+  "Done": "Done",
+  "Range…": "Range…",
+  "Clear": "Clear",
+  "Filter…": "Filter…",
+  "No matching options": "No matching options"
 }

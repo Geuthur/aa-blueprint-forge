@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import type { components } from "@/Api/OpenApi";
 import { BaseModal } from "@/Components/Base/BaseModal";
 import { imageServer } from "@/Utils/eveOnline";
+import { formatDate } from "@/Utils/format";
 
 type Order = components["schemas"]["OrderSchema"];
 
@@ -95,7 +96,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                     <strong>{t("Buyer:")}</strong> {order.requesting_user_name}
                   </span>
                   <span>•</span>
-                  <span>{new Date(order.created_at).toLocaleString()}</span>
+                  <span>{formatDate(order.created_at)}</span>
                 </div>
               </div>
             </div>

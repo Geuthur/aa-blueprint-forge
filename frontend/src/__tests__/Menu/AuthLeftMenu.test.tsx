@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router';
 
 // Third Party
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 // AA bpforge
@@ -157,14 +157,14 @@ describe('AuthLeftMenu', () => {
         );
 
         // Expected Result
-        const settingsLink = await screen.findByTestId('settings-nav-link');
+        const settingsLink = await screen.findByRole('link', { name: /settings/i });
         expect(settingsLink).toBeDefined();
         await waitFor(() => {
-            expect(settingsLink.classList.contains('aa-order-nav-pulse')).toBe(false);
+            expect(within(settingsLink).queryByText(/^\d+$/)).toBeNull();
         });
     });
 
-    it('should render Settings link with pulse when any update status is not ok or has error', async () => {
+    it('should render pulsating issue badge on Settings link when an owner has an error', async () => {
         // Test Data
         const testData = [{ name: 'Settings', link: '/settings/' }];
         const mockOwners = [
@@ -182,11 +182,13 @@ describe('AuthLeftMenu', () => {
         );
 
         // Expected Result
-        const settingsLink = await screen.findByTestId('settings-nav-link');
+        const settingsLink = await screen.findByRole('link', { name: /settings/i });
         expect(settingsLink).toBeDefined();
         await waitFor(() => {
-            expect(settingsLink.querySelector('.aa-danger-dot-core')).toBeInTheDocument();
-            expect(settingsLink.classList.contains('aa-order-nav-pulse')).toBe(true);
+            expect(settingsLink.querySelector('.aa-danger-dot-core')).toBeNull();
+            const badge = within(settingsLink).getByText('1');
+            expect(badge.textContent).toBe('1');
+            expect(badge.classList.contains('aa-menu-badge-pulse')).toBe(true);
         });
     });
 

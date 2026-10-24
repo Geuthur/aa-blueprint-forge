@@ -356,5 +356,11 @@
   "Toggle Task Management": "Aufgabenverwaltung umschalten",
   "The ESI token is invalid or expired. Re-add the character or corporation.": "Das ESI-Token ist ungültig oder abgelaufen. Füge den Charakter oder die Corporation erneut hinzu.",
   "ESI Error Details": "ESI-Fehlerdetails",
-  "Show error details for {{name}}": "Fehlerdetails für {{name}} anzeigen"
+  "Show error details for {{name}}": "Fehlerdetails für {{name}} anzeigen",
+  "Reset": "Zurücksetzen",
+  "Done": "Fertig",
+  "Range…": "Bereich…",
+  "Clear": "Leeren",
+  "Filter…": "Filter…",
+  "No matching options": "Keine passenden Optionen"
 }

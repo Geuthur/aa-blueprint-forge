@@ -11,6 +11,7 @@ import { initReactI18next } from "react-i18next";
 import { AppName, ProjectName } from "@/constants";
 import Routing from "@/Routing";
 import '@/Styles/index.css';
+import '@/Styles/table.css';
 
 // Read language directly from Django's LANGUAGE_CODE (set as lang="..." on root div)
 const djangoLanguage = typeof document !== "undefined" ? document.getElementById(`${AppName}-root`)?.getAttribute("lang") ?? "en" : "en";

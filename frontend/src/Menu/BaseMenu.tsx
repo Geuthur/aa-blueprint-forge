@@ -94,15 +94,12 @@ export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPa
         staleTime: 15000,
     });
 
-    // Has issue if any owner's update status has error or token_error
-    const hasStatusIssue = Boolean(
-        (owners &&
-        owners.length > 0 &&
-        owners.some((o) => {
-            const status = (o.status || "").toLowerCase();
-            return status === "error" || status === "token_error" || Boolean(o.has_error);
-        })) || Boolean(link.has_errors)
-    );
+    // An owner has an issue if its update status has error or token_error
+    const issueCount = (owners ?? []).filter((o) => {
+        const status = (o.status || "").toLowerCase();
+        return status === "error" || status === "token_error" || Boolean(o.has_error);
+    }).length;
+    const hasStatusIssue = Boolean(link.has_errors || issueCount > 0);
 
     return (
         <Nav.Item as="li">
@@ -112,16 +109,14 @@ export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPa
                 id={link.name}
                 key={link.name}
                 active={hit}
-                className={hasStatusIssue ? "aa-order-nav-pulse" : ""}
                 data-testid="settings-nav-link"
             >
-                {hasStatusIssue && (
-                    <span className="aa-pending-dot-container me-1" aria-hidden="true">
-                        <span className="aa-danger-dot-ping" />
-                        <span className="aa-danger-dot-core" />
-                    </span>
-                )}
                 {t(link.name)}
+                {issueCount > 0 ? (
+                    <span className={`badge bg-danger ms-1 ${hasStatusIssue ? "aa-menu-badge-pulse" : ""}`}>
+                        {issueCount}
+                    </span>
+                ) : null}
             </Nav.Link>
         </Nav.Item>
     );

@@ -356,5 +356,11 @@
   "Toggle Task Management": "Toggle Task Management",
   "The ESI token is invalid or expired. Re-add the character or corporation.": "The ESI token is invalid or expired. Re-add the character or corporation.",
   "ESI Error Details": "ESI Error Details",
-  "Show error details for {{name}}": "Show error details for {{name}}"
+  "Show error details for {{name}}": "Show error details for {{name}}",
+  "Reset": "Reset",
+  "Done": "Done",
+  "Range…": "Range…",
+  "Clear": "Clear",
+  "Filter…": "Filter…",
+  "No matching options": "No matching options"
 }
