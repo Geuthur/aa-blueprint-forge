@@ -1,7 +1,7 @@
 // AA bpforge
 import { apiClient } from "@/Api/Api";
 import type { components } from "@/Api/OpenApi";
-import { ProjectName } from "@/configuration";
+import { ProjectName } from "@/constants";
 
 export async function loadUserData(): Promise<{ user: components["schemas"]["UserData"] }> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/user/`);
@@ -287,52 +287,52 @@ export async function updateOwnerBpos(
   return data as { success: boolean; count?: number };
 }
 
-export async function loadSuperuserGroups(): Promise<components["schemas"]["GroupSchema"][]> {
-  const { data, error } = await apiClient.GET(`/${ProjectName}/api/superuser/groups/`);
+export async function loadAdministrationGroups(): Promise<components["schemas"]["GroupSchema"][]> {
+  const { data, error } = await apiClient.GET(`/${ProjectName}/api/administration/groups/`);
   if (error || !data) {
     throw new Error("Failed to load Alliance Auth groups");
   }
   return data;
 }
 
-export async function loadSuperuserSettings(): Promise<
-  components["schemas"]["SuperuserNotificationSettingsSchema"]
+export async function loadAdministrationSettings(): Promise<
+  components["schemas"]["AdministrationNotificationSettingsSchema"]
 > {
-  const { data, error } = await apiClient.GET(`/${ProjectName}/api/superuser/settings/`);
+  const { data, error } = await apiClient.GET(`/${ProjectName}/api/administration/settings/`);
   if (error || !data) {
-    throw new Error("Failed to load superuser notification settings");
+    throw new Error("Failed to load administration notification settings");
   }
   return data;
 }
 
-export async function updateSuperuserSettings(
-  payload: components["schemas"]["SuperuserNotificationSettingsSchema"],
-): Promise<components["schemas"]["SuperuserNotificationSettingsSchema"]> {
-  const { data, error } = await apiClient.PUT(`/${ProjectName}/api/superuser/settings/`, {
+export async function updateAdministrationSettings(
+  payload: components["schemas"]["AdministrationNotificationSettingsSchema"],
+): Promise<components["schemas"]["AdministrationNotificationSettingsSchema"]> {
+  const { data, error } = await apiClient.PUT(`/${ProjectName}/api/administration/settings/`, {
     body: payload,
   });
   if (error || !data) {
-    throw new Error("Failed to update superuser notification settings");
+    throw new Error("Failed to update administration notification settings");
   }
   return data;
 }
 
-export async function loadSuperuserOwners(): Promise<
+export async function loadAdministrationOwners(): Promise<
   components["schemas"]["OwnerSettingSchema"][]
 > {
-  const { data, error } = await apiClient.GET(`/${ProjectName}/api/superuser/owners/`);
+  const { data, error } = await apiClient.GET(`/${ProjectName}/api/administration/owners/`);
   if (error || !data) {
-    throw new Error("Failed to load all owners for superuser");
+    throw new Error("Failed to load all owners for administration");
   }
   return data;
 }
 
-export async function updateSuperuserOwner(
+export async function updateAdministrationOwner(
   ownerId: number,
-  payload: components["schemas"]["SuperuserOwnerUpdateRequest"],
+  payload: components["schemas"]["AdministrationOwnerUpdateRequest"],
 ): Promise<components["schemas"]["OwnerSettingSchema"]> {
   const { data, error } = await apiClient.PATCH(
-    `/${ProjectName}/api/superuser/owners/{owner_id}/`,
+    `/${ProjectName}/api/administration/owners/{owner_id}/`,
     {
       params: {
         path: { owner_id: ownerId },
@@ -341,16 +341,16 @@ export async function updateSuperuserOwner(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to update owner by superuser");
+    throw new Error("Failed to update owner by administration");
   }
   return data;
 }
 
-export async function loadSuperuserOwnerBlueprints(
+export async function loadAdministrationOwnerBlueprints(
   ownerId: number,
 ): Promise<components["schemas"]["BlueprintItemSchema"][]> {
   const { data, error } = await apiClient.GET(
-    `/${ProjectName}/api/superuser/owners/{owner_id}/blueprints/`,
+    `/${ProjectName}/api/administration/owners/{owner_id}/blueprints/`,
     {
       params: {
         path: { owner_id: ownerId },
@@ -358,17 +358,17 @@ export async function loadSuperuserOwnerBlueprints(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to load owner blueprints for superuser");
+    throw new Error("Failed to load owner blueprints for administration");
   }
   return data;
 }
 
-export async function triggerSuperuserOwnerUpdate(
+export async function triggerAdministrationOwnerUpdate(
   ownerId: number,
   forceRefresh: boolean = false,
 ): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
   const { data, error } = await apiClient.POST(
-    `/${ProjectName}/api/superuser/owners/{owner_id}/update/`,
+    `/${ProjectName}/api/administration/owners/{owner_id}/update/`,
     {
       params: {
         path: { owner_id: ownerId },
@@ -384,11 +384,11 @@ export async function triggerSuperuserOwnerUpdate(
   return data;
 }
 
-export async function deleteSuperuserOwner(
+export async function deleteAdministrationOwner(
   ownerId: number,
 ): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
   const { data, error } = await apiClient.DELETE(
-    `/${ProjectName}/api/superuser/owners/{owner_id}/`,
+    `/${ProjectName}/api/administration/owners/{owner_id}/`,
     {
       params: {
         path: { owner_id: ownerId },
@@ -401,12 +401,12 @@ export async function deleteSuperuserOwner(
   return data;
 }
 
-export async function triggerSuperuserGlobalUpdate(params: {
+export async function triggerAdministrationGlobalUpdate(params: {
   target: "all" | "characters" | "corporations";
   forceRefresh?: boolean;
 }): Promise<components["schemas"]["TaskTriggerResponseSchema"]> {
   const { data, error } = await apiClient.POST(
-    `/${ProjectName}/api/superuser/tasks/queue/`,
+    `/${ProjectName}/api/administration/tasks/queue/`,
     {
       body: {
         target: params.target,

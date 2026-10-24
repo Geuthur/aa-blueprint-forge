@@ -19,6 +19,7 @@ from bpforge.helpers.eveonline import (
 )
 from bpforge.models.blueprint import Owner
 from bpforge.models.general import (
+    General,
     UserSettings,
     user_can_manage_orders,
     user_is_global_order_manager,
@@ -212,7 +213,7 @@ class ApiEndpoints:
             )
 
             right_menu: list[schema.MenuLink] = []
-            if request.user.has_perm("bpforge.basic_access"):
+            if General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 right_menu.append(
                     schema.MenuLink(
                         name=_("Add Character"),
@@ -228,11 +229,11 @@ class ApiEndpoints:
                     )
                 )
 
-            if request.user.is_superuser:
+            if General.has_perm(request.user, General.Permission.FULL_ACCESS):
                 right_menu.append(
                     schema.MenuLink(
-                        name=_("Superuser"),
-                        link="/superuser/",
+                        name=_("Administration"),
+                        link="/administration/",
                     )
                 )
 
@@ -250,7 +251,7 @@ class ApiEndpoints:
             tags=self.tags,
         )
         def get_user(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             try:
@@ -278,7 +279,9 @@ class ApiEndpoints:
                 else None
             )
 
-            is_admin = bool(request.user.has_perm("bpforge.full_access"))
+            is_admin = bool(
+                General.has_perm(request.user, General.Permission.FULL_ACCESS)
+            )
             can_manage = user_can_manage_orders(request.user)
             is_global_mgr = user_is_global_order_manager(request.user)
 
@@ -292,6 +295,7 @@ class ApiEndpoints:
                 alliance_name=alliance_name,
                 portrait=portrait_url,
                 is_admin=is_admin,
+                is_superuser=bool(request.user.is_superuser),
                 can_manage_orders=can_manage,
                 is_global_order_manager=is_global_mgr,
             )
@@ -306,7 +310,7 @@ class ApiEndpoints:
             summary="Get current user's settings",
         )
         def get_user_settings(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             settings = UserSettings.objects.get_or_create(user=request.user)[0]
@@ -324,7 +328,7 @@ class ApiEndpoints:
             summary="Update current user's settings",
         )
         def update_user_settings(request, payload: schema.UserSettingsUpdateRequest):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             settings = UserSettings.objects.get_or_create(user=request.user)[0]
@@ -344,7 +348,7 @@ class ApiEndpoints:
             summary="List current user's blueprint owners",
         )
         def get_user_owners(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owners = (
@@ -385,7 +389,7 @@ class ApiEndpoints:
             summary="Get current user's character and corporation update statuses for settings overview",
         )
         def get_user_character_statuses(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owners = (
@@ -429,7 +433,7 @@ class ApiEndpoints:
         def update_owner_setting(
             request, owner_id: int, payload: schema.OwnerSettingUpdateRequest
         ):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owner = get_object_or_404(
@@ -458,7 +462,7 @@ class ApiEndpoints:
             )
 
             is_owner = owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -489,12 +493,12 @@ class ApiEndpoints:
             summary="List all BPOs for an owner with their selective offering status",
         )
         def list_owner_bpos(request, owner_id: int):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owner = get_object_or_404(Owner, id=owner_id)
             is_owner = owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -534,12 +538,12 @@ class ApiEndpoints:
         def update_owner_bpos(
             request, owner_id: int, payload: schema.OwnerBpoSelectionUpdateRequest
         ):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owner = get_object_or_404(Owner, id=owner_id)
             is_owner = owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -577,7 +581,7 @@ class ApiEndpoints:
             request,
             payload: schema.OwnerUpdateRequest | None = None,
         ):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             force_refresh = payload.force_refresh if payload else False
@@ -607,7 +611,7 @@ class ApiEndpoints:
             owner_id: int,
             payload: schema.OwnerUpdateRequest | None = None,
         ):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owner = get_object_or_404(
@@ -615,7 +619,7 @@ class ApiEndpoints:
                 id=owner_id,
             )
             is_owner = owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -642,7 +646,7 @@ class ApiEndpoints:
             summary="Delete owner and associated data from blueprint forge",
         )
         def delete_owner_settings(request, owner_id: int):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owner = get_object_or_404(
@@ -650,7 +654,7 @@ class ApiEndpoints:
                 id=owner_id,
             )
             is_owner = owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 

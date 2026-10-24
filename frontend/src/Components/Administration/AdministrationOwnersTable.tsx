@@ -1,5 +1,5 @@
 // React
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 
 // Third Party
 import { createColumnHelper } from "@tanstack/react-table";
@@ -18,12 +18,14 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { OwnerSettingSchema } from "@/Api/schema";
+import { AdministrationErrorModal } from "@/Components/Administration/AdministrationErrorModal";
+import { getEsiStatusBadgeClass } from "@/Components/Administration/esiStatus";
 import BaseTable from "@/Components/Base/BaseTable/BaseTable";
-import styles from "@/Styles/modules/Superuser.module.css";
+import styles from "@/Styles/modules/Administration.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
-interface SuperuserOwnersTableProps {
+interface AdministrationOwnersTableProps {
   owners?: OwnerSettingSchema[];
   isLoading: boolean;
   isError: boolean;
@@ -32,11 +34,12 @@ interface SuperuserOwnersTableProps {
   onDismissFeedback: () => void;
   onInspect: (owner: OwnerSettingSchema) => void;
   onEdit: (owner: OwnerSettingSchema) => void;
+  isSuperuser: boolean;
   onTriggerUpdate: (ownerId: number, forceRefresh: boolean) => void;
   onDelete: (owner: OwnerSettingSchema) => void;
 }
 
-export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
+export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps> = ({
   owners,
   isLoading,
   isError,
@@ -45,10 +48,13 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
   onDismissFeedback,
   onInspect,
   onEdit,
+  isSuperuser,
   onTriggerUpdate,
   onDelete,
 }) => {
   const { t } = useTranslation();
+  // Owner whose ESI error is shown in the modal
+  const [errorOwner, setErrorOwner] = useState<OwnerSettingSchema | null>(null);
 
   const columns = useMemo<ColumnDef<OwnerSettingSchema, unknown>[]>(() => {
     const columnHelper = createColumnHelper<OwnerSettingSchema>();
@@ -126,14 +132,27 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
         header: t("ESI Status"),
         cell: ({ row }) => {
           const owner = row.original;
+          const badgeClass = `badge ${getEsiStatusBadgeClass(owner.status)}`;
+          const hasDetails = Boolean(owner.error_message) || owner.status === "token_error";
+
+          if (!hasDetails) {
+            return <span className={badgeClass}>{owner.status}</span>;
+          }
+
+          // Badge opens the error modal (keyboard accessible)
           return (
             <span
-              className={`badge ${owner.status === "ok"
-                ? "aa-bg-success border border-success"
-                : owner.status === "token_error"
-                  ? "aa-bg-warning border border-warning"
-                  : "aa-bg-danger border border-danger"
-                }`}
+              className={`${badgeClass} ${styles.statusBadgeClickable}`}
+              role="button"
+              tabIndex={0}
+              aria-label={t("Show error details for {{name}}", { name: owner.name })}
+              onClick={() => setErrorOwner(owner)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setErrorOwner(owner);
+                }
+              }}
             >
               {owner.status}
             </span>
@@ -295,10 +314,12 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
                     <RefreshCw size={14} className="me-2 text-primary" />
                     {t("Normal Update")}
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, true)}>
-                    <RefreshCw size={14} className="me-2 text-warning" />
-                    {t("Force Refresh (Bypass Cache)")}
-                  </Dropdown.Item>
+                  {isSuperuser && (
+                    <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, true)}>
+                      <RefreshCw size={14} className="me-2 text-warning" />
+                      {t("Force Refresh (Bypass Cache)")}
+                    </Dropdown.Item>
+                  )}
                 </Dropdown.Menu>
               </Dropdown>
               {renderTooltip(
@@ -318,7 +339,7 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
         },
       }),
     ];
-  }, [t, updatingOwnerId, onInspect, onEdit, onTriggerUpdate, onDelete]);
+  }, [t, updatingOwnerId, isSuperuser, onInspect, onEdit, onTriggerUpdate, onDelete]);
 
   return (
     <Card className="bg-secondary text-light border-0 shadow-sm">
@@ -363,6 +384,13 @@ export const SuperuserOwnersTable: React.FC<SuperuserOwnersTableProps> = ({
           />
         )}
       </Card.Body>
+      <AdministrationErrorModal
+        show={errorOwner !== null}
+        onHide={() => setErrorOwner(null)}
+        ownerName={errorOwner?.name ?? ""}
+        status={errorOwner?.status ?? ""}
+        errorMessage={errorOwner?.error_message}
+      />
     </Card>
   );
 };

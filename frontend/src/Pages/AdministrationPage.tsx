@@ -20,39 +20,47 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import {
-    deleteSuperuserOwner,
-    loadSuperuserGroups,
-    loadSuperuserOwnerBlueprints,
-    loadSuperuserOwners,
-    loadSuperuserSettings,
-    triggerSuperuserGlobalUpdate,
-    triggerSuperuserOwnerUpdate,
-    updateSuperuserOwner,
-    updateSuperuserSettings,
+    deleteAdministrationOwner,
+    loadAdministrationGroups,
+    loadAdministrationOwnerBlueprints,
+    loadAdministrationOwners,
+    loadAdministrationSettings,
+    loadUserData,
+    triggerAdministrationGlobalUpdate,
+    triggerAdministrationOwnerUpdate,
+    updateAdministrationOwner,
+    updateAdministrationSettings,
 } from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
 import type {
     OwnerSettingSchema,
-    SuperuserOwnerUpdateRequest,
+    AdministrationOwnerUpdateRequest,
 } from "@/Api/schema";
+import { AdministrationInspectionView } from "@/Components/Administration/AdministrationInspectionView";
+import { AdministrationOwnerModal } from "@/Components/Administration/AdministrationOwnerModal";
+import { AdministrationOwnersTable } from "@/Components/Administration/AdministrationOwnersTable";
+import { GlobalNotificationSettingsCard } from "@/Components/Administration/GlobalNotificationSettingsCard";
 import { BaseModal } from "@/Components/Base/BaseModal";
-import { GlobalNotificationSettingsCard } from "@/Components/Superuser/GlobalNotificationSettingsCard";
-import { SuperuserInspectionView } from "@/Components/Superuser/SuperuserInspectionView";
-import { SuperuserOwnerModal } from "@/Components/Superuser/SuperuserOwnerModal";
-import { SuperuserOwnersTable } from "@/Components/Superuser/SuperuserOwnersTable";
-import styles from "@/Styles/modules/Superuser.module.css";
+import styles from "@/Styles/modules/Administration.module.css";
 
-const SuperuserPage: React.FC = () => {
+const AdministrationPage: React.FC = () => {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
+
+    // Superuser-only features (global task queue, force refresh) are hidden for administrators
+    const { data: userData } = useQuery({
+        queryKey: queryKeys.User,
+        queryFn: loadUserData,
+    });
+    const isSuperuser = Boolean(userData?.user.is_superuser);
 
     // Queries
     const {
         data: groups,
         isLoading: isLoadingGroups,
     } = useQuery({
-        queryKey: queryKeys.SuperuserGroups,
-        queryFn: loadSuperuserGroups,
+        queryKey: queryKeys.AdministrationGroups,
+        queryFn: loadAdministrationGroups,
     });
 
     const {
@@ -60,8 +68,8 @@ const SuperuserPage: React.FC = () => {
         isLoading: isLoadingSettings,
         isError: isErrorSettings,
     } = useQuery({
-        queryKey: queryKeys.SuperuserSettings,
-        queryFn: loadSuperuserSettings,
+        queryKey: queryKeys.AdministrationSettings,
+        queryFn: loadAdministrationSettings,
     });
 
     const {
@@ -69,8 +77,8 @@ const SuperuserPage: React.FC = () => {
         isLoading: isLoadingOwners,
         isError: isErrorOwners,
     } = useQuery({
-        queryKey: queryKeys.SuperuserOwners,
-        queryFn: loadSuperuserOwners,
+        queryKey: queryKeys.AdministrationOwners,
+        queryFn: loadAdministrationOwners,
     });
 
     // Filter and search state
@@ -108,10 +116,10 @@ const SuperuserPage: React.FC = () => {
 
     // Global settings mutation
     const globalMutation = useMutation({
-        mutationFn: (payload: Parameters<typeof updateSuperuserSettings>[0]) =>
-            updateSuperuserSettings(payload),
+        mutationFn: (payload: Parameters<typeof updateAdministrationSettings>[0]) =>
+            updateAdministrationSettings(payload),
         onSuccess: (updated) => {
-            queryClient.setQueryData(queryKeys.SuperuserSettings, updated);
+            queryClient.setQueryData(queryKeys.AdministrationSettings, updated);
             setUserCreatedGroupIds(null);
             setUserStatusGroupIds(null);
             setGlobalSavedSuccess(true);
@@ -151,10 +159,10 @@ const SuperuserPage: React.FC = () => {
 
     // Owner update mutation
     const ownerMutation = useMutation({
-        mutationFn: ({ ownerId, payload }: { ownerId: number; payload: SuperuserOwnerUpdateRequest }) =>
-            updateSuperuserOwner(ownerId, payload),
+        mutationFn: ({ ownerId, payload }: { ownerId: number; payload: AdministrationOwnerUpdateRequest }) =>
+            updateAdministrationOwner(ownerId, payload),
         onSuccess: (updatedOwner) => {
-            queryClient.setQueryData<OwnerSettingSchema[]>(queryKeys.SuperuserOwners, (old) =>
+            queryClient.setQueryData<OwnerSettingSchema[]>(queryKeys.AdministrationOwners, (old) =>
                 old?.map((o) => (o.id === updatedOwner.id ? updatedOwner : o))
             );
             queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
@@ -166,7 +174,7 @@ const SuperuserPage: React.FC = () => {
         },
     });
 
-    const handleSaveOwner = (payload: SuperuserOwnerUpdateRequest) => {
+    const handleSaveOwner = (payload: AdministrationOwnerUpdateRequest) => {
         if (!editingOwner) return;
         setOwnerEditError(null);
         ownerMutation.mutate({
@@ -184,13 +192,13 @@ const SuperuserPage: React.FC = () => {
 
     const taskMutation = useMutation({
         mutationFn: ({ ownerId, forceRefresh }: { ownerId: number; forceRefresh: boolean }) =>
-            triggerSuperuserOwnerUpdate(ownerId, forceRefresh),
+            triggerAdministrationOwnerUpdate(ownerId, forceRefresh),
         onSuccess: (res) => {
             setTaskFeedback({
                 variant: "success",
                 message: res.message || t("Update task queued successfully."),
             });
-            queryClient.invalidateQueries({ queryKey: queryKeys.SuperuserOwners });
+            queryClient.invalidateQueries({ queryKey: queryKeys.AdministrationOwners });
             queryClient.invalidateQueries({ queryKey: queryKeys.UserCharacterStatuses });
         },
         onError: (err: unknown) => {
@@ -224,7 +232,7 @@ const SuperuserPage: React.FC = () => {
             target: "characters" | "corporations";
             forceRefresh: boolean;
         }) =>
-            triggerSuperuserGlobalUpdate({
+            triggerAdministrationGlobalUpdate({
                 target,
                 forceRefresh,
             }),
@@ -233,7 +241,7 @@ const SuperuserPage: React.FC = () => {
                 variant: "success",
                 message: data.message || t("Global update tasks queued successfully."),
             });
-            queryClient.invalidateQueries({ queryKey: queryKeys.SuperuserOwners });
+            queryClient.invalidateQueries({ queryKey: queryKeys.AdministrationOwners });
         },
         onError: (err: unknown) => {
             setTaskFeedback({
@@ -250,13 +258,13 @@ const SuperuserPage: React.FC = () => {
     const [ownerToDelete, setOwnerToDelete] = useState<OwnerSettingSchema | null>(null);
 
     const deleteOwnerMutation = useMutation({
-        mutationFn: (ownerId: number) => deleteSuperuserOwner(ownerId),
+        mutationFn: (ownerId: number) => deleteAdministrationOwner(ownerId),
         onSuccess: (res) => {
             setTaskFeedback({
                 variant: "success",
                 message: res.message || t("Owner deleted successfully."),
             });
-            queryClient.invalidateQueries({ queryKey: queryKeys.SuperuserOwners });
+            queryClient.invalidateQueries({ queryKey: queryKeys.AdministrationOwners });
             queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
             queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
             setOwnerToDelete(null);
@@ -329,18 +337,18 @@ const SuperuserPage: React.FC = () => {
         refetch: refetchOwnerBlueprints,
     } = useQuery({
         queryKey: inspectingOwner
-            ? queryKeys.SuperuserOwnerBlueprints(inspectingOwner.id)
+            ? queryKeys.AdministrationOwnerBlueprints(inspectingOwner.id)
             : ["none"],
         queryFn: () =>
             inspectingOwner
-                ? loadSuperuserOwnerBlueprints(inspectingOwner.id)
+                ? loadAdministrationOwnerBlueprints(inspectingOwner.id)
                 : Promise.resolve([]),
         enabled: Boolean(inspectingOwner),
     });
 
     if (inspectingOwner) {
         return (
-            <SuperuserInspectionView
+            <AdministrationInspectionView
                 inspectingOwner={inspectingOwner}
                 ownerBlueprints={ownerBlueprints}
                 isLoading={isLoadingOwnerBlueprints}
@@ -350,6 +358,7 @@ const SuperuserPage: React.FC = () => {
                 onDismissFeedback={() => setTaskFeedback(null)}
                 onBack={() => setInspectOwnerId(null)}
                 onRefetch={() => refetchOwnerBlueprints()}
+                isSuperuser={isSuperuser}
                 onTriggerUpdate={handleTriggerOwnerUpdate}
             />
         );
@@ -363,7 +372,7 @@ const SuperuserPage: React.FC = () => {
                         <ShieldAlert size={28} />
                     </div>
                     <div>
-                        <h1 className="h3 mb-1 fw-bold">{t("Superuser Administration")}</h1>
+                        <h1 className="h3 mb-1 fw-bold">{t("Administration")}</h1>
                         <p className="mb-0 small">
                             {t(
                                 "System-wide management of blueprint owners and configuration of Alliance Auth notification groups."
@@ -454,7 +463,8 @@ const SuperuserPage: React.FC = () => {
                     onDismissError={() => setGlobalErrorMsg(null)}
                 />
 
-                {/* Global Task Update Panel (Collapsible) */}
+                {/* Global Task Update Panel (Collapsible, superuser only) */}
+                {isSuperuser && (
                 <Card className="bg-dark border-secondary mb-4 shadow-sm">
                     <Card.Header
                         className={`border-secondary d-flex align-items-center justify-content-between py-2 ${styles.cursorPointer}`}
@@ -462,13 +472,13 @@ const SuperuserPage: React.FC = () => {
                     >
                         <div className="d-flex align-items-center gap-2">
                             <RefreshCw size={16} className="text-primary" />
-                            <span className="fw-semibold text-light">{t("Global Task Administration")}</span>
+                            <span className="fw-semibold text-light">{t("Global Task Management")}</span>
                         </div>
                         <Button
                             variant="link"
                             size="sm"
                             className="p-0 text-muted"
-                            aria-label={t("Toggle Task Administration")}
+                            aria-label={t("Toggle Task Management")}
                             data-testid="toggle-task-panel"
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -561,6 +571,7 @@ const SuperuserPage: React.FC = () => {
                         </Card.Body>
                     )}
                 </Card>
+                )}
 
                 {/* Filter and Search Bar */}
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4 mb-2">
@@ -608,7 +619,7 @@ const SuperuserPage: React.FC = () => {
                     </div>
                 </div>
 
-                <SuperuserOwnersTable
+                <AdministrationOwnersTable
                     owners={filteredOwners}
                     isLoading={isLoadingOwners}
                     isError={isErrorOwners}
@@ -617,11 +628,12 @@ const SuperuserPage: React.FC = () => {
                     onDismissFeedback={() => setTaskFeedback(null)}
                     onInspect={(owner) => setInspectOwnerId(owner.id)}
                     onEdit={(owner) => openOwnerModal(owner)}
+                    isSuperuser={isSuperuser}
                     onTriggerUpdate={handleTriggerOwnerUpdate}
                     onDelete={(owner) => setOwnerToDelete(owner)}
                 />
 
-                <SuperuserOwnerModal
+                <AdministrationOwnerModal
                     owner={editingOwner}
                     groups={groups}
                     isSaving={ownerMutation.isPending}
@@ -705,4 +717,4 @@ const SuperuserPage: React.FC = () => {
     );
 };
 
-export default SuperuserPage;
+export default AdministrationPage;

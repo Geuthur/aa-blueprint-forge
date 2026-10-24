@@ -7,25 +7,25 @@ import { Alert, Badge, Button, Card, Form, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import type { GroupSchema, OwnerSettingSchema, SuperuserOwnerUpdateRequest } from "@/Api/schema";
+import type { GroupSchema, OwnerSettingSchema, AdministrationOwnerUpdateRequest } from "@/Api/schema";
 import { BaseModal } from "@/Components/Base/BaseModal";
-import styles from "@/Styles/modules/Superuser.module.css";
+import styles from "@/Styles/modules/Administration.module.css";
 
-interface SuperuserOwnerModalProps {
+interface AdministrationOwnerModalProps {
     owner: OwnerSettingSchema | null;
     groups?: GroupSchema[];
     isSaving: boolean;
     errorMsg: string | null;
     onClose: () => void;
-    onSave: (payload: SuperuserOwnerUpdateRequest) => void;
+    onSave: (payload: AdministrationOwnerUpdateRequest) => void;
     onDismissError?: () => void;
 }
 
-interface SuperuserOwnerModalDialogProps extends Omit<SuperuserOwnerModalProps, "owner"> {
+interface AdministrationOwnerModalDialogProps extends Omit<AdministrationOwnerModalProps, "owner"> {
     owner: OwnerSettingSchema;
 }
 
-const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
+const AdministrationOwnerModalDialog: React.FC<AdministrationOwnerModalDialogProps> = ({
     owner,
     groups,
     isSaving,
@@ -214,7 +214,7 @@ const SuperuserOwnerModalDialog: React.FC<SuperuserOwnerModalDialogProps> = ({
     );
 };
 
-export const SuperuserOwnerModal: React.FC<SuperuserOwnerModalProps> = (props) => {
+export const AdministrationOwnerModal: React.FC<AdministrationOwnerModalProps> = (props) => {
     if (!props.owner) return null;
-    return <SuperuserOwnerModalDialog key={props.owner.id} {...props} owner={props.owner} />;
+    return <AdministrationOwnerModalDialog key={props.owner.id} {...props} owner={props.owner} />;
 };

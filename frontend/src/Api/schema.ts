@@ -14,9 +14,9 @@ export type OwnerSettingUpdateRequest = components['schemas']['OwnerSettingUpdat
 export type OwnerBpoItemSchema = components['schemas']['OwnerBpoItemSchema']
 export type OwnerBpoSelectionUpdateRequest = components['schemas']['OwnerBpoSelectionUpdateRequest']
 export type GroupSchema = components['schemas']['GroupSchema']
-export type SuperuserNotificationSettingsSchema = components['schemas']['SuperuserNotificationSettingsSchema']
-export type SuperuserOwnerUpdateRequest = components['schemas']['SuperuserOwnerUpdateRequest']
-export type SuperuserUpdateOwnerTaskRequest = components['schemas']['SuperuserUpdateOwnerTaskRequest']
+export type AdministrationNotificationSettingsSchema = components['schemas']['AdministrationNotificationSettingsSchema']
+export type AdministrationOwnerUpdateRequest = components['schemas']['AdministrationOwnerUpdateRequest']
+export type AdministrationUpdateOwnerTaskRequest = components['schemas']['AdministrationUpdateOwnerTaskRequest']
 export type TaskTriggerResponseSchema = components['schemas']['TaskTriggerResponseSchema']
 export type BlueprintItemSchema = components['schemas']['BlueprintItemSchema']
 

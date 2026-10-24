@@ -1166,9 +1166,9 @@
         ]
       }
     },
-    "/bpforge/api/superuser/groups/": {
+    "/bpforge/api/administration/groups/": {
       "get": {
-        "operationId": "bpforge_api_superuser_list_groups",
+        "operationId": "bpforge_api_administration_list_groups",
         "summary": "List all Alliance Auth groups for notification configuration",
         "parameters": [],
         "responses": {
@@ -1200,7 +1200,7 @@
           }
         },
         "tags": [
-          "Superuser"
+          "Administration"
         ],
         "security": [
           {
@@ -1209,10 +1209,10 @@
         ]
       }
     },
-    "/bpforge/api/superuser/settings/": {
+    "/bpforge/api/administration/settings/": {
       "get": {
-        "operationId": "bpforge_api_superuser_get_notification_settings",
-        "summary": "Get global notification settings for superusers",
+        "operationId": "bpforge_api_administration_get_notification_settings",
+        "summary": "Get global notification settings for administrators",
         "parameters": [],
         "responses": {
           "200": {
@@ -1220,7 +1220,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuperuserNotificationSettingsSchema"
+                  "$ref": "#/components/schemas/AdministrationNotificationSettingsSchema"
                 }
               }
             }
@@ -1239,7 +1239,7 @@
           }
         },
         "tags": [
-          "Superuser"
+          "Administration"
         ],
         "security": [
           {
@@ -1248,8 +1248,8 @@
         ]
       },
       "put": {
-        "operationId": "bpforge_api_superuser_update_notification_settings",
-        "summary": "Update global notification settings for superusers",
+        "operationId": "bpforge_api_administration_update_notification_settings",
+        "summary": "Update global notification settings for administrators",
         "parameters": [],
         "responses": {
           "200": {
@@ -1257,7 +1257,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuperuserNotificationSettingsSchema"
+                  "$ref": "#/components/schemas/AdministrationNotificationSettingsSchema"
                 }
               }
             }
@@ -1276,13 +1276,13 @@
           }
         },
         "tags": [
-          "Superuser"
+          "Administration"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SuperuserNotificationSettingsSchema"
+                "$ref": "#/components/schemas/AdministrationNotificationSettingsSchema"
               }
             }
           },
@@ -1295,10 +1295,10 @@
         ]
       }
     },
-    "/bpforge/api/superuser/owners/": {
+    "/bpforge/api/administration/owners/": {
       "get": {
-        "operationId": "bpforge_api_superuser_list_all_owners",
-        "summary": "List all owners across the entire system for superuser management",
+        "operationId": "bpforge_api_administration_list_all_owners",
+        "summary": "List all owners across the entire system for administration management",
         "parameters": [],
         "responses": {
           "200": {
@@ -1329,7 +1329,7 @@
           }
         },
         "tags": [
-          "Superuser"
+          "Administration"
         ],
         "security": [
           {
@@ -1338,10 +1338,10 @@
         ]
       }
     },
-    "/bpforge/api/superuser/owners/{owner_id}/": {
+    "/bpforge/api/administration/owners/{owner_id}/": {
       "patch": {
-        "operationId": "bpforge_api_superuser_update_owner_by_superuser",
-        "summary": "Superuser update of an owner's settings and notification groups",
+        "operationId": "bpforge_api_administration_update_owner_by_administration",
+        "summary": "Administration update of an owner's settings and notification groups",
         "parameters": [
           {
             "in": "path",
@@ -1390,13 +1390,13 @@
           }
         },
         "tags": [
-          "Superuser"
+          "Administration"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SuperuserOwnerUpdateRequest"
+                "$ref": "#/components/schemas/AdministrationOwnerUpdateRequest"
               }
             }
           },
@@ -1409,7 +1409,7 @@
         ]
       },
       "delete": {
-        "operationId": "bpforge_api_superuser_delete_owner_by_superuser",
+        "operationId": "bpforge_api_administration_delete_owner_by_administration",
         "summary": "Delete an owner and all associated blueprints and configurations",
         "parameters": [
           {
@@ -1459,7 +1459,7 @@
           }
         },
         "tags": [
-          "Superuser"
+          "Administration"
         ],
         "security": [
           {
@@ -1468,10 +1468,10 @@
         ]
       }
     },
-    "/bpforge/api/superuser/owners/{owner_id}/blueprints/": {
+    "/bpforge/api/administration/owners/{owner_id}/blueprints/": {
       "get": {
-        "operationId": "bpforge_api_superuser_list_owner_blueprints_for_superuser",
-        "summary": "List all blueprints for a specific owner for superuser inspection",
+        "operationId": "bpforge_api_administration_list_owner_blueprints_for_administration",
+        "summary": "List all blueprints for a specific owner for administration inspection",
         "parameters": [
           {
             "in": "path",
@@ -1524,7 +1524,7 @@
           }
         },
         "tags": [
-          "Superuser"
+          "Administration"
         ],
         "security": [
           {
@@ -1533,9 +1533,9 @@
         ]
       }
     },
-    "/bpforge/api/superuser/owners/{owner_id}/update/": {
+    "/bpforge/api/administration/owners/{owner_id}/update/": {
       "post": {
-        "operationId": "bpforge_api_superuser_trigger_owner_update",
+        "operationId": "bpforge_api_administration_trigger_owner_update",
         "summary": "Trigger update_owner Celery task for a specific owner",
         "parameters": [
           {
@@ -1585,7 +1585,7 @@
           }
         },
         "tags": [
-          "Superuser"
+          "Administration"
         ],
         "requestBody": {
           "content": {
@@ -1593,7 +1593,7 @@
               "schema": {
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/SuperuserUpdateOwnerTaskRequest"
+                    "$ref": "#/components/schemas/AdministrationUpdateOwnerTaskRequest"
                   },
                   {
                     "type": "null"
@@ -1611,9 +1611,9 @@
         ]
       }
     },
-    "/bpforge/api/superuser/tasks/queue/": {
+    "/bpforge/api/administration/tasks/queue/": {
       "post": {
-        "operationId": "bpforge_api_superuser_trigger_global_update",
+        "operationId": "bpforge_api_administration_trigger_global_update",
         "summary": "Trigger global update tasks for all owners or characters/corporations",
         "parameters": [],
         "responses": {
@@ -1641,7 +1641,7 @@
           }
         },
         "tags": [
-          "Superuser"
+          "Administration"
         ],
         "requestBody": {
           "content": {
@@ -1649,7 +1649,7 @@
               "schema": {
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/SuperuserGlobalTaskRequest"
+                    "$ref": "#/components/schemas/GlobalUpdateTaskRequest"
                   },
                   {
                     "type": "null"
@@ -1806,7 +1806,7 @@
         "type": "object"
       },
       "UserData": {
-        "description": "Schema for user data, including character ID and character name.\n\nParameters:\n    user_id (int): The ID of the user.\n    character_id (int): The ID of the character associated with the user.\n    character_name (str): The name of the character.\n    corporation_id (int): The ID of the corporation associated with the user.\n    corporation_name (str): The name of the corporation associated with the user.\n    alliance_id (int | None): The ID of the alliance associated with the user, if any.\n    alliance_name (str | None): The name of the alliance associated with the user, if any.\n    portrait (str | None): The URL or path to the character's portrait image.\n    is_admin (boolean): The admin status for the user.",
+        "description": "Schema for user data, including character ID and character name.\n\nParameters:\n    user_id (int): The ID of the user.\n    character_id (int): The ID of the character associated with the user.\n    character_name (str): The name of the character.\n    corporation_id (int): The ID of the corporation associated with the user.\n    corporation_name (str): The name of the corporation associated with the user.\n    alliance_id (int | None): The ID of the alliance associated with the user, if any.\n    alliance_name (str | None): The name of the alliance associated with the user, if any.\n    portrait (str | None): The URL or path to the character's portrait image.\n    is_admin (boolean): The admin status for the user.\n    is_superuser (boolean): Whether the user is a superuser.",
         "properties": {
           "user_id": {
             "title": "User Id",
@@ -1864,6 +1864,11 @@
           "is_admin": {
             "default": false,
             "title": "Is Admin",
+            "type": "boolean"
+          },
+          "is_superuser": {
+            "default": false,
+            "title": "Is Superuser",
             "type": "boolean"
           },
           "can_manage_orders": {
@@ -2911,8 +2916,8 @@
         "title": "GroupSchema",
         "type": "object"
       },
-      "SuperuserNotificationSettingsSchema": {
-        "description": "Global notification settings for Superusers.",
+      "AdministrationNotificationSettingsSchema": {
+        "description": "Global notification settings for Administrators.",
         "properties": {
           "order_created_group_ids": {
             "items": {
@@ -2933,11 +2938,11 @@
           "order_created_group_ids",
           "order_status_group_ids"
         ],
-        "title": "SuperuserNotificationSettingsSchema",
+        "title": "AdministrationNotificationSettingsSchema",
         "type": "object"
       },
-      "SuperuserOwnerUpdateRequest": {
-        "description": "Payload for superusers to update owner visibility and notification groups.",
+      "AdministrationOwnerUpdateRequest": {
+        "description": "Payload for administrators to update owner visibility and notification groups.",
         "properties": {
           "is_public": {
             "anyOf": [
@@ -3001,10 +3006,10 @@
             "title": "Notify Order Status Group Ids"
           }
         },
-        "title": "SuperuserOwnerUpdateRequest",
+        "title": "AdministrationOwnerUpdateRequest",
         "type": "object"
       },
-      "SuperuserUpdateOwnerTaskRequest": {
+      "AdministrationUpdateOwnerTaskRequest": {
         "description": "Payload to trigger update_owner Celery task.",
         "properties": {
           "force_refresh": {
@@ -3013,10 +3018,10 @@
             "type": "boolean"
           }
         },
-        "title": "SuperuserUpdateOwnerTaskRequest",
+        "title": "AdministrationUpdateOwnerTaskRequest",
         "type": "object"
       },
-      "SuperuserGlobalTaskRequest": {
+      "GlobalUpdateTaskRequest": {
         "description": "Payload to trigger global owner update task.",
         "properties": {
           "target": {
@@ -3030,7 +3035,7 @@
             "type": "boolean"
           }
         },
-        "title": "SuperuserGlobalTaskRequest",
+        "title": "GlobalUpdateTaskRequest",
         "type": "object"
       }
     },

@@ -28,15 +28,6 @@ Section Order:
 
 <!-- AI Changes -->
 
-### Changed
-
-- [CHANGE] Removed pulse and warning dot indicator from Overview `OwnerCard` `Browse Blueprints` button; the pulse notification is restricted to the `Settings` navigation item when user's own owner is affected.
-- [CHANGE] Settings navigation item displays a pulsating red dot and pulse animation (`aa-order-nav-pulse`) when an ESI error or token error is present.
-- [CHANGE] Refactored `SettingsPage` to use modular `BaseOwnerSettingsSection` and `BaseOwnerCard` for unified owner settings management.
-- [CHANGE] Integrated `nuqs` URL query parameter (`?inspect=<ownerId>`) for the Superuser inspection view, enabling native browser back/forward navigation.
-
-<!-- Your changes go here -->
-
 ### Added
 
 - [ADD] Owner manual update endpoint `POST /bpforge/api/settings/owners/{owner_id}/update/` with Celery task queueing.
@@ -68,6 +59,22 @@ Section Order:
 ### Fixed
 
 - Fixed invalid ORM field lookups in `bpforge.thirdparty.charlink_hook` (`character__character` and `corporation__corporation_id` in `is_character_added_annotation`).
+
+### Changed
+
+- [CHANGE] Removed pulse and warning dot indicator from Overview `OwnerCard` `Browse Blueprints` button; the pulse notification is restricted to the `Settings` navigation item when user's own owner is affected.
+- [CHANGE] Settings navigation item displays a pulsating red dot and pulse animation (`aa-order-nav-pulse`) when an ESI error or token error is present.
+- [CHANGE] Refactored `SettingsPage` to use modular `BaseOwnerSettingsSection` and `BaseOwnerCard` for unified owner settings management.
+- [CHANGE] Integrated `nuqs` URL query parameter (`?inspect=<ownerId>`) for the Superuser inspection view, enabling native browser back/forward navigation.
+- [CHANGE] Centralized permission handling in `General.Permission` (`TextChoices`) with `General.get_perm`, `General.has_perm` and `General.has_any_perm`; permission codenames are unchanged (migration only updates model options).
+- [CHANGE] Renamed the "Superuser" area to "Administration": API paths `superuser/...` -> `administration/...`, `api/superuser.py` -> `api/administration.py`, `Superuser*` schemas/pages/components/query keys -> `Administration*`, menu link `/administration/`.
+- [CHANGE] Administration endpoints and the menu entry are now guarded by the `bpforge.full_access` permission instead of `is_superuser`; only the global update queue (`POST administration/tasks/queue/`) and `force_refresh` remain superuser-only (`force_refresh` by non-superusers returns 403).
+- [CHANGE] Removed redundant `is_superuser` branches from `AccessQuerySet`/`AccessManager` and `user_is_global_order_manager`; the permission system decides.
+- [CHANGE] `UserData` exposes `is_superuser`; the global task panel and the Force Refresh actions are only shown to superusers.
+- [CHANGE] Aligned the frontend entry files with `aa-ledger`: `main.tsx` -> `Main.tsx`, `App.tsx` -> `Routing.tsx`, `configuration.ts` -> `src/constants.ts`, `index.css` -> `Styles/index.css`; i18n initialisation moved to `Main.tsx`.
+- [CHANGE] The ESI status badge in the Administration owners table opens the new `AdministrationErrorModal` with the full error message when the owner has an error or a `token_error`; owners without errors keep a plain badge. `SettingsPage` is unchanged.
+
+<!-- Your changes go here -->
 
 ## [1.0.2] - 2026-10-18
 

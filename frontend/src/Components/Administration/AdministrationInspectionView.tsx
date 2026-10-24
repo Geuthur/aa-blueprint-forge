@@ -9,11 +9,11 @@ import { useTranslation } from "react-i18next";
 // AA bpforge
 import type { BlueprintItemSchema, OwnerSettingSchema } from "@/Api/schema";
 import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
-import styles from "@/Styles/modules/Superuser.module.css";
+import styles from "@/Styles/modules/Administration.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
-interface SuperuserInspectionViewProps {
+interface AdministrationInspectionViewProps {
   inspectingOwner: OwnerSettingSchema;
   ownerBlueprints: BlueprintItemSchema[];
   isLoading: boolean;
@@ -23,10 +23,11 @@ interface SuperuserInspectionViewProps {
   onDismissFeedback: () => void;
   onBack: () => void;
   onRefetch: () => void;
+  isSuperuser: boolean;
   onTriggerUpdate: (ownerId: number, forceRefresh: boolean) => void;
 }
 
-export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = ({
+export const AdministrationInspectionView: React.FC<AdministrationInspectionViewProps> = ({
   inspectingOwner,
   ownerBlueprints,
   isLoading,
@@ -36,6 +37,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
   onDismissFeedback,
   onBack,
   onRefetch,
+  isSuperuser,
   onTriggerUpdate,
 }) => {
   const { t } = useTranslation();
@@ -63,7 +65,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
               className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
             >
               <ArrowLeft size={16} />
-              <span>{t("Back to Superuser Overview")}</span>
+              <span>{t("Back to Administration Overview")}</span>
             </Button>
             {avatarUrl && (
               <img
@@ -78,7 +80,7 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
               <div className="d-flex align-items-center gap-2">
                 <h1 className="h4 mb-0 fw-bold">{inspectingOwner.name}</h1>
                 <Badge bg="warning" text="dark">
-                  {t("Superuser Inspection")}
+                  {t("Administration Inspection")}
                 </Badge>
                 {inspectingOwner.is_public ? (
                   <Badge bg="success">{t("Public Shop")}</Badge>
@@ -131,10 +133,12 @@ export const SuperuserInspectionView: React.FC<SuperuserInspectionViewProps> = (
                   <RefreshCw size={14} className="me-2 text-primary" />
                   {t("Normal Update")}
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => onTriggerUpdate(inspectingOwner.id, true)}>
-                  <RefreshCw size={14} className="me-2 text-warning" />
-                  {t("Force Refresh (Bypass Cache)")}
-                </Dropdown.Item>
+                {isSuperuser && (
+                  <Dropdown.Item onClick={() => onTriggerUpdate(inspectingOwner.id, true)}>
+                    <RefreshCw size={14} className="me-2 text-warning" />
+                    {t("Force Refresh (Bypass Cache)")}
+                  </Dropdown.Item>
+                )}
               </Dropdown.Menu>
             </Dropdown>
             <Button

@@ -1,5 +1,8 @@
 """Models for General."""
 
+# Standard Library
+from typing import Any
+
 # Django
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -10,18 +13,43 @@ from allianceauth.groupmanagement.models import Group
 
 
 class General(models.Model):
-    """General model for app permissions"""
+    """General model for app permissions and permission helpers."""
+
+    class Permission(models.TextChoices):
+        """All permissions of this app (codename, description)."""
+
+        BASIC_ACCESS = "basic_access", _("Can access this app")
+        MANAGE_ACCESS = "manage_access", _("Can manage")
+        FULL_ACCESS = "full_access", _("Full access")
 
     class Meta:
         managed = False
         verbose_name = "AA-Blueprint-Forge"
         verbose_name_plural = "AA-Blueprint-Forge"
-        permissions = (
-            ("basic_access", _("Can access this app")),
-            ("manage_access", _("Can manage")),
-            ("full_access", _("Full access")),
-        )
         default_permissions = ()  # Remove standard permissions
+
+    # Inject dynamic permissions
+    Meta.permissions = Permission.choices
+
+    @classmethod
+    def get_perm(cls, perm: "str | Permission") -> str:
+        """Return full permission string 'bpforge.<codename>'."""
+        codename = perm.value if isinstance(perm, cls.Permission) else perm
+        return f"bpforge.{codename}"
+
+    @classmethod
+    def has_perm(cls, user: Any, perm: "str | General.Permission") -> bool:
+        """Check if user has permission."""
+        if not user or not hasattr(user, "has_perm"):
+            return False
+        return user.has_perm(cls.get_perm(perm))
+
+    @classmethod
+    def has_any_perm(cls, user: Any, *perms: "str | General.Permission") -> bool:
+        """Return True if user has any of the specified permissions."""
+        if not user or not hasattr(user, "has_perm"):
+            return False
+        return any(user.has_perm(cls.get_perm(p)) for p in perms)
 
 
 class UserSettings(models.Model):
@@ -38,7 +66,7 @@ class UserSettings(models.Model):
 
 
 class GeneralNotificationSettings(models.Model):
-    """Global notification settings managed by Superusers."""
+    """Global notification settings managed by Administration."""
 
     class Meta:
         default_permissions = ()
@@ -85,7 +113,7 @@ def user_is_global_order_manager(user: User) -> bool:
     """Check if user has global management rights over all orders."""
     if not user or not user.is_authenticated:
         return False
-    if user.is_superuser or user.has_perm("bpforge.full_access"):
+    if General.has_perm(user, General.Permission.FULL_ACCESS):
         return True
     settings_obj = GeneralNotificationSettings.get_solo()
     user_group_ids = set(user.groups.values_list("id", flat=True))
@@ -99,7 +127,7 @@ def user_is_corp_order_manager(user: User) -> bool:
     """Check if user has management rights over their corporation's orders."""
     if not user or not user.is_authenticated:
         return False
-    return user.has_perm("bpforge.manage_access")
+    return General.has_perm(user, General.Permission.MANAGE_ACCESS)
 
 
 def user_can_manage_orders(user: User) -> bool:

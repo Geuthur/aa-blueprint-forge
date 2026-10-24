@@ -10,6 +10,7 @@ from allianceauth.services.hooks import MenuItemHook, UrlHook
 
 # AA Blueprint Forge
 from bpforge import app_settings, urls
+from bpforge.models.general import General
 
 
 class BlueprintForgeMenuItem(MenuItemHook):
@@ -24,7 +25,7 @@ class BlueprintForgeMenuItem(MenuItemHook):
         )
 
     def render(self, request):
-        if request.user.has_perm("bpforge.basic_access"):
+        if General.has_perm(request.user, General.Permission.BASIC_ACCESS):
             return MenuItemHook.render(self, request)
         return ""
 

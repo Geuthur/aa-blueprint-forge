@@ -284,7 +284,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/bpforge/api/superuser/groups/": {
+    "/bpforge/api/administration/groups/": {
         parameters: {
             query?: never;
             header?: never;
@@ -292,7 +292,7 @@ export interface paths {
             cookie?: never;
         };
         /** List all Alliance Auth groups for notification configuration */
-        get: operations["bpforge_api_superuser_list_groups"];
+        get: operations["bpforge_api_administration_list_groups"];
         put?: never;
         post?: never;
         delete?: never;
@@ -301,17 +301,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/bpforge/api/superuser/settings/": {
+    "/bpforge/api/administration/settings/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get global notification settings for superusers */
-        get: operations["bpforge_api_superuser_get_notification_settings"];
-        /** Update global notification settings for superusers */
-        put: operations["bpforge_api_superuser_update_notification_settings"];
+        /** Get global notification settings for administrators */
+        get: operations["bpforge_api_administration_get_notification_settings"];
+        /** Update global notification settings for administrators */
+        put: operations["bpforge_api_administration_update_notification_settings"];
         post?: never;
         delete?: never;
         options?: never;
@@ -319,15 +319,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/bpforge/api/superuser/owners/": {
+    "/bpforge/api/administration/owners/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List all owners across the entire system for superuser management */
-        get: operations["bpforge_api_superuser_list_all_owners"];
+        /** List all owners across the entire system for administration management */
+        get: operations["bpforge_api_administration_list_all_owners"];
         put?: never;
         post?: never;
         delete?: never;
@@ -336,7 +336,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/bpforge/api/superuser/owners/{owner_id}/": {
+    "/bpforge/api/administration/owners/{owner_id}/": {
         parameters: {
             query?: never;
             header?: never;
@@ -347,22 +347,22 @@ export interface paths {
         put?: never;
         post?: never;
         /** Delete an owner and all associated blueprints and configurations */
-        delete: operations["bpforge_api_superuser_delete_owner_by_superuser"];
+        delete: operations["bpforge_api_administration_delete_owner_by_administration"];
         options?: never;
         head?: never;
-        /** Superuser update of an owner's settings and notification groups */
-        patch: operations["bpforge_api_superuser_update_owner_by_superuser"];
+        /** Administration update of an owner's settings and notification groups */
+        patch: operations["bpforge_api_administration_update_owner_by_administration"];
         trace?: never;
     };
-    "/bpforge/api/superuser/owners/{owner_id}/blueprints/": {
+    "/bpforge/api/administration/owners/{owner_id}/blueprints/": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List all blueprints for a specific owner for superuser inspection */
-        get: operations["bpforge_api_superuser_list_owner_blueprints_for_superuser"];
+        /** List all blueprints for a specific owner for administration inspection */
+        get: operations["bpforge_api_administration_list_owner_blueprints_for_administration"];
         put?: never;
         post?: never;
         delete?: never;
@@ -371,7 +371,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/bpforge/api/superuser/owners/{owner_id}/update/": {
+    "/bpforge/api/administration/owners/{owner_id}/update/": {
         parameters: {
             query?: never;
             header?: never;
@@ -381,14 +381,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Trigger update_owner Celery task for a specific owner */
-        post: operations["bpforge_api_superuser_trigger_owner_update"];
+        post: operations["bpforge_api_administration_trigger_owner_update"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/bpforge/api/superuser/tasks/queue/": {
+    "/bpforge/api/administration/tasks/queue/": {
         parameters: {
             query?: never;
             header?: never;
@@ -398,7 +398,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Trigger global update tasks for all owners or characters/corporations */
-        post: operations["bpforge_api_superuser_trigger_global_update"];
+        post: operations["bpforge_api_administration_trigger_global_update"];
         delete?: never;
         options?: never;
         head?: never;
@@ -499,6 +499,7 @@ export interface components {
          *         alliance_name (str | None): The name of the alliance associated with the user, if any.
          *         portrait (str | None): The URL or path to the character's portrait image.
          *         is_admin (boolean): The admin status for the user.
+         *         is_superuser (boolean): Whether the user is a superuser.
          */
         UserData: {
             /** User Id */
@@ -522,6 +523,11 @@ export interface components {
              * @default false
              */
             is_admin: boolean;
+            /**
+             * Is Superuser
+             * @default false
+             */
+            is_superuser: boolean;
             /**
              * Can Manage Orders
              * @default false
@@ -987,20 +993,20 @@ export interface components {
             name: string;
         };
         /**
-         * SuperuserNotificationSettingsSchema
-         * @description Global notification settings for Superusers.
+         * AdministrationNotificationSettingsSchema
+         * @description Global notification settings for Administrators.
          */
-        SuperuserNotificationSettingsSchema: {
+        AdministrationNotificationSettingsSchema: {
             /** Order Created Group Ids */
             order_created_group_ids: number[];
             /** Order Status Group Ids */
             order_status_group_ids: number[];
         };
         /**
-         * SuperuserOwnerUpdateRequest
-         * @description Payload for superusers to update owner visibility and notification groups.
+         * AdministrationOwnerUpdateRequest
+         * @description Payload for administrators to update owner visibility and notification groups.
          */
-        SuperuserOwnerUpdateRequest: {
+        AdministrationOwnerUpdateRequest: {
             /** Is Public */
             is_public?: boolean | null;
             /** Public Type */
@@ -1013,10 +1019,10 @@ export interface components {
             notify_order_status_group_ids?: number[] | null;
         };
         /**
-         * SuperuserUpdateOwnerTaskRequest
+         * AdministrationUpdateOwnerTaskRequest
          * @description Payload to trigger update_owner Celery task.
          */
-        SuperuserUpdateOwnerTaskRequest: {
+        AdministrationUpdateOwnerTaskRequest: {
             /**
              * Force Refresh
              * @default false
@@ -1024,10 +1030,10 @@ export interface components {
             force_refresh: boolean;
         };
         /**
-         * SuperuserGlobalTaskRequest
+         * GlobalUpdateTaskRequest
          * @description Payload to trigger global owner update task.
          */
-        SuperuserGlobalTaskRequest: {
+        GlobalUpdateTaskRequest: {
             /**
              * Target
              * @default all
@@ -1861,7 +1867,7 @@ export interface operations {
             };
         };
     };
-    bpforge_api_superuser_list_groups: {
+    bpforge_api_administration_list_groups: {
         parameters: {
             query?: never;
             header?: never;
@@ -1892,7 +1898,7 @@ export interface operations {
             };
         };
     };
-    bpforge_api_superuser_get_notification_settings: {
+    bpforge_api_administration_get_notification_settings: {
         parameters: {
             query?: never;
             header?: never;
@@ -1907,7 +1913,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SuperuserNotificationSettingsSchema"];
+                    "application/json": components["schemas"]["AdministrationNotificationSettingsSchema"];
                 };
             };
             /** @description Forbidden */
@@ -1923,7 +1929,7 @@ export interface operations {
             };
         };
     };
-    bpforge_api_superuser_update_notification_settings: {
+    bpforge_api_administration_update_notification_settings: {
         parameters: {
             query?: never;
             header?: never;
@@ -1932,7 +1938,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SuperuserNotificationSettingsSchema"];
+                "application/json": components["schemas"]["AdministrationNotificationSettingsSchema"];
             };
         };
         responses: {
@@ -1942,7 +1948,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SuperuserNotificationSettingsSchema"];
+                    "application/json": components["schemas"]["AdministrationNotificationSettingsSchema"];
                 };
             };
             /** @description Forbidden */
@@ -1958,7 +1964,7 @@ export interface operations {
             };
         };
     };
-    bpforge_api_superuser_list_all_owners: {
+    bpforge_api_administration_list_all_owners: {
         parameters: {
             query?: never;
             header?: never;
@@ -1989,7 +1995,7 @@ export interface operations {
             };
         };
     };
-    bpforge_api_superuser_delete_owner_by_superuser: {
+    bpforge_api_administration_delete_owner_by_administration: {
         parameters: {
             query?: never;
             header?: never;
@@ -2033,7 +2039,7 @@ export interface operations {
             };
         };
     };
-    bpforge_api_superuser_update_owner_by_superuser: {
+    bpforge_api_administration_update_owner_by_administration: {
         parameters: {
             query?: never;
             header?: never;
@@ -2044,7 +2050,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SuperuserOwnerUpdateRequest"];
+                "application/json": components["schemas"]["AdministrationOwnerUpdateRequest"];
             };
         };
         responses: {
@@ -2081,7 +2087,7 @@ export interface operations {
             };
         };
     };
-    bpforge_api_superuser_list_owner_blueprints_for_superuser: {
+    bpforge_api_administration_list_owner_blueprints_for_administration: {
         parameters: {
             query?: never;
             header?: never;
@@ -2125,7 +2131,7 @@ export interface operations {
             };
         };
     };
-    bpforge_api_superuser_trigger_owner_update: {
+    bpforge_api_administration_trigger_owner_update: {
         parameters: {
             query?: never;
             header?: never;
@@ -2136,7 +2142,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["SuperuserUpdateOwnerTaskRequest"] | null;
+                "application/json": components["schemas"]["AdministrationUpdateOwnerTaskRequest"] | null;
             };
         };
         responses: {
@@ -2173,7 +2179,7 @@ export interface operations {
             };
         };
     };
-    bpforge_api_superuser_trigger_global_update: {
+    bpforge_api_administration_trigger_global_update: {
         parameters: {
             query?: never;
             header?: never;
@@ -2182,7 +2188,7 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["SuperuserGlobalTaskRequest"] | null;
+                "application/json": components["schemas"]["GlobalUpdateTaskRequest"] | null;
             };
         };
         responses: {

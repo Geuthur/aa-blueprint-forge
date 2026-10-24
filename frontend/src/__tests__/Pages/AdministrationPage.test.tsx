@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // AA bpforge
 import * as ApiCalls from "@/Api/ApiCalls";
-import SuperuserPage from "@/Pages/SuperuserPage";
+import AdministrationPage from "@/Pages/AdministrationPage";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -19,16 +19,31 @@ vi.mock("react-i18next", () => ({
 }));
 
 vi.mock("@/Api/ApiCalls", () => ({
-  deleteSuperuserOwner: vi.fn(),
-  loadSuperuserGroups: vi.fn(),
-  loadSuperuserSettings: vi.fn(),
-  updateSuperuserSettings: vi.fn(),
-  loadSuperuserOwners: vi.fn(),
-  updateSuperuserOwner: vi.fn(),
-  loadSuperuserOwnerBlueprints: vi.fn(),
-  triggerSuperuserOwnerUpdate: vi.fn(),
-  triggerSuperuserGlobalUpdate: vi.fn(),
+  deleteAdministrationOwner: vi.fn(),
+  loadAdministrationGroups: vi.fn(),
+  loadAdministrationSettings: vi.fn(),
+  loadUserData: vi.fn(),
+  updateAdministrationSettings: vi.fn(),
+  loadAdministrationOwners: vi.fn(),
+  updateAdministrationOwner: vi.fn(),
+  loadAdministrationOwnerBlueprints: vi.fn(),
+  triggerAdministrationOwnerUpdate: vi.fn(),
+  triggerAdministrationGlobalUpdate: vi.fn(),
 }));
+
+const mockUserData = (isSuperuser: boolean) => ({
+  user: {
+    user_id: 1,
+    character_id: 1,
+    character_name: "Admin",
+    corporation_id: 1,
+    corporation_name: "Corp",
+    is_admin: true,
+    is_superuser: isSuperuser,
+    can_manage_orders: true,
+    is_global_order_manager: true,
+  },
+});
 
 const renderPage = () => {
   const queryClient = new QueryClient({
@@ -38,16 +53,17 @@ const renderPage = () => {
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
         <NuqsTestingAdapter hasMemory>
-          <SuperuserPage />
+          <AdministrationPage />
         </NuqsTestingAdapter>
       </MemoryRouter>
     </QueryClientProvider>
   );
 };
 
-describe("SuperuserPage", () => {
+describe("AdministrationPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(ApiCalls.loadUserData).mockResolvedValue(mockUserData(false));
   });
 
   it("should render global notification groups and allow updating them", async () => {
@@ -62,10 +78,10 @@ describe("SuperuserPage", () => {
       order_status_group_ids: [2],
     };
 
-    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue(mockGroups);
-    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue(mockSettings);
-    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue([]);
-    vi.mocked(ApiCalls.updateSuperuserSettings).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue(mockGroups);
+    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue(mockSettings);
+    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue([]);
+    vi.mocked(ApiCalls.updateAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [1, 2],
       order_status_group_ids: [2],
     });
@@ -74,7 +90,7 @@ describe("SuperuserPage", () => {
     renderPage();
 
     // Expected Result
-    expect(await screen.findByText("Superuser Administration")).toBeInTheDocument();
+    expect(await screen.findByText("Administration")).toBeInTheDocument();
     expect(screen.getByText("Global Notification Groups")).toBeInTheDocument();
 
     // Expand notification panel
@@ -93,7 +109,7 @@ describe("SuperuserPage", () => {
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(ApiCalls.updateSuperuserSettings).toHaveBeenCalledWith({
+      expect(ApiCalls.updateAdministrationSettings).toHaveBeenCalledWith({
         order_created_group_ids: [1, 2],
         order_status_group_ids: [2],
       });
@@ -132,13 +148,13 @@ describe("SuperuserPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue(mockGroups);
-    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue(mockGroups);
+    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.updateSuperuserOwner).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.updateAdministrationOwner).mockResolvedValue({
       ...mockOwners[0],
       public_type: "all",
     });
@@ -163,7 +179,7 @@ describe("SuperuserPage", () => {
     await user.click(saveOwnerBtn);
 
     await waitFor(() => {
-      expect(ApiCalls.updateSuperuserOwner).toHaveBeenCalledWith(10, {
+      expect(ApiCalls.updateAdministrationOwner).toHaveBeenCalledWith(10, {
         is_public: true,
         public_type: "all",
         selective_bpo_enabled: true,
@@ -241,13 +257,13 @@ describe("SuperuserPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue(mockGroups);
-    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue(mockGroups);
+    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.loadSuperuserOwnerBlueprints).mockResolvedValue(mockOwnerBlueprints);
+    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.loadAdministrationOwnerBlueprints).mockResolvedValue(mockOwnerBlueprints);
 
     // Test Action
     renderPage();
@@ -258,12 +274,12 @@ describe("SuperuserPage", () => {
     await user.click(blueprintsBtn);
 
     // Expected Result
-    expect(await screen.findByText("Superuser Inspection")).toBeInTheDocument();
+    expect(await screen.findByText("Administration Inspection")).toBeInTheDocument();
     expect(await screen.findByText("Rifter Blueprint")).toBeInTheDocument();
     expect(screen.getByText("Breacher Blueprint")).toBeInTheDocument();
-    expect(ApiCalls.loadSuperuserOwnerBlueprints).toHaveBeenCalledWith(10);
+    expect(ApiCalls.loadAdministrationOwnerBlueprints).toHaveBeenCalledWith(10);
 
-    const backBtn = screen.getByRole("button", { name: "Back to Superuser Overview" });
+    const backBtn = screen.getByRole("button", { name: "Back to Administration Overview" });
     await user.click(backBtn);
 
     expect(await screen.findByText("All Blueprint Owners")).toBeInTheDocument();
@@ -292,13 +308,13 @@ describe("SuperuserPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.triggerSuperuserOwnerUpdate).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.triggerAdministrationOwnerUpdate).mockResolvedValue({
       success: true,
       message: "Update task queued for Enterprise Industrialists (force_refresh=False).",
     });
@@ -313,14 +329,14 @@ describe("SuperuserPage", () => {
 
     // Expected Result
     await waitFor(() => {
-      expect(ApiCalls.triggerSuperuserOwnerUpdate).toHaveBeenCalledWith(10, false);
+      expect(ApiCalls.triggerAdministrationOwnerUpdate).toHaveBeenCalledWith(10, false);
     });
     expect(
       await screen.findByText("Update task queued for Enterprise Industrialists (force_refresh=False).")
     ).toBeInTheDocument();
   });
 
-  it("should trigger force refresh task when selecting Force Refresh from dropdown", async () => {
+  it("should trigger force refresh task for superuser when selecting Force Refresh from dropdown", async () => {
     // Test Data
     const user = userEvent.setup();
     const mockOwners = [
@@ -343,13 +359,14 @@ describe("SuperuserPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.triggerSuperuserOwnerUpdate).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.loadUserData).mockResolvedValue(mockUserData(true));
+    vi.mocked(ApiCalls.triggerAdministrationOwnerUpdate).mockResolvedValue({
       success: true,
       message: "Update task queued for Enterprise Industrialists (force_refresh=True).",
     });
@@ -367,7 +384,7 @@ describe("SuperuserPage", () => {
 
     // Expected Result
     await waitFor(() => {
-      expect(ApiCalls.triggerSuperuserOwnerUpdate).toHaveBeenCalledWith(10, true);
+      expect(ApiCalls.triggerAdministrationOwnerUpdate).toHaveBeenCalledWith(10, true);
     });
     expect(
       await screen.findByText("Update task queued for Enterprise Industrialists (force_refresh=True).")
@@ -397,13 +414,13 @@ describe("SuperuserPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.deleteSuperuserOwner).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.deleteAdministrationOwner).mockResolvedValue({
       success: true,
       message: "Owner Enterprise Industrialists and all associated data deleted successfully.",
     });
@@ -426,7 +443,7 @@ describe("SuperuserPage", () => {
     await user.click(confirmBtn);
 
     await waitFor(() => {
-      expect(ApiCalls.deleteSuperuserOwner).toHaveBeenCalledWith(10);
+      expect(ApiCalls.deleteAdministrationOwner).toHaveBeenCalledWith(10);
     });
 
     expect(
@@ -481,12 +498,12 @@ describe("SuperuserPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue(mockMultiOwners);
+    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockMultiOwners);
 
     // Test Action
     renderPage();
@@ -511,23 +528,24 @@ describe("SuperuserPage", () => {
     expect(screen.queryByText("Character Crafter")).not.toBeInTheDocument();
   });
 
-  it("should trigger global update tasks for characters and corporations with force refresh", async () => {
+  it("should trigger global update tasks for superuser with force refresh", async () => {
     // Test Data
     const user = userEvent.setup();
-    vi.mocked(ApiCalls.loadSuperuserGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadSuperuserSettings).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadSuperuserOwners).mockResolvedValue([]);
-    vi.mocked(ApiCalls.triggerSuperuserGlobalUpdate).mockResolvedValue({
+    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadUserData).mockResolvedValue(mockUserData(true));
+    vi.mocked(ApiCalls.triggerAdministrationGlobalUpdate).mockResolvedValue({
       success: true,
       message: "Queued Update All Characters",
     });
 
     // Test Action
     renderPage();
-    expect(await screen.findByText("Global Task Administration")).toBeInTheDocument();
+    expect(await screen.findByText("Global Task Management")).toBeInTheDocument();
     expect(screen.getByText("Sync Issues")).toBeInTheDocument();
 
     // Expand collapsible panel
@@ -544,14 +562,14 @@ describe("SuperuserPage", () => {
 
     // Expected Result 1
     await waitFor(() => {
-      expect(ApiCalls.triggerSuperuserGlobalUpdate).toHaveBeenCalledWith({
+      expect(ApiCalls.triggerAdministrationGlobalUpdate).toHaveBeenCalledWith({
         target: "characters",
         forceRefresh: true,
       });
     });
 
     // Click Update All Corporations
-    vi.mocked(ApiCalls.triggerSuperuserGlobalUpdate).mockResolvedValue({
+    vi.mocked(ApiCalls.triggerAdministrationGlobalUpdate).mockResolvedValue({
       success: true,
       message: "Queued Update All Corporations",
     });
@@ -560,11 +578,51 @@ describe("SuperuserPage", () => {
 
     // Expected Result 2
     await waitFor(() => {
-      expect(ApiCalls.triggerSuperuserGlobalUpdate).toHaveBeenCalledWith({
+      expect(ApiCalls.triggerAdministrationGlobalUpdate).toHaveBeenCalledWith({
         target: "corporations",
         forceRefresh: true,
       });
     });
   });
-});
 
+  it("should hide global task panel and force refresh option for administrators without superuser", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    const mockOwners = [
+      {
+        id: 10,
+        name: "Enterprise Industrialists",
+        is_corporation: true,
+        corporation_id: 98000001,
+        status: "ok",
+        has_error: false,
+        sections: [],
+        is_public: true,
+        public_type: "all",
+        selective_bpo_enabled: false,
+        blueprint_count: 5,
+        bpo_count: 3,
+        bpc_count: 2,
+        notify_order_created_group_ids: [],
+        notify_order_status_group_ids: [],
+      },
+    ];
+    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
+      order_created_group_ids: [],
+      order_status_group_ids: [],
+    });
+    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(ApiCalls.loadUserData).mockResolvedValue(mockUserData(false));
+
+    // Test Action
+    renderPage();
+    expect(await screen.findByText("Enterprise Industrialists")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "More update options" }));
+
+    // Expected Result
+    expect(await screen.findByText("Normal Update")).toBeInTheDocument();
+    expect(screen.queryByText("Force Refresh (Bypass Cache)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Global Task Management")).not.toBeInTheDocument();
+  });
+});

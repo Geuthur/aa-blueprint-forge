@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { loadOrders, loadUserOwners } from "@/Api/ApiCalls";
 import type { components } from "@/Api/OpenApi";
 import { queryKeys } from "@/Api/query";
-import { ProjectName } from "@/configuration";
+import { ProjectName } from "@/constants";
 
 export type MenuLinkItem = components["schemas"]["MenuLink"];
 
@@ -127,7 +127,7 @@ export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPa
     );
 };
 
-export const SuperuserMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
+export const AdministrationMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
     const { t } = useTranslation();
     const path = useLocation();
     const hit = isLinkActive(link.link, path.pathname);
@@ -141,7 +141,7 @@ export const SuperuserMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToP
                 key={link.name}
                 active={hit}
                 className="aa-nav-danger d-flex align-items-center gap-1"
-                data-testid="superuser-nav-link"
+                data-testid="administration-nav-link"
             >
                 <ShieldAlert size={15} className="text-danger flex-shrink-0" />
                 <span>{t(link.name)}</span>
@@ -192,13 +192,13 @@ export const MenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath) => {
         return <SettingsMenuItem link={link} toPath={toPath} />;
     }
 
-    const isSuperuserLink = Boolean(
-        link.link?.replace(/^\/+|\/+$/g, "") === "superuser" ||
-        link.name.toLowerCase() === "superuser"
+    const isAdministrationLink = Boolean(
+        link.link?.replace(/^\/+|\/+$/g, "") === "administration" ||
+        link.name.toLowerCase() === "administration"
     );
 
-    if (isSuperuserLink) {
-        return <SuperuserMenuItem link={link} toPath={toPath} />;
+    if (isAdministrationLink) {
+        return <AdministrationMenuItem link={link} toPath={toPath} />;
     }
 
     return (

@@ -36,3 +36,6 @@
 .cursorPointer {
   cursor: pointer;
 }
+.statusBadgeClickable {
+  cursor: pointer;
+}

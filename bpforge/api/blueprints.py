@@ -14,6 +14,7 @@ from django.utils.translation import gettext as _
 # AA Blueprint Forge
 from bpforge.api import schema
 from bpforge.models.blueprint import Blueprint, Owner
+from bpforge.models.general import General
 
 
 class ApiEndpoints:
@@ -31,7 +32,7 @@ class ApiEndpoints:
             summary="List all public blueprint owners",
         )
         def list_public_blueprints(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             bpo_filter = Q(bpforge_blueprints__runs__isnull=True) | Q(
@@ -142,7 +143,7 @@ class ApiEndpoints:
             summary="Search all public blueprints",
         )
         def search_public_blueprints(request, q: str = ""):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             query = q.strip()
@@ -196,7 +197,7 @@ class ApiEndpoints:
             summary="List blueprints for a specific owner",
         )
         def list_owner_blueprints(request, owner_id: int):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owner = get_object_or_404(
@@ -206,7 +207,7 @@ class ApiEndpoints:
 
             # Check visibility: public or owned by user or full_access admin
             is_owner = owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_admin = General.has_perm(request.user, General.Permission.FULL_ACCESS)
             if not (owner.is_public or is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("This blueprint catalog is private.")

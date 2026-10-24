@@ -15,8 +15,8 @@ export const queryKeys = {
     Orders: (role?: string) => (role ? (["Orders", role] as const) : (["Orders"] as const)),
     OrderDetail: (orderId: number) => ["OrderDetail", orderId] as const,
     OwnerBpos: (ownerId: number) => ["OwnerBpos", ownerId] as const,
-    SuperuserGroups: ["SuperuserGroups"] as const,
-    SuperuserSettings: ["SuperuserSettings"] as const,
-    SuperuserOwners: ["SuperuserOwners"] as const,
-    SuperuserOwnerBlueprints: (ownerId: number) => ["SuperuserOwnerBlueprints", ownerId] as const,
+    AdministrationGroups: ["AdministrationGroups"] as const,
+    AdministrationSettings: ["AdministrationSettings"] as const,
+    AdministrationOwners: ["AdministrationOwners"] as const,
+    AdministrationOwnerBlueprints: (ownerId: number) => ["AdministrationOwnerBlueprints", ownerId] as const,
 };

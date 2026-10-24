@@ -1,4 +1,4 @@
-"""API endpoints for superuser management and global notification settings."""
+"""API endpoints for administration and global notification settings."""
 
 # Standard Library
 from http import HTTPStatus
@@ -16,17 +16,17 @@ from django.utils.translation import gettext as _
 from bpforge.api import schema
 from bpforge.api.general import _build_owner_setting_schema
 from bpforge.models.blueprint import Blueprint, Owner
-from bpforge.models.general import GeneralNotificationSettings
+from bpforge.models.general import General, GeneralNotificationSettings
 from bpforge.tasks import update_all_blueprints, update_owner
 
 
 class ApiEndpoints:
-    tags = ["Superuser"]
+    tags = ["Administration"]
 
     # pylint: disable=too-many-statements
     def __init__(self, api: NinjaAPI):
         @api.get(
-            "superuser/groups/",
+            "administration/groups/",
             response={
                 HTTPStatus.OK: list[schema.GroupSchema],
                 HTTPStatus.FORBIDDEN: dict,
@@ -35,9 +35,9 @@ class ApiEndpoints:
             summary="List all Alliance Auth groups for notification configuration",
         )
         def list_groups(request):
-            if not request.user.is_superuser:
+            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
                 return HTTPStatus.FORBIDDEN, {
-                    "error": _("Superuser permission required.")
+                    "error": _("Administration permission required.")
                 }
 
             groups = Group.objects.all().order_by("name")
@@ -46,22 +46,22 @@ class ApiEndpoints:
             ]
 
         @api.get(
-            "superuser/settings/",
+            "administration/settings/",
             response={
-                HTTPStatus.OK: schema.SuperuserNotificationSettingsSchema,
+                HTTPStatus.OK: schema.AdministrationNotificationSettingsSchema,
                 HTTPStatus.FORBIDDEN: dict,
             },
             tags=self.tags,
-            summary="Get global notification settings for superusers",
+            summary="Get global notification settings for administrators",
         )
         def get_notification_settings(request):
-            if not request.user.is_superuser:
+            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
                 return HTTPStatus.FORBIDDEN, {
-                    "error": _("Superuser permission required.")
+                    "error": _("Administration permission required.")
                 }
 
             settings_obj = GeneralNotificationSettings.get_solo()
-            return HTTPStatus.OK, schema.SuperuserNotificationSettingsSchema(
+            return HTTPStatus.OK, schema.AdministrationNotificationSettingsSchema(
                 order_created_group_ids=list(
                     settings_obj.order_created_groups.values_list("id", flat=True)
                 ),
@@ -71,27 +71,27 @@ class ApiEndpoints:
             )
 
         @api.put(
-            "superuser/settings/",
+            "administration/settings/",
             response={
-                HTTPStatus.OK: schema.SuperuserNotificationSettingsSchema,
+                HTTPStatus.OK: schema.AdministrationNotificationSettingsSchema,
                 HTTPStatus.FORBIDDEN: dict,
             },
             tags=self.tags,
-            summary="Update global notification settings for superusers",
+            summary="Update global notification settings for administrators",
         )
         def update_notification_settings(
-            request, payload: schema.SuperuserNotificationSettingsSchema
+            request, payload: schema.AdministrationNotificationSettingsSchema
         ):
-            if not request.user.is_superuser:
+            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
                 return HTTPStatus.FORBIDDEN, {
-                    "error": _("Superuser permission required.")
+                    "error": _("Administration permission required.")
                 }
 
             settings_obj = GeneralNotificationSettings.get_solo()
             settings_obj.order_created_groups.set(payload.order_created_group_ids)
             settings_obj.order_status_groups.set(payload.order_status_group_ids)
 
-            return HTTPStatus.OK, schema.SuperuserNotificationSettingsSchema(
+            return HTTPStatus.OK, schema.AdministrationNotificationSettingsSchema(
                 order_created_group_ids=list(
                     settings_obj.order_created_groups.values_list("id", flat=True)
                 ),
@@ -101,18 +101,18 @@ class ApiEndpoints:
             )
 
         @api.get(
-            "superuser/owners/",
+            "administration/owners/",
             response={
                 HTTPStatus.OK: list[schema.OwnerSettingSchema],
                 HTTPStatus.FORBIDDEN: dict,
             },
             tags=self.tags,
-            summary="List all owners across the entire system for superuser management",
+            summary="List all owners across the entire system for administration management",
         )
         def list_all_owners(request):
-            if not request.user.is_superuser:
+            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
                 return HTTPStatus.FORBIDDEN, {
-                    "error": _("Superuser permission required.")
+                    "error": _("Administration permission required.")
                 }
 
             owners = (
@@ -148,21 +148,21 @@ class ApiEndpoints:
             return HTTPStatus.OK, result
 
         @api.patch(
-            "superuser/owners/{int:owner_id}/",
+            "administration/owners/{int:owner_id}/",
             response={
                 HTTPStatus.OK: schema.OwnerSettingSchema,
                 HTTPStatus.FORBIDDEN: dict,
                 HTTPStatus.NOT_FOUND: dict,
             },
             tags=self.tags,
-            summary="Superuser update of an owner's settings and notification groups",
+            summary="Administration update of an owner's settings and notification groups",
         )
-        def update_owner_by_superuser(
-            request, owner_id: int, payload: schema.SuperuserOwnerUpdateRequest
+        def update_owner_by_administration(
+            request, owner_id: int, payload: schema.AdministrationOwnerUpdateRequest
         ):
-            if not request.user.is_superuser:
+            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
                 return HTTPStatus.FORBIDDEN, {
-                    "error": _("Superuser permission required.")
+                    "error": _("Administration permission required.")
                 }
 
             owner = get_object_or_404(
@@ -218,19 +218,19 @@ class ApiEndpoints:
             return HTTPStatus.OK, _build_owner_setting_schema(owner)
 
         @api.get(
-            "superuser/owners/{int:owner_id}/blueprints/",
+            "administration/owners/{int:owner_id}/blueprints/",
             response={
                 HTTPStatus.OK: list[schema.BlueprintItemSchema],
                 HTTPStatus.FORBIDDEN: dict,
                 HTTPStatus.NOT_FOUND: dict,
             },
             tags=self.tags,
-            summary="List all blueprints for a specific owner for superuser inspection",
+            summary="List all blueprints for a specific owner for administration inspection",
         )
-        def list_owner_blueprints_for_superuser(request, owner_id: int):
-            if not request.user.is_superuser:
+        def list_owner_blueprints_for_administration(request, owner_id: int):
+            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
                 return HTTPStatus.FORBIDDEN, {
-                    "error": _("Superuser permission required.")
+                    "error": _("Administration permission required.")
                 }
 
             owner = get_object_or_404(
@@ -250,7 +250,7 @@ class ApiEndpoints:
             return HTTPStatus.OK, result
 
         @api.post(
-            "superuser/owners/{int:owner_id}/update/",
+            "administration/owners/{int:owner_id}/update/",
             response={
                 HTTPStatus.OK: schema.TaskTriggerResponseSchema,
                 HTTPStatus.FORBIDDEN: dict,
@@ -262,11 +262,11 @@ class ApiEndpoints:
         def trigger_owner_update(
             request,
             owner_id: int,
-            payload: schema.SuperuserUpdateOwnerTaskRequest | None = None,
+            payload: schema.AdministrationUpdateOwnerTaskRequest | None = None,
         ):
-            if not request.user.is_superuser:
+            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
                 return HTTPStatus.FORBIDDEN, {
-                    "error": _("Superuser permission required.")
+                    "error": _("Administration permission required.")
                 }
 
             owner = get_object_or_404(
@@ -274,6 +274,10 @@ class ApiEndpoints:
                 id=owner_id,
             )
             force_refresh = payload.force_refresh if payload else False
+            if force_refresh and not request.user.is_superuser:
+                return HTTPStatus.FORBIDDEN, {
+                    "error": _("Superuser permission required.")
+                }
             update_owner.delay(owner_pk=owner.pk, force_refresh=force_refresh)
 
             owner_name = owner.name
@@ -286,7 +290,7 @@ class ApiEndpoints:
             )
 
         @api.delete(
-            "superuser/owners/{int:owner_id}/",
+            "administration/owners/{int:owner_id}/",
             response={
                 HTTPStatus.OK: schema.TaskTriggerResponseSchema,
                 HTTPStatus.FORBIDDEN: dict,
@@ -295,10 +299,10 @@ class ApiEndpoints:
             tags=self.tags,
             summary="Delete an owner and all associated blueprints and configurations",
         )
-        def delete_owner_by_superuser(request, owner_id: int):
-            if not request.user.is_superuser:
+        def delete_owner_by_administration(request, owner_id: int):
+            if not General.has_perm(request.user, General.Permission.FULL_ACCESS):
                 return HTTPStatus.FORBIDDEN, {
-                    "error": _("Superuser permission required.")
+                    "error": _("Administration permission required.")
                 }
 
             owner = get_object_or_404(
@@ -316,7 +320,7 @@ class ApiEndpoints:
             )
 
         @api.post(
-            "superuser/tasks/queue/",
+            "administration/tasks/queue/",
             response={
                 HTTPStatus.OK: schema.TaskTriggerResponseSchema,
                 HTTPStatus.FORBIDDEN: dict,
@@ -325,7 +329,7 @@ class ApiEndpoints:
             summary="Trigger global update tasks for all owners or characters/corporations",
         )
         def trigger_global_update(
-            request, payload: schema.SuperuserGlobalTaskRequest | None = None
+            request, payload: schema.GlobalUpdateTaskRequest | None = None
         ):
             if not request.user.is_superuser:
                 return HTTPStatus.FORBIDDEN, {

@@ -350,5 +350,13 @@
   "Search by name or corporation...": "Search by name or corporation...",
   "Search owners": "Search owners",
   "This will permanently delete this owner, removing all associated blueprints, update statuses, and related configurations. This action cannot be undone.": "This will permanently delete this owner, removing all associated blueprints, update statuses, and related configurations. This action cannot be undone.",
-  "Total Blueprints:": "Total Blueprints:"
+  "Total Blueprints:": "Total Blueprints:",
+  "The ESI token is invalid or expired. Re-add the character or corporation.": "The ESI token is invalid or expired. Re-add the character or corporation.",
+  "ESI Error Details": "ESI Error Details",
+  "Back to Administration Overview": "Back to Administration Overview",
+  "Administration Inspection": "Administration Inspection",
+  "Show error details for {{name}}": "Show error details for {{name}}",
+  "Administration": "Administration",
+  "Global Task Management": "Global Task Management",
+  "Toggle Task Management": "Toggle Task Management"
 }

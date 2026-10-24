@@ -15,6 +15,7 @@ from django.utils.translation import gettext as _
 from bpforge.api import schema
 from bpforge.models.blueprint import Blueprint, Owner
 from bpforge.models.general import (
+    General,
     get_manageable_orders_filter,
     user_can_manage_order,
     user_can_manage_orders,
@@ -44,7 +45,7 @@ class ApiEndpoints:
         )
         # pylint: disable=too-many-return-statements
         def create_order(request, payload: schema.OrderCreateRequest):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             if not payload.items:
@@ -58,7 +59,7 @@ class ApiEndpoints:
             if (
                 not owner.is_public
                 and owner.user != request.user
-                and not request.user.has_perm("bpforge.full_access")
+                and not General.has_perm(request.user, General.Permission.FULL_ACCESS)
             ):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Cannot order from a private shop.")
@@ -79,7 +80,7 @@ class ApiEndpoints:
 
             if not (
                 owner.user == request.user
-                or request.user.has_perm("bpforge.full_access")
+                or General.has_perm(request.user, General.Permission.FULL_ACCESS)
             ):
                 if owner.public_type == "bpo" and any(
                     bp.runs and bp.runs > 0 for bp in blueprints
@@ -139,7 +140,7 @@ class ApiEndpoints:
         )
         def list_orders(request, role: str = "all"):
             """Role can be 'buyer', 'seller', 'manage', or 'all'."""
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             queryset = Order.objects.select_related(
@@ -181,7 +182,7 @@ class ApiEndpoints:
             summary="Get specific order details",
         )
         def get_order(request, order_id: int):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             order = get_object_or_404(
@@ -217,7 +218,7 @@ class ApiEndpoints:
         def update_order_status(
             request, order_id: int, payload: schema.OrderStatusUpdateRequest
         ):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             order = get_object_or_404(
@@ -271,7 +272,7 @@ class ApiEndpoints:
             summary="Delete an order completely (Managers only)",
         )
         def delete_order(request, order_id: int):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             order = get_object_or_404(
