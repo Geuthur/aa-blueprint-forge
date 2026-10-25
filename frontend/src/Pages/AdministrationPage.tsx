@@ -606,7 +606,7 @@ const AdministrationPage: React.FC = () => {
                         </Button>
                     </ButtonGroup>
 
-                    <div style={{ maxWidth: "300px", width: "100%" }}>
+                    <div className={`w-100 ${styles.searchContainer}`}>
                         <Form.Control
                             type="search"
                             placeholder={t("Search by name or corporation…")}

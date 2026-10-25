@@ -39,3 +39,7 @@
 .statusBadgeClickable {
   cursor: pointer;
 }
+
+.searchContainer {
+  max-width: 300px;
+}

@@ -76,3 +76,6 @@
   background-color: var(--aa-table-row-hover, rgba(128, 128, 128, 0.15)) !important;
   border-color: var(--bg-dark-border, rgba(128, 128, 128, 0.3)) !important;
 }
+.matchingBlueprintList {
+  max-height: 160px;
+}

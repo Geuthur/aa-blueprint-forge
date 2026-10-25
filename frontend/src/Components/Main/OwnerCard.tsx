@@ -146,8 +146,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
               </span>
             </div>
             <div
-              className="d-flex flex-column gap-1 overflow-auto pe-1"
-              style={{ maxHeight: "160px" }}
+              className={`d-flex flex-column gap-1 overflow-auto pe-1 ${styles.matchingBlueprintList}`}
               data-testid="matching-blueprints-list"
             >
               {matchingBlueprints.slice(0, 10).map((bp) => (
@@ -160,7 +159,6 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
                   role="button"
                   tabIndex={0}
                   className={`d-flex align-items-center justify-content-between p-1 px-2 rounded border border-secondary-subtle small ${styles.matchingBlueprintItem}`}
-                  style={{ cursor: "pointer" }}
                 >
                   <div className="d-flex align-items-center gap-2 text-truncate me-2">
                     <img
