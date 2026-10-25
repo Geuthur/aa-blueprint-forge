@@ -1,5 +1,5 @@
 // React
-import { useSearchParams } from "react-router";
+import { useSearchParams } from "react-router-dom";
 
 // Third Party
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

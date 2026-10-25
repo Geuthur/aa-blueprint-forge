@@ -78,7 +78,7 @@ Section Order:
 - [CHANGE] The ESI status badge in the Administration owners table opens the new `AdministrationErrorModal` with the full error message when the owner has an error or a `token_error`; owners without errors keep a plain badge. `SettingsPage` is unchanged.
 - [CHANGE] Moved all backend permission and order access logic into the `General` model (`has_administration_access`, `is_global_order_manager`, `is_corp_order_manager`, `can_manage_orders`, `can_manage_order`, `get_manageable_orders_filter`, `get_user_corporation_ids`); the loose module functions in `bpforge.models.general` were removed and all API endpoints, managers and hooks call the `General` methods. Behaviour is unchanged.
 - [CHANGE] Consolidated the frontend formatting helpers in `Utils/format.ts` (`formatNumber`, `formatCompactNumber`, `formatIsk`, `formatDate`, `formatRelativeTime`, `formatEta`) with a single `en` locale fallback; `renderTooltip` now lives only in `Utils/bootsTrap.tsx` and `renderHtml` in `Utils/general.tsx`.
-- [CHANGE] Replaced `BaseTable` with the shared implementation from `aa-ledger` (new toolbar, `variant` is now `default` or `light`, table styles moved to `Styles/table.css`); `onRowClick` is kept. Owner type badges in the settings use the `aa-ledger` colors (`primary` / `info`). Frontend imports use `react-router` instead of `react-router-dom`.
+- [CHANGE] Replaced `BaseTable` with the shared implementation from `aa-ledger` (new toolbar, `variant` is now `default` or `light`, table styles moved to `Styles/table.css`); `onRowClick` is kept. Owner type badges in the settings use the `aa-ledger` colors (`primary` / `info`).
 
 <!-- Your changes go here -->
 
