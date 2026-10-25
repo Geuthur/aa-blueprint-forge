@@ -26,6 +26,24 @@ Section Order:
 ### Removed
 -->
 
+### Added
+
+- [ADD] Reusable frontend components `OwnerPortrait` and `FilterButtonGroup`, replacing several inline copies.
+
+- [ADD] Frontend hooks per area (`Components/<Area>/Hooks`) that hold the queries and mutations of the Administration, Settings, Orders, Catalog, My Blueprints and menu views, plus the shared hooks `useFeedback`, `useCooldown` and `useUserData`.
+
+### Changed
+
+- [CHANGE] Buttons use the Bootstrap 5 variants (`variant`, `size`) with the theme look defined as overrides under `.aa-react`; the custom `aa-btn` classes were removed. The order tabs use the Bootstrap nav pills with the same override approach. Frontend inline styles were replaced by CSS classes, and missing `index.ts` files were added.
+
+- [CHANGE] Both menus now share the same query options (5 minutes stale time, one retry, no refetch on window focus).
+
+- [CHANGE] The generated `manifest.json` is excluded from the pre-commit end-of-file fixer.
+
+### Removed
+
+- [REMOVED] Unused copy of the blueprint components in `Components/Blueprint`.
+
 <!-- Your changes go here -->
 
 ## [1.1.0] - 2026-10-25
