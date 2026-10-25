@@ -50,8 +50,8 @@ ______________________________________________________________________
 - **Discord & Alliance Auth Notifications**:
   - Instant Discord notifications for new orders and order status changes with direct order links.
   - Configurable notification recipient groups globally and per owner.
-- **Superuser Administration Dashboard**:
-  - Dedicated `/superuser/` administration view to inspect all owners and raw inventories across the installation.
+- **Administration Dashboard**:
+  - Dedicated `/administration/` view (requires the `full_access` permission) to inspect all owners and raw inventories across the installation.
   - On-demand sync task triggers and global notification group configuration.
 - **Modern Responsive React SPA**:
   - Built with React, TypeScript, and Vite for a fast and fluid user experience.
@@ -62,7 +62,7 @@ ______________________________________________________________________
 ## Screenshots<a name="screenshots"></a>
 
 ![Image: overview]
-![Image: superuser]
+![Image: administration]
 ![Image: orders]
 ![Image: blueprints]
 ![Image: discord]
@@ -180,8 +180,8 @@ Please ensure you read the [Contribution Guidelines]
 <!-- MD Links -->
 
 [contribution guidelines]: https://github.com/Geuthur/aa-blueprint-forge/blob/master/CONTRIBUTING.md "Contribution Guidelines"
+[image: administration]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/superuser.png "Blueprint Forge Administration"
 [image: blueprints]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/blueprints.png "Blueprint Forge Blueprints"
 [image: discord]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/discord.png "Blueprint Forge Discord"
 [image: orders]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/orders.png "Blueprint Forge Orders"
 [image: overview]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/overview.png "Blueprint Forge Overview"
-[image: superuser]: https://raw.githubusercontent.com/geuthur/aa-blueprint-forge/master/docs/images/superuser.png "Blueprint Forge Superuser"

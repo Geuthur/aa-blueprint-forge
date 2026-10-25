@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 # AA Blueprint Forge
 from bpforge.api import schema
 from bpforge.models.blueprint import Blueprint, Owner
+from bpforge.models.general import General
 
 
 class ApiEndpoints:
@@ -28,7 +29,7 @@ class ApiEndpoints:
             summary="List all blueprints owned by the current user across characters and corporations",
         )
         def list_my_blueprints(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             user_owners = Owner.objects.filter(user=request.user)

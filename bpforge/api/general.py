@@ -18,12 +18,9 @@ from bpforge.helpers.eveonline import (
     get_corporation_logo_url,
 )
 from bpforge.models.blueprint import Owner
-from bpforge.models.general import (
-    UserSettings,
-    user_can_manage_orders,
-    user_is_global_order_manager,
-)
+from bpforge.models.general import General, UserSettings
 from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.tasks import update_owner
 
 
 # pylint: disable=too-many-locals, too-many-statements
@@ -185,17 +182,33 @@ class ApiEndpoints:
             tags=self.tags,
             summary="Get AA Blueprint Shop navigation menu",
         )
-        def get_menu(request):  # pylint: disable=unused-argument
+        def get_menu(request):
+            has_errors = False
+            if request.user.is_authenticated:
+                user_owners = Owner.objects.filter(user=request.user)
+                for o in user_owners:
+                    if o.bpforge_update_status.filter(
+                        Q(has_token_error=True) | Q(is_success=False)
+                    ).exists():
+                        has_errors = True
+                        break
+
             left_menu: list[schema.MenuLink] = []
             left_menu.append(schema.MenuLink(name=_("Overview"), link="/overview/"))
             left_menu.append(
                 schema.MenuLink(name=_("My Blueprints"), link="/my-blueprints/")
             )
             left_menu.append(schema.MenuLink(name=_("Orders"), link="/orders/"))
-            left_menu.append(schema.MenuLink(name=_("Settings"), link="/settings/"))
+            left_menu.append(
+                schema.MenuLink(
+                    name=_("Settings"),
+                    link="/settings/",
+                    has_errors=has_errors,
+                )
+            )
 
             right_menu: list[schema.MenuLink] = []
-            if request.user.has_perm("bpforge.basic_access"):
+            if General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 right_menu.append(
                     schema.MenuLink(
                         name=_("Add Character"),
@@ -211,11 +224,11 @@ class ApiEndpoints:
                     )
                 )
 
-            if request.user.is_superuser:
+            if General.has_administration_access(request.user):
                 right_menu.append(
                     schema.MenuLink(
-                        name=_("Superuser"),
-                        link="/superuser/",
+                        name=_("Administration"),
+                        link="/administration/",
                     )
                 )
 
@@ -233,7 +246,7 @@ class ApiEndpoints:
             tags=self.tags,
         )
         def get_user(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             try:
@@ -261,9 +274,9 @@ class ApiEndpoints:
                 else None
             )
 
-            is_admin = bool(request.user.has_perm("bpforge.full_access"))
-            can_manage = user_can_manage_orders(request.user)
-            is_global_mgr = user_is_global_order_manager(request.user)
+            is_admin = bool(General.has_administration_access(request.user))
+            can_manage = General.can_manage_orders(request.user)
+            is_global_mgr = General.is_global_order_manager(request.user)
 
             return HTTPStatus.OK, schema.UserData(
                 user_id=request.user.id,
@@ -275,6 +288,7 @@ class ApiEndpoints:
                 alliance_name=alliance_name,
                 portrait=portrait_url,
                 is_admin=is_admin,
+                is_superuser=bool(request.user.is_superuser),
                 can_manage_orders=can_manage,
                 is_global_order_manager=is_global_mgr,
             )
@@ -289,7 +303,7 @@ class ApiEndpoints:
             summary="Get current user's settings",
         )
         def get_user_settings(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             settings = UserSettings.objects.get_or_create(user=request.user)[0]
@@ -307,7 +321,7 @@ class ApiEndpoints:
             summary="Update current user's settings",
         )
         def update_user_settings(request, payload: schema.UserSettingsUpdateRequest):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             settings = UserSettings.objects.get_or_create(user=request.user)[0]
@@ -327,7 +341,7 @@ class ApiEndpoints:
             summary="List current user's blueprint owners",
         )
         def get_user_owners(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owners = (
@@ -368,7 +382,7 @@ class ApiEndpoints:
             summary="Get current user's character and corporation update statuses for settings overview",
         )
         def get_user_character_statuses(request):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owners = (
@@ -412,7 +426,7 @@ class ApiEndpoints:
         def update_owner_setting(
             request, owner_id: int, payload: schema.OwnerSettingUpdateRequest
         ):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owner = get_object_or_404(
@@ -441,7 +455,7 @@ class ApiEndpoints:
             )
 
             is_owner = owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_admin = General.has_administration_access(request.user)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -472,12 +486,12 @@ class ApiEndpoints:
             summary="List all BPOs for an owner with their selective offering status",
         )
         def list_owner_bpos(request, owner_id: int):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owner = get_object_or_404(Owner, id=owner_id)
             is_owner = owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_admin = General.has_administration_access(request.user)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -517,12 +531,12 @@ class ApiEndpoints:
         def update_owner_bpos(
             request, owner_id: int, payload: schema.OwnerBpoSelectionUpdateRequest
         ):
-            if not request.user.has_perm("bpforge.basic_access"):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             owner = get_object_or_404(Owner, id=owner_id)
             is_owner = owner.user == request.user
-            is_admin = request.user.has_perm("bpforge.full_access")
+            is_admin = General.has_administration_access(request.user)
             if not (is_owner or is_admin):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -546,3 +560,102 @@ class ApiEndpoints:
                 bpos.filter(item_id__in=to_disable_ids).update(is_offered=False)
 
             return HTTPStatus.OK, {"success": True, "count": len(offered_set)}
+
+        @api.post(
+            "settings/owners/update-all/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+            },
+            tags=self.tags,
+            summary="Trigger update tasks for all owners of the current user",
+        )
+        def trigger_update_all_user_owners(
+            request,
+            payload: schema.OwnerUpdateRequest | None = None,
+        ):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            force_refresh = payload.force_refresh if payload else False
+            owners = Owner.objects.filter(user=request.user)
+            count = 0
+            for owner in owners:
+                update_owner.delay(owner_pk=owner.pk, force_refresh=force_refresh)
+                count += 1
+
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=_("Queued updates for %(count)d owner(s).") % {"count": count},
+            )
+
+        @api.post(
+            "settings/owners/{int:owner_id}/update/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.NOT_FOUND: dict,
+            },
+            tags=self.tags,
+            summary="Trigger update task for a specific owner in settings",
+        )
+        def trigger_owner_update_settings(
+            request,
+            owner_id: int,
+            payload: schema.OwnerUpdateRequest | None = None,
+        ):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            owner = get_object_or_404(
+                Owner.objects.select_related("character__character", "corporation"),
+                id=owner_id,
+            )
+            is_owner = owner.user == request.user
+            is_admin = General.has_administration_access(request.user)
+            if not (is_owner or is_admin):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            force_refresh = payload.force_refresh if payload else False
+            update_owner.delay(owner_pk=owner.pk, force_refresh=force_refresh)
+
+            owner_name = owner.name
+
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=_(
+                    f"Update task queued for {owner_name} (force_refresh={force_refresh})."
+                ),
+            )
+
+        @api.delete(
+            "settings/owners/{int:owner_id}/",
+            response={
+                HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.NOT_FOUND: dict,
+            },
+            tags=self.tags,
+            summary="Delete owner and associated data from blueprint forge",
+        )
+        def delete_owner_settings(request, owner_id: int):
+            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            owner = get_object_or_404(
+                Owner.objects.select_related("character__character", "corporation"),
+                id=owner_id,
+            )
+            is_owner = owner.user == request.user
+            is_admin = General.has_administration_access(request.user)
+            if not (is_owner or is_admin):
+                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+
+            owner_name = owner.name
+            owner.delete()
+
+            return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
+                success=True,
+                message=_("Owner %(name)s and associated data deleted.")
+                % {"name": owner_name},
+            )

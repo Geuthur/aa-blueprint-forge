@@ -81,7 +81,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
         {isSubmitting ? (
           <>
             <Spinner size="sm" animation="border" className="me-1" />
-            {t("Submitting...")}
+            {t("Submitting…")}
           </>
         ) : (
           <>
@@ -224,7 +224,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
           <Form.Control
             as="textarea"
             rows={2}
-            placeholder={t("e.g. Delivery location details, contact preference...")}
+            placeholder={t("e.g. Delivery location details, contact preference…")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />

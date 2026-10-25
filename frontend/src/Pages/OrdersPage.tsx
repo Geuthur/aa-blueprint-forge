@@ -1,5 +1,5 @@
 // React
-import { useSearchParams } from "react-router";
+import { useSearchParams } from "react-router-dom";
 
 // Third Party
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -145,7 +145,7 @@ export function OrdersPage() {
       {isLoading && (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <div className="text-light mt-2">{t("Loading orders...")}</div>
+          <div className="text-light mt-2">{t("Loading orders…")}</div>
         </div>
       )}
 

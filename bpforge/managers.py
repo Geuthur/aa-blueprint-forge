@@ -19,6 +19,7 @@ from eve_sde.models import ItemType, SolarSystem
 # AA Blueprint Forge
 from bpforge import __title__
 from bpforge.app_settings import BPFORGE_BULK_BATCH_SIZE
+from bpforge.models.general import General
 from bpforge.models.helpers.core import LocationFlag
 from bpforge.models.helpers.update_manager import UpdateSection
 from bpforge.providers import AppLogger, esi
@@ -53,15 +54,7 @@ class AccessQuerySet(models.QuerySet[T], Generic[T]):
 
     def visible_to(self, user):
         """Get all objects visible to the user."""
-        # superusers get all visible
-        if user.is_superuser:
-            logger.debug(
-                "Returning all objects for superuser %s.",
-                user,
-            )
-            return self
-
-        if user.has_perm("bpforge.full_access"):
+        if General.has_administration_access(user):
             logger.debug("Returning all objects for admin user %s.", user)
             return self
 
@@ -83,15 +76,7 @@ class AccessQuerySet(models.QuerySet[T], Generic[T]):
 
     def manage_to(self, user):
         """Get QuerySet of objects that the user can manage."""
-        # superusers get all visible
-        if user.is_superuser:
-            logger.debug(
-                "Returning all manageable queries for superuser %s.",
-                user,
-            )
-            return self
-
-        if user.has_perm("bpforge.full_access"):
+        if General.has_administration_access(user):
             logger.debug("Returning all manageable queries for admin user %s.", user)
             return self
 
@@ -132,11 +117,7 @@ class AccessManager(models.Manager[T], Generic[T]):
     @staticmethod
     def visible_eve_characters(user):
         qs = EveCharacter.objects.get_queryset()
-        if user.is_superuser:
-            logger.debug("Returning all characters for superuser %s.", user)
-            return qs.all()
-
-        if user.has_perm("bpforge.full_access"):
+        if General.has_administration_access(user):
             logger.debug("Returning all characters for %s.", user)
             return qs.all()
 

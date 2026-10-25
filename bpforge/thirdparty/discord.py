@@ -166,12 +166,12 @@ def _build_order_notification_message(order, base_message: str, recipient: User)
     """Append a tailored link to the orders page for the recipient."""
     # pylint: disable=import-outside-toplevel
     # AA Blueprint Forge
-    from bpforge.models.general import user_can_manage_orders
+    from bpforge.models.general import General
 
     site_url = getattr(settings, "SITE_URL", "").rstrip("/")
     base_orders_url = f"{site_url}/bpforge/orders/" if site_url else "/bpforge/orders/"
 
-    if user_can_manage_orders(recipient):
+    if General.can_manage_orders(recipient):
         order_url = f"{base_orders_url}?tab=manage"
         action_label = "Open Order Management"
     elif recipient.pk == order.requesting_user_id:

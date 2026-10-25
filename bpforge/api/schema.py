@@ -16,6 +16,7 @@ class UserData(Schema):
         alliance_name (str | None): The name of the alliance associated with the user, if any.
         portrait (str | None): The URL or path to the character's portrait image.
         is_admin (boolean): The admin status for the user.
+        is_superuser (boolean): Whether the user is a superuser.
     """
 
     user_id: int
@@ -28,6 +29,7 @@ class UserData(Schema):
     portrait: str | None = None
 
     is_admin: bool = False
+    is_superuser: bool = False
     can_manage_orders: bool = False
     is_global_order_manager: bool = False
 
@@ -120,6 +122,7 @@ class MenuLink(Schema):
     name: str
     link: str = ""
     is_external: bool = False
+    has_errors: bool = False
 
 
 class MenuCategory(MenuLink):
@@ -170,6 +173,7 @@ class OwnerPublicSchema(Schema):
     blueprint_count: int = 0
     bpo_count: int = 0
     bpc_count: int = 0
+    has_errors: bool = False
 
 
 class BlueprintItemSchema(Schema):
@@ -300,15 +304,15 @@ class GroupSchema(Schema):
     name: str
 
 
-class SuperuserNotificationSettingsSchema(Schema):
-    """Global notification settings for Superusers."""
+class AdministrationNotificationSettingsSchema(Schema):
+    """Global notification settings for Administrators."""
 
     order_created_group_ids: list[int]
     order_status_group_ids: list[int]
 
 
-class SuperuserOwnerUpdateRequest(Schema):
-    """Payload for superusers to update owner visibility and notification groups."""
+class AdministrationOwnerUpdateRequest(Schema):
+    """Payload for administrators to update owner visibility and notification groups."""
 
     is_public: bool | None = None
     public_type: str | None = None
@@ -317,9 +321,22 @@ class SuperuserOwnerUpdateRequest(Schema):
     notify_order_status_group_ids: list[int] | None = None
 
 
-class SuperuserUpdateOwnerTaskRequest(Schema):
+class OwnerUpdateRequest(Schema):
     """Payload to trigger update_owner Celery task."""
 
+    force_refresh: bool = False
+
+
+class AdministrationUpdateOwnerTaskRequest(Schema):
+    """Payload to trigger update_owner Celery task."""
+
+    force_refresh: bool = False
+
+
+class GlobalUpdateTaskRequest(Schema):
+    """Payload to trigger global owner update task."""
+
+    target: str = "all"
     force_refresh: bool = False
 
 

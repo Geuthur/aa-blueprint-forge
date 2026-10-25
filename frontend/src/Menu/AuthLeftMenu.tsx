@@ -10,7 +10,7 @@
 // AA bpforge
 // AA bpforge
 // AA bpforge
-import { ProjectName } from "@/configuration";
+import { ProjectName } from "@/constants";
 import { MenuItem } from "@/Menu/BaseMenu";
 import type { MenuLinkItem, MenuProps } from "@/Menu/BaseMenu";
 

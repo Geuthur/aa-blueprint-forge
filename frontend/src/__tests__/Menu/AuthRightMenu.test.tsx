@@ -1,12 +1,12 @@
 // React
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 
 // Third Party
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 // AA bpforge
-import { ProjectName } from '@/configuration';
+import { ProjectName } from '@/constants';
 // AA Blueprint Shop
 import AuthRightMenu from '@/Menu/AuthRightMenu';
 

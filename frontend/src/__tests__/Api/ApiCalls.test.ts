@@ -11,7 +11,7 @@ import {
     updateOwnerSetting,
     updateUserSettings,
 } from '@/Api/ApiCalls';
-import { ProjectName } from '@/configuration';
+import { ProjectName } from '@/constants';
 
 describe('General API client functions', () => {
     beforeEach(() => {
@@ -249,7 +249,7 @@ describe('General API client functions', () => {
             });
         });
 
-        it('loadSuperuserGroups calls superuser/groups/ endpoint', async () => {
+        it('loadAdministrationGroups calls administration/groups/ endpoint', async () => {
             // Test Data
             const mockGroups = [{ id: 1, name: 'Admins' }];
             vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
@@ -259,14 +259,14 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action
-            const result = await (await import('@/Api/ApiCalls')).loadSuperuserGroups();
+            const result = await (await import('@/Api/ApiCalls')).loadAdministrationGroups();
 
             // Expected Result
             expect(result).toEqual(mockGroups);
-            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/superuser/groups/`);
+            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/administration/groups/`);
         });
 
-        it('loadSuperuserSettings calls superuser/settings/ endpoint', async () => {
+        it('loadAdministrationSettings calls administration/settings/ endpoint', async () => {
             // Test Data
             const mockSettings = { order_created_group_ids: [1], order_status_group_ids: [2] };
             vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
@@ -276,14 +276,14 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action
-            const result = await (await import('@/Api/ApiCalls')).loadSuperuserSettings();
+            const result = await (await import('@/Api/ApiCalls')).loadAdministrationSettings();
 
             // Expected Result
             expect(result).toEqual(mockSettings);
-            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/superuser/settings/`);
+            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/administration/settings/`);
         });
 
-        it('updateSuperuserSettings submits settings via PUT', async () => {
+        it('updateAdministrationSettings submits settings via PUT', async () => {
             // Test Data
             const payload = { order_created_group_ids: [1], order_status_group_ids: [2] };
             vi.spyOn(apiClient, 'PUT').mockResolvedValueOnce({
@@ -293,16 +293,16 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action
-            const result = await (await import('@/Api/ApiCalls')).updateSuperuserSettings(payload);
+            const result = await (await import('@/Api/ApiCalls')).updateAdministrationSettings(payload);
 
             // Expected Result
             expect(result).toEqual(payload);
-            expect(apiClient.PUT).toHaveBeenCalledWith(`/${ProjectName}/api/superuser/settings/`, {
+            expect(apiClient.PUT).toHaveBeenCalledWith(`/${ProjectName}/api/administration/settings/`, {
                 body: payload,
             });
         });
 
-        it('loadSuperuserOwners calls superuser/owners/ endpoint', async () => {
+        it('loadAdministrationOwners calls administration/owners/ endpoint', async () => {
             // Test Data
             const mockOwners = [{ id: 1, name: 'Pilot 1', is_corporation: false }];
             vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
@@ -312,14 +312,14 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action
-            const result = await (await import('@/Api/ApiCalls')).loadSuperuserOwners();
+            const result = await (await import('@/Api/ApiCalls')).loadAdministrationOwners();
 
             // Expected Result
             expect(result).toEqual(mockOwners);
-            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/superuser/owners/`);
+            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/administration/owners/`);
         });
 
-        it('updateSuperuserOwner submits owner patch via PATCH', async () => {
+        it('updateAdministrationOwner submits owner patch via PATCH', async () => {
             // Test Data
             const payload = { is_public: true, public_type: 'bpo' };
             const mockOwner = { id: 1, name: 'Pilot 1', is_public: true, public_type: 'bpo' };
@@ -330,17 +330,17 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action
-            const result = await (await import('@/Api/ApiCalls')).updateSuperuserOwner(1, payload);
+            const result = await (await import('@/Api/ApiCalls')).updateAdministrationOwner(1, payload);
 
             // Expected Result
             expect(result).toEqual(mockOwner);
-            expect(apiClient.PATCH).toHaveBeenCalledWith(`/${ProjectName}/api/superuser/owners/{owner_id}/`, {
+            expect(apiClient.PATCH).toHaveBeenCalledWith(`/${ProjectName}/api/administration/owners/{owner_id}/`, {
                 params: { path: { owner_id: 1 } },
                 body: payload,
             });
         });
 
-        it('loadSuperuserOwnerBlueprints calls superuser/owners/{owner_id}/blueprints/ endpoint', async () => {
+        it('loadAdministrationOwnerBlueprints calls administration/owners/{owner_id}/blueprints/ endpoint', async () => {
             // Test Data
             const mockBps = [{ item_id: 101, type_name: 'Rifter Blueprint' }];
             vi.spyOn(apiClient, 'GET').mockResolvedValueOnce({
@@ -350,16 +350,16 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action
-            const result = await (await import('@/Api/ApiCalls')).loadSuperuserOwnerBlueprints(1);
+            const result = await (await import('@/Api/ApiCalls')).loadAdministrationOwnerBlueprints(1);
 
             // Expected Result
             expect(result).toEqual(mockBps);
-            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/superuser/owners/{owner_id}/blueprints/`, {
+            expect(apiClient.GET).toHaveBeenCalledWith(`/${ProjectName}/api/administration/owners/{owner_id}/blueprints/`, {
                 params: { path: { owner_id: 1 } },
             });
         });
 
-        it('triggerSuperuserOwnerUpdate submits update request with default force_refresh false', async () => {
+        it('triggerAdministrationOwnerUpdate submits update request with default force_refresh false', async () => {
             // Test Data
             const mockResponse = { success: true, message: 'Update task queued' };
             vi.spyOn(apiClient, 'POST').mockResolvedValueOnce({
@@ -369,17 +369,17 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action
-            const result = await (await import('@/Api/ApiCalls')).triggerSuperuserOwnerUpdate(1);
+            const result = await (await import('@/Api/ApiCalls')).triggerAdministrationOwnerUpdate(1);
 
             // Expected Result
             expect(result).toEqual(mockResponse);
-            expect(apiClient.POST).toHaveBeenCalledWith(`/${ProjectName}/api/superuser/owners/{owner_id}/update/`, {
+            expect(apiClient.POST).toHaveBeenCalledWith(`/${ProjectName}/api/administration/owners/{owner_id}/update/`, {
                 params: { path: { owner_id: 1 } },
                 body: { force_refresh: false },
             });
         });
 
-        it('triggerSuperuserOwnerUpdate submits update request with force_refresh true', async () => {
+        it('triggerAdministrationOwnerUpdate submits update request with force_refresh true', async () => {
             // Test Data
             const mockResponse = { success: true, message: 'Update task queued' };
             vi.spyOn(apiClient, 'POST').mockResolvedValueOnce({
@@ -389,11 +389,11 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action
-            const result = await (await import('@/Api/ApiCalls')).triggerSuperuserOwnerUpdate(1, true);
+            const result = await (await import('@/Api/ApiCalls')).triggerAdministrationOwnerUpdate(1, true);
 
             // Expected Result
             expect(result).toEqual(mockResponse);
-            expect(apiClient.POST).toHaveBeenCalledWith(`/${ProjectName}/api/superuser/owners/{owner_id}/update/`, {
+            expect(apiClient.POST).toHaveBeenCalledWith(`/${ProjectName}/api/administration/owners/{owner_id}/update/`, {
                 params: { path: { owner_id: 1 } },
                 body: { force_refresh: true },
             });
@@ -443,8 +443,8 @@ describe('General API client functions', () => {
         });
     });
 
-    describe('deleteSuperuserOwner', () => {
-        it('calls DELETE on superuser owner endpoint and returns response', async () => {
+    describe('deleteAdministrationOwner', () => {
+        it('calls DELETE on administration owner endpoint and returns response', async () => {
             // Test Data
             const mockResponse = { success: true, message: 'Owner deleted.' };
             vi.spyOn(apiClient, 'DELETE').mockResolvedValueOnce({
@@ -454,12 +454,12 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action
-            const result = await (await import('@/Api/ApiCalls')).deleteSuperuserOwner(42);
+            const result = await (await import('@/Api/ApiCalls')).deleteAdministrationOwner(42);
 
             // Expected Result
             expect(result).toEqual(mockResponse);
             expect(apiClient.DELETE).toHaveBeenCalledWith(
-                `/${ProjectName}/api/superuser/owners/{owner_id}/`,
+                `/${ProjectName}/api/administration/owners/{owner_id}/`,
                 {
                     params: { path: { owner_id: 42 } },
                 }
@@ -475,7 +475,7 @@ describe('General API client functions', () => {
             } as never);
 
             // Test Action & Expected Result
-            await expect((await import('@/Api/ApiCalls')).deleteSuperuserOwner(42)).rejects.toThrow(
+            await expect((await import('@/Api/ApiCalls')).deleteAdministrationOwner(42)).rejects.toThrow(
                 'Failed to delete owner'
             );
         });
