@@ -4,15 +4,7 @@ import React, { useMemo, useState } from "react";
 // Third Party
 import { createColumnHelper } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
-import {
-  Building2,
-  Edit2,
-  Eye,
-  RefreshCw,
-  Trash2,
-  User,
-  Users,
-} from "lucide-react";
+import { Edit2, Eye, RefreshCw, Trash2, Users } from "lucide-react";
 import { Alert, Button, ButtonGroup, Card, Dropdown, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
@@ -21,6 +13,7 @@ import type { OwnerSettingSchema } from "@/Api/schema";
 import { AdministrationErrorModal } from "@/Components/Administration/AdministrationErrorModal";
 import { getEsiStatusBadgeClass } from "@/Components/Administration/esiStatus";
 import BaseTable from "@/Components/Base/BaseTable/BaseTable";
+import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import styles from "@/Styles/modules/Administration.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
@@ -75,21 +68,13 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                 ? imageServer("characters", owner.character_id, 32)
                 : null);
 
-          return avatarUrl ? (
-            <img
+          return (
+            <OwnerPortrait
               src={avatarUrl}
-              alt=""
-              width={32}
-              height={32}
-              className="rounded"
-              loading="lazy"
+              type={owner.is_corporation ? "corporation" : "character"}
+              size="sm"
+              shape="rounded"
             />
-          ) : (
-            <div
-              className={`p-1 bg-secondary rounded text-center ${styles.avatarFallback}`}
-            >
-              {owner.is_corporation ? <Building2 size={16} /> : <User size={16} />}
-            </div>
           );
         },
       }),

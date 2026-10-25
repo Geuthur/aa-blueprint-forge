@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
+import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
@@ -34,21 +35,13 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
     <Card className="bg-dark h-100 shadow-sm border-0 d-flex flex-column justify-content-between">
       <Card.Body className="p-3">
         <div className="d-flex align-items-center gap-3 mb-3">
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={owner.name}
-              width={54}
-              height={54}
-              className={`rounded ${owner.is_corporation ? "" : "rounded-circle"} border border-secondary shadow-sm`}
-            />
-          ) : (
-            <div
-              className={`rounded d-flex align-items-center justify-content-center bg-secondary text-light ${styles.ownerCardAvatar}`}
-            >
-              <ShoppingBag size={24} />
-            </div>
-          )}
+          <OwnerPortrait
+            src={avatarUrl}
+            alt={owner.name}
+            type={owner.is_corporation ? "corporation" : "character"}
+            shape={owner.is_corporation ? "rounded" : "circle"}
+            bordered
+          />
           <div className="overflow-hidden">
             {renderTooltip(
               owner.name,

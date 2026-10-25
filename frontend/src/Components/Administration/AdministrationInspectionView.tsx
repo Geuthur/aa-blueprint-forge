@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { BlueprintItemSchema, OwnerSettingSchema } from "@/Api/schema";
+import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
 import styles from "@/Styles/modules/Administration.module.css";
 import { renderTooltip } from "@/Utils";
@@ -67,15 +68,12 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
               <ArrowLeft size={16} />
               <span>{t("Back to Administration Overview")}</span>
             </Button>
-            {avatarUrl && (
-              <img
-                src={avatarUrl}
-                alt=""
-                width={36}
-                height={36}
-                className="rounded"
-              />
-            )}
+            <OwnerPortrait
+              src={avatarUrl}
+              type={inspectingOwner.is_corporation ? "corporation" : "character"}
+              size="sm"
+              shape="rounded"
+            />
             <div>
               <div className="d-flex align-items-center gap-2">
                 <h1 className="h4 mb-0 fw-bold">{inspectingOwner.name}</h1>

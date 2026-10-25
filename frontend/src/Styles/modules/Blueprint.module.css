@@ -24,11 +24,6 @@
   width: 90%;
 }
 
-.ownerCardAvatar {
-  width: 54px;
-  height: 54px;
-}
-
 .clickable {
   cursor: pointer;
   transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, filter 0.15s ease-in-out;

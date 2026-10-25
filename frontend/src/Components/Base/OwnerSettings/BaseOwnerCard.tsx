@@ -14,6 +14,7 @@ import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
+import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import styles from "@/Components/Base/OwnerSettings/OwnerSettings.module.css";
 import type { BaseOwner, BaseOwnerCardProps } from "@/Components/Base/OwnerSettings/types";
 
@@ -87,19 +88,13 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
   return (
     <article className={`bg-dark ${styles["char-card"]} ${cardClass}`}>
       <div className={styles["char-header"]}>
-        {owner.avatar_url ? (
-          <img
-            src={owner.avatar_url}
-            alt={owner.name}
-            className={`${styles["portrait"]} ${type === "corporation" ? styles["portrait-corp"] : ""}`}
-          />
-        ) : (
-          <div
-            className={`${styles["portrait"]} d-flex align-items-center justify-content-center bg-secondary text-light`}
-          >
-            <TypeIcon size={24} />
-          </div>
-        )}
+        <OwnerPortrait
+          src={owner.avatar_url}
+          alt={owner.name}
+          type={type}
+          shape={type === "corporation" ? "rounded" : "circle"}
+          bordered
+        />
         <div className={styles["char-info"]}>
           <div className="d-flex align-items-center justify-content-between gap-2">
             <h3 className={styles["char-name"]} title={owner.name}>

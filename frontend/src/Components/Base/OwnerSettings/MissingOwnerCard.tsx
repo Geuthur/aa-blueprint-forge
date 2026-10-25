@@ -2,11 +2,12 @@
 import React from "react";
 
 // Third Party
-import { AlertCircle, Plus, User } from "lucide-react";
+import { AlertCircle, Plus } from "lucide-react";
 import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
+import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import styles from "@/Components/Base/OwnerSettings/OwnerSettings.module.css";
 import type { BaseMissingOwner, MissingOwnerCardProps } from "@/Components/Base/OwnerSettings/types";
 
@@ -22,15 +23,7 @@ export const MissingOwnerCard: React.FC<MissingOwnerCardProps<BaseMissingOwner>>
   return (
     <article className={`${styles["char-card"]} ${styles["missing-card"]}`}>
       <div className={styles["char-header"]}>
-        {missing.avatar_url ? (
-          <img src={missing.avatar_url} alt={missing.name} className={styles["portrait"]} />
-        ) : (
-          <div
-            className={`${styles["portrait"]} d-flex align-items-center justify-content-center bg-secondary text-light`}
-          >
-            <User size={24} />
-          </div>
-        )}
+        <OwnerPortrait src={missing.avatar_url} alt={missing.name} bordered />
         <div className={styles["char-info"]}>
           <div className="d-flex align-items-center justify-content-between gap-2">
             <h3 className={styles["char-name"]}>{missing.name}</h3>

@@ -15,7 +15,7 @@ import {
     User,
 } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { Badge, Button, ButtonGroup, Card, CardBody, Col, Form, Row, Spinner } from "react-bootstrap";
+import { Button, Card, CardBody, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -41,7 +41,10 @@ import { AdministrationOwnerModal } from "@/Components/Administration/Administra
 import { AdministrationOwnersTable } from "@/Components/Administration/AdministrationOwnersTable";
 import { GlobalNotificationSettingsCard } from "@/Components/Administration/GlobalNotificationSettingsCard";
 import { BaseModal } from "@/Components/Base/BaseModal";
+import { FilterButtonGroup } from "@/Components/Base/FilterButtonGroup";
 import styles from "@/Styles/modules/Administration.module.css";
+
+type TypeFilter = "all" | "character" | "corporation" | "issues";
 
 const AdministrationPage: React.FC = () => {
     const { t } = useTranslation();
@@ -82,7 +85,7 @@ const AdministrationPage: React.FC = () => {
     });
 
     // Filter and search state
-    const [typeFilter, setTypeFilter] = useState<"all" | "character" | "corporation" | "issues">("all");
+    const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
     const [searchTerm, setSearchTerm] = useState("");
 
     // Global settings state
@@ -575,36 +578,17 @@ const AdministrationPage: React.FC = () => {
 
                 {/* Filter and Search Bar */}
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4 mb-2">
-                    <ButtonGroup size="sm">
-                        <Button
-                            variant={typeFilter === "all" ? "primary" : "secondary"}
-                            onClick={() => setTypeFilter("all")}
-                            className={`aa-btn ${typeFilter === "all" ? "aa-btn-primary" : "aa-btn-secondary"}`}
-                        >
-                            {t("All")} <Badge bg="secondary" className="ms-1">{totalCount}</Badge>
-                        </Button>
-                        <Button
-                            variant={typeFilter === "character" ? "primary" : "secondary"}
-                            onClick={() => setTypeFilter("character")}
-                            className={`aa-btn ${typeFilter === "character" ? "aa-btn-primary" : "aa-btn-secondary"}`}
-                        >
-                            {t("Characters")} <Badge bg="secondary" className="ms-1">{charCount}</Badge>
-                        </Button>
-                        <Button
-                            variant={typeFilter === "corporation" ? "primary" : "secondary"}
-                            onClick={() => setTypeFilter("corporation")}
-                            className={`aa-btn ${typeFilter === "corporation" ? "aa-btn-primary" : "aa-btn-secondary"}`}
-                        >
-                            {t("Corporations")} <Badge bg="secondary" className="ms-1">{corpCount}</Badge>
-                        </Button>
-                        <Button
-                            variant={typeFilter === "issues" ? "primary" : "secondary"}
-                            onClick={() => setTypeFilter("issues")}
-                            className={`aa-btn ${typeFilter === "issues" ? "aa-btn-primary" : "aa-btn-secondary"}`}
-                        >
-                            {t("Issues")} <Badge bg="secondary" className="ms-1">{issuesCount}</Badge>
-                        </Button>
-                    </ButtonGroup>
+                    <FilterButtonGroup<TypeFilter>
+                        options={[
+                            { value: "all", label: t("All"), count: totalCount },
+                            { value: "character", label: t("Characters"), count: charCount },
+                            { value: "corporation", label: t("Corporations"), count: corpCount },
+                            { value: "issues", label: t("Issues"), count: issuesCount },
+                        ]}
+                        value={typeFilter}
+                        onChange={setTypeFilter}
+                        ariaLabel={t("Filter owners by type")}
+                    />
 
                     <div className={`w-100 ${styles.searchContainer}`}>
                         <Form.Control
