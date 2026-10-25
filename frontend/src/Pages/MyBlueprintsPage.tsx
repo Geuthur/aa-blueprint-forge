@@ -38,7 +38,7 @@ export function MyBlueprintsPage() {
           variant="secondary"
           size="sm"
           onClick={() => refetch()}
-          className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+          className="d-flex align-items-center gap-1"
         >
           <RefreshCw size={14} />
           <span>{t("Refresh")}</span>

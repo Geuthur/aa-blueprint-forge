@@ -112,7 +112,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         variant="success"
                         size="sm"
                         disabled={isUpdating || isDeleting}
-                        className="d-flex align-items-center gap-1 aa-btn aa-btn-success"
+                        className="d-flex align-items-center gap-1"
                         onClick={() => onUpdateStatus(order.id, "Accepted")}
                       >
                         <Check size={14} />
@@ -122,7 +122,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         variant="danger"
                         size="sm"
                         disabled={isUpdating || isDeleting}
-                        className="d-flex align-items-center gap-1 aa-btn aa-btn-danger"
+                        className="d-flex align-items-center gap-1"
                         onClick={() => onUpdateStatus(order.id, "Declined")}
                       >
                         <X size={14} />
@@ -132,7 +132,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         variant="secondary"
                         size="sm"
                         disabled={isUpdating || isDeleting}
-                        className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                        className="d-flex align-items-center gap-1"
                         onClick={() => onUpdateStatus(order.id, "Cancelled")}
                       >
                         <X size={14} />
@@ -147,7 +147,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         variant="primary"
                         size="sm"
                         disabled={isUpdating || isDeleting}
-                        className="d-flex align-items-center gap-1 aa-btn aa-btn-primary"
+                        className="d-flex align-items-center gap-1"
                         onClick={() => onUpdateStatus(order.id, "Delivered")}
                       >
                         <Truck size={14} />
@@ -157,7 +157,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         variant="danger"
                         size="sm"
                         disabled={isUpdating || isDeleting}
-                        className="d-flex align-items-center gap-1 aa-btn aa-btn-danger"
+                        className="d-flex align-items-center gap-1"
                         onClick={() => onUpdateStatus(order.id, "Declined")}
                       >
                         <X size={14} />
@@ -167,7 +167,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         variant="secondary"
                         size="sm"
                         disabled={isUpdating || isDeleting}
-                        className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                        className="d-flex align-items-center gap-1"
                         onClick={() => onUpdateStatus(order.id, "Cancelled")}
                       >
                         <X size={14} />
@@ -181,7 +181,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                       variant="danger"
                       size="sm"
                       disabled={isUpdating || isDeleting}
-                      className="d-flex align-items-center gap-1 aa-btn aa-btn-danger"
+                      className="d-flex align-items-center gap-1"
                       onClick={() => setShowDeleteModal(true)}
                     >
                       <Trash2 size={14} />
@@ -198,7 +198,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         variant="success"
                         size="sm"
                         disabled={isUpdating}
-                        className="d-flex align-items-center gap-1 aa-btn aa-btn-success"
+                        className="d-flex align-items-center gap-1"
                         onClick={() => onUpdateStatus(order.id, "Accepted")}
                       >
                         <Check size={14} />
@@ -208,7 +208,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         variant="danger"
                         size="sm"
                         disabled={isUpdating}
-                        className="d-flex align-items-center gap-1 aa-btn aa-btn-danger"
+                        className="d-flex align-items-center gap-1"
                         onClick={() => onUpdateStatus(order.id, "Declined")}
                       >
                         <X size={14} />
@@ -222,7 +222,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                       variant="primary"
                       size="sm"
                       disabled={isUpdating}
-                      className="d-flex align-items-center gap-1 aa-btn aa-btn-primary"
+                      className="d-flex align-items-center gap-1"
                       onClick={() => onUpdateStatus(order.id, "Delivered")}
                     >
                       <Truck size={14} />
@@ -235,7 +235,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                       variant="secondary"
                       size="sm"
                       disabled={isUpdating}
-                      className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                      className="d-flex align-items-center gap-1"
                       onClick={() => onUpdateStatus(order.id, "Cancelled")}
                     >
                       <X size={14} />
@@ -250,7 +250,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                 variant="secondary"
                 size="sm"
                 onClick={() => setExpanded(!expanded)}
-                className="d-flex align-items-center gap-1 ms-1 aa-btn aa-btn-secondary"
+                className="d-flex align-items-center gap-1 ms-1"
               >
                 <span>{order.items.length} {t("Items")}</span>
                 {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -335,7 +335,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               variant="secondary"
               onClick={() => setShowDeleteModal(false)}
               disabled={isDeleting}
-              className="aa-btn aa-btn-secondary"
+              
             >
               {t("Cancel")}
             </Button>
@@ -343,7 +343,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               variant="danger"
               onClick={handleConfirmDelete}
               disabled={isDeleting}
-              className="aa-btn aa-btn-danger d-flex align-items-center gap-1"
+              className="d-flex align-items-center gap-1"
             >
               <Trash2 size={14} />
               <span>{isDeleting ? t("Deleting…") : t("Confirm Delete")}</span>

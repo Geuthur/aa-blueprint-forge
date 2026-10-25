@@ -241,10 +241,10 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
               {renderTooltip(
                 t("Inspect All Blueprints"),
                 <Button
-                  variant="link"
+                  variant="primary"
                   size="sm"
                   onClick={() => onInspect(owner)}
-                  className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-primary"
+                  className="d-inline-flex align-items-center gap-1"
                 >
                   <Eye size={13} />
                   <span>{t("Blueprints")}</span>
@@ -256,7 +256,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                   variant="warning"
                   size="sm"
                   onClick={() => onEdit(owner)}
-                  className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-warning"
+                  className="d-inline-flex align-items-center gap-1"
                 >
                   <Edit2 size={13} />
                   <span>{t("Edit")}</span>
@@ -270,7 +270,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                     size="sm"
                     onClick={() => onTriggerUpdate(owner.id, false)}
                     disabled={updatingOwnerId === owner.id}
-                    className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-danger"
+                    className="d-inline-flex align-items-center gap-1"
                   >
                     {updatingOwnerId === owner.id ? (
                       <Spinner size="sm" animation="border" />
@@ -288,7 +288,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                     variant="danger"
                     aria-label={t("More update options")}
                     disabled={updatingOwnerId === owner.id}
-                    className="aa-btn aa-btn-danger"
+                    
                   />
                 )}
                 <Dropdown.Menu
@@ -313,7 +313,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                   variant="danger"
                   size="sm"
                   onClick={() => onDelete(owner)}
-                  className="d-inline-flex align-items-center gap-1 aa-btn aa-btn-danger"
+                  className="d-inline-flex align-items-center gap-1"
                 >
                   <Trash2 size={13} />
                   <span>{t("Delete")}</span>

@@ -138,7 +138,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
             <Button
               size="sm"
               onClick={onOpenOrderModal}
-              className="d-flex align-items-center gap-2 aa-btn aa-btn-primary"
+              variant="primary" className="d-flex align-items-center gap-2"
               data-testid="top-review-order-btn"
             >
               <ShoppingCart size={15} />

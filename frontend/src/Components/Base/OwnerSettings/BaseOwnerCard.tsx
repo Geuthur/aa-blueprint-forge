@@ -167,7 +167,7 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
               <Button
                 variant="secondary"
                 size="sm"
-                className="aa-btn aa-btn-secondary aa-btn-sm d-flex align-items-center gap-1"
+                className="d-flex align-items-center gap-1"
                 disabled={isUpdating || cooldown > 0}
                 onClick={() => onTriggerUpdate(owner.id)}
                 aria-label={t("Update Owner")}
@@ -184,7 +184,7 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
               <Button
                 variant="danger"
                 size="sm"
-                className="aa-btn aa-btn-danger aa-btn-sm d-flex align-items-center gap-1"
+                className="d-flex align-items-center gap-1"
                 onClick={() => onDeleteClick(owner)}
                 aria-label={t("Delete Owner")}
               >

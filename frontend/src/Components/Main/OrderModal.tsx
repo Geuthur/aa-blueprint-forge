@@ -66,7 +66,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
     <div className="d-flex justify-content-end gap-2 w-100">
       <Button
         variant="secondary"
-        className="aa-btn aa-btn-secondary"
+        
         onClick={onHide}
         disabled={isSubmitting}
       >
@@ -74,7 +74,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
       </Button>
       <Button
         variant="primary"
-        className="aa-btn aa-btn-primary d-flex align-items-center gap-2"
+        className="d-flex align-items-center gap-2"
         onClick={() => handleSubmit()}
         disabled={items.length === 0 || isSubmitting}
       >
@@ -206,7 +206,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                           size="sm"
                           aria-label={t("Remove item")}
                           onClick={() => onRemoveItem(blueprint.item_id)}
-                          className="p-1 aa-btn aa-btn-danger"
+                          className="p-1"
                         >
                           <Trash2 size={15} />
                         </Button>

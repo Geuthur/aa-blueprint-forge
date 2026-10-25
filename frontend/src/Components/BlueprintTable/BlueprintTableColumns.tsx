@@ -157,7 +157,7 @@ export function getBlueprintColumns({
                 <Button
                   variant={`${isSelected ? "success" : "primary"}`}
                   size="sm"
-                  className={`py-1 px-2 d-flex align-items-center gap-1 ${isSelected ? "aa-btn-success aa-btn" : "aa-btn aa-btn-primary"}`}
+                  className="py-1 px-2 d-flex align-items-center gap-1"
                   onClick={() => onToggleSelect(bp)}
                 >
                   {isSelected ? <Check size={14} /> : <Plus size={14} />}

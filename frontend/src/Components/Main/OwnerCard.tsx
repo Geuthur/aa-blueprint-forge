@@ -185,7 +185,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
       <Card.Footer className="bg-transparent border-0 p-3 pt-0">
         <Button
           variant="primary"
-          className="w-100 d-flex align-items-center justify-content-center gap-2 aa-btn aa-btn-primary"
+          className="w-100 d-flex align-items-center justify-content-center gap-2"
           onClick={() => onSelect(owner)}
         >
           <ShoppingBag size={16} />

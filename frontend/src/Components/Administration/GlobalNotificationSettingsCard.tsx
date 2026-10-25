@@ -151,7 +151,7 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
                                 variant="primary"
                                 type="submit"
                                 disabled={isSaving}
-                                className="d-flex align-items-center gap-1 aa-btn aa-btn-primary"
+                                className="d-flex align-items-center gap-1"
                             >
                                 {isSaving ? (
                                     <Spinner size="sm" animation="border" />

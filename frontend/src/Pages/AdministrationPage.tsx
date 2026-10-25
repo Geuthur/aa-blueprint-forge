@@ -524,7 +524,7 @@ const AdministrationPage: React.FC = () => {
                                                         forceRefresh: forceRefreshGlobal,
                                                     })
                                                 }
-                                                className="w-100 d-flex align-items-center justify-content-center gap-1 aa-btn aa-btn-primary"
+                                                className="w-100 d-flex align-items-center justify-content-center gap-1"
                                                 data-testid="update-all-characters-btn"
                                             >
                                                 {globalQueueMutation.isPending ? (
@@ -557,7 +557,7 @@ const AdministrationPage: React.FC = () => {
                                                         forceRefresh: forceRefreshGlobal,
                                                     })
                                                 }
-                                                className="w-100 d-flex align-items-center justify-content-center gap-1 aa-btn aa-btn-primary"
+                                                className="w-100 d-flex align-items-center justify-content-center gap-1"
                                                 data-testid="update-all-corporations-btn"
                                             >
                                                 {globalQueueMutation.isPending ? (
@@ -643,7 +643,7 @@ const AdministrationPage: React.FC = () => {
                                 variant="secondary"
                                 onClick={() => setOwnerToDelete(null)}
                                 disabled={deleteOwnerMutation.isPending}
-                                className="aa-btn aa-btn-secondary"
+                                
                             >
                                 {t("Cancel")}
                             </Button>
@@ -651,7 +651,7 @@ const AdministrationPage: React.FC = () => {
                                 variant="danger"
                                 onClick={handleConfirmDelete}
                                 disabled={deleteOwnerMutation.isPending}
-                                className="aa-btn aa-btn-danger d-flex align-items-center gap-1"
+                                className="d-flex align-items-center gap-1"
                             >
                                 <Trash2 size={14} />
                                 <span>

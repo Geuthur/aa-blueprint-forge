@@ -63,7 +63,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
               variant="secondary"
               size="sm"
               onClick={onBack}
-              className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+              className="d-flex align-items-center gap-1"
             >
               <ArrowLeft size={16} />
               <span>{t("Back to Administration Overview")}</span>
@@ -102,7 +102,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
                   size="sm"
                   onClick={() => onTriggerUpdate(inspectingOwner.id, false)}
                   disabled={updatingOwnerId === inspectingOwner.id}
-                  className="d-flex align-items-center gap-1 aa-btn aa-btn-warning"
+                  className="d-flex align-items-center gap-1"
                 >
                   {updatingOwnerId === inspectingOwner.id ? (
                     <Spinner size="sm" animation="border" />
@@ -120,7 +120,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
                   size="sm"
                   aria-label={t("More update options")}
                   disabled={updatingOwnerId === inspectingOwner.id}
-                  className="aa-btn aa-btn-warning"
+                  
                 />
               )}
               <Dropdown.Menu
@@ -143,7 +143,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
               variant="secondary"
               size="sm"
               onClick={onRefetch}
-              className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+              className="d-flex align-items-center gap-1"
             >
               <RefreshCw size={14} />
               <span>{t("Refresh")}</span>

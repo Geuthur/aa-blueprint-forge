@@ -182,7 +182,7 @@ function MainPage() {
                 size="sm"
                 aria-label={t("All Blueprints")}
                 onClick={handleBackToDirectory}
-                className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                className="d-flex align-items-center gap-1"
               >
                 <span>{t("All Blueprints")}</span>
               </Button>
@@ -216,7 +216,7 @@ function MainPage() {
                 variant="secondary"
                 size="sm"
                 onClick={() => refetchShops()}
-                className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                className="d-flex align-items-center gap-1"
               >
                 <RefreshCw size={14} />
                 <span className="d-none d-sm-inline">{t("Refresh")}</span>

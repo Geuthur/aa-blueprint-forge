@@ -69,7 +69,7 @@ const AdministrationOwnerModalDialog: React.FC<AdministrationOwnerModalDialogPro
         <div className="d-flex justify-content-between w-100">
             <Button
                 variant="secondary"
-                className="aa-btn aa-btn-secondary"
+                
                 onClick={onClose}
                 disabled={isSaving}
             >
@@ -77,7 +77,7 @@ const AdministrationOwnerModalDialog: React.FC<AdministrationOwnerModalDialogPro
             </Button>
             <Button
                 variant="primary"
-                className="aa-btn aa-btn-primary"
+                
                 onClick={handleSave}
                 disabled={isSaving}
             >

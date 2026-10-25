@@ -52,9 +52,9 @@ export const OrderFloatingBar: React.FC<OrderFloatingBarProps> = ({
           )}
 
           <Button
-            variant="light"
+            variant="secondary"
             size="sm"
-            className="rounded-pill fw-bold d-flex align-items-center gap-1 px-3 aa-btn aa-btn-secondary"
+            className="rounded-pill fw-bold d-flex align-items-center gap-1 px-3"
             onClick={onOpenOrderModal}
           >
             <span>{t("Review Order")}</span>

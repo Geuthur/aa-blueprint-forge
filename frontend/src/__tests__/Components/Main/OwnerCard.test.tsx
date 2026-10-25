@@ -143,7 +143,7 @@ describe('OwnerCard Component', () => {
 
     // Expected Result
     const browseButton = screen.getByRole('button', { name: /browse blueprints/i });
-    expect(browseButton).not.toHaveClass('aa-btn-pulse');
+    expect(browseButton).not.toHaveClass('aa-pulse');
     expect(browseButton.querySelector('.aa-pending-dot-container')).toBeNull();
   });
 });

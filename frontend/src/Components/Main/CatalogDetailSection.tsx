@@ -73,7 +73,7 @@ export const CatalogDetailSection: React.FC<CatalogDetailSectionProps> = ({
                 variant="secondary"
                 size="sm"
                 onClick={onBackToDirectory}
-                className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                className="d-flex align-items-center gap-1"
                 title={t("Back to all catalogs")}
               >
                 <ArrowLeft size={16} />
@@ -114,7 +114,7 @@ export const CatalogDetailSection: React.FC<CatalogDetailSectionProps> = ({
                   variant="secondary"
                   size="sm"
                   onClick={onRefetchBlueprints}
-                  className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                  className="d-flex align-items-center gap-1"
                 >
                   <RefreshCw size={14} />
                   <span className="d-none d-sm-inline">{t("Refresh")}</span>

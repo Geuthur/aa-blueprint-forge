@@ -388,8 +388,9 @@ export const SettingsPage: React.FC = () => {
                   {owner.selective_bpo_enabled && (
                     <Button
                       variant="primary"
+                      size="sm"
                       type="button"
-                      className={`aa-btn aa-btn-primary btn btn-sm ${styles["bpo-btn"]}`}
+                      className={styles["bpo-btn"]}
                       onClick={() =>
                         setActiveBpoModalOwner({ id: owner.id, name: owner.name })
                       }

@@ -227,7 +227,7 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
         <div className="d-flex align-items-center justify-content-between w-100">
             <Button
                 variant="secondary"
-                className="aa-btn aa-btn-secondary"
+                
                 onClick={handleClose}
                 disabled={saveMutation.isPending}
             >
@@ -235,7 +235,7 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
             </Button>
             <Button
                 variant="primary"
-                className="aa-btn aa-btn-primary"
+                
                 onClick={handleSave}
                 disabled={saveMutation.isPending || isLoading}
             >
@@ -304,21 +304,21 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
 
                     <div className="d-flex align-items-center gap-2">
                         <Button
-                            variant="outline-secondary"
+                            variant="secondary"
                             size="sm"
                             onClick={handleSelectAllFiltered}
                             disabled={filteredBpos.length === 0}
-                            className="aa-btn aa-btn-secondary"
+                            
                         >
                             <CheckSquare size={14} className="me-1" />
                             {t("Select All")}
                         </Button>
                         <Button
-                            variant="outline-secondary"
+                            variant="secondary"
                             size="sm"
                             onClick={handleDeselectAllFiltered}
                             disabled={filteredBpos.length === 0}
-                            className="aa-btn aa-btn-secondary"
+                            
                         >
                             <Square size={14} className="me-1" />
                             {t("Deselect All")}
