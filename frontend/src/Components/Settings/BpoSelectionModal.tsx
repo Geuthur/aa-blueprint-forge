@@ -2,7 +2,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 // Third Party
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Check, CheckSquare, Search, Square, X } from "lucide-react";
@@ -10,11 +9,10 @@ import { Alert, Badge, Button, Form, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { loadOwnerBpos, updateOwnerBpos } from "@/Api/ApiCalls";
 import type { components } from "@/Api/OpenApi";
-import { queryKeys } from "@/Api/query";
 import { BaseModal } from "@/Components/Base/BaseModal";
 import { BaseTable } from "@/Components/Base/BaseTable";
+import { useOwnerBpos, useSaveOwnerBpos } from "@/Components/Settings/Hooks";
 import styles from "@/Styles/modules/SettingsPage.module.css";
 import { imageServer } from "@/Utils/eveOnline";
 
@@ -34,21 +32,12 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
     ownerName,
 }) => {
     const { t } = useTranslation();
-    const queryClient = useQueryClient();
 
     const [search, setSearch] = useState("");
     const [userSelectedIds, setUserSelectedIds] = useState<Set<number> | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    const {
-        data: bpos,
-        isLoading,
-        isError,
-    } = useQuery({
-        queryKey: queryKeys.OwnerBpos(ownerId),
-        queryFn: () => loadOwnerBpos(ownerId),
-        enabled: show && ownerId > 0,
-    });
+    const { data: bpos, isLoading, isError } = useOwnerBpos(ownerId, show);
 
     const initialOffered = useMemo(() => {
         const s = new Set<number>();
@@ -71,20 +60,9 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
         onHide();
     };
 
-    const saveMutation = useMutation({
-        mutationFn: (ids: number[]) => updateOwnerBpos(ownerId, ids),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.OwnerBpos(ownerId) });
-            queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
-            queryClient.invalidateQueries({ queryKey: queryKeys.PublicShops });
-            queryClient.invalidateQueries({ queryKey: queryKeys.ShopBlueprints(ownerId) });
-            handleClose();
-        },
-        onError: (err: unknown) => {
-            setErrorMsg(
-                err instanceof Error ? err.message : t("Failed to save blueprint selection.")
-            );
-        },
+    const saveMutation = useSaveOwnerBpos(ownerId, {
+        onSaved: handleClose,
+        onError: setErrorMsg,
     });
 
     const filteredBpos = useMemo(() => {

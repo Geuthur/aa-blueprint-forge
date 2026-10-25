@@ -2,31 +2,21 @@
 import { useState } from "react";
 
 // Third Party
-import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Alert, Button, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { loadMyBlueprints } from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
 import BaseSectionHeader from "@/Components/Base/BaseHeader";
 import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
+import { useMyBlueprints } from "@/Components/MyBlueprints/Hooks";
 import { MyBlueprintsKpiSection } from "@/Components/MyBlueprints/MyBlueprintsKpiSection";
 
 export function MyBlueprintsPage() {
   const { t } = useTranslation();
   const [typeFilter, setTypeFilter] = useState<"all" | "bpo" | "bpc">("all");
 
-  const {
-    data: blueprints = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: queryKeys.MyBlueprints,
-    queryFn: loadMyBlueprints,
-  });
+  const { data: blueprints = [], isLoading, isError, refetch } = useMyBlueprints();
 
   const bpoCount = blueprints.filter((b) => b.is_original).length;
   const bpcCount = blueprints.filter((b) => !b.is_original).length;
