@@ -26,7 +26,9 @@ Section Order:
 ### Removed
 -->
 
-<!-- AI Changes -->
+<!-- Your changes go here -->
+
+## [1.1.0] - 2026-10-25
 
 ### Added
 
@@ -80,8 +82,6 @@ Section Order:
 - [CHANGE] Consolidated the frontend formatting helpers in `Utils/format.ts` (`formatNumber`, `formatCompactNumber`, `formatIsk`, `formatDate`, `formatRelativeTime`, `formatEta`) with a single `en` locale fallback; `renderTooltip` now lives only in `Utils/bootsTrap.tsx` and `renderHtml` in `Utils/general.tsx`.
 - [CHANGE] Replaced `BaseTable` with the shared implementation from `aa-ledger` (new toolbar, `variant` is now `default` or `light`, table styles moved to `Styles/table.css`); `onRowClick` is kept. Owner type badges in the settings use the `aa-ledger` colors (`primary` / `info`).
 - [CHANGE] Replaced `pook` with `pookx` in the test dependencies.
-
-<!-- Your changes go here -->
 
 ## [1.0.2] - 2026-10-18
 
@@ -144,4 +144,5 @@ Section Order:
 [1.0.0]: https://github.com/Geuthur/aa-blueprint-forge/compare/v...v1.0.0 "v1.0.0"
 [1.0.1]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.0...v1.0.1 "v1.0.1"
 [1.0.2]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.1...v1.0.2 "v1.0.2"
-[in development]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.2...HEAD "In Development"
+[1.1.0]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.2...v1.1.0 "v1.1.0"
+[in development]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.1.0...HEAD "In Development"
