@@ -328,7 +328,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
 
   return (
     <Card className="bg-secondary text-light border-0 shadow-sm">
-      <Card.Header className="d-flex align-items-center justify-content-between bg-transparent py-3">
+      <Card.Header className="d-flex flex-wrap align-items-center justify-content-between gap-2 bg-transparent py-3">
         <div className="d-flex align-items-center gap-2">
           <Users size={18} className="text-primary" />
           <h2 className="h5 mb-0">{t("All Blueprint Owners")}</h2>

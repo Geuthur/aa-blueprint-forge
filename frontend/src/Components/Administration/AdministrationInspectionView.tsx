@@ -57,8 +57,8 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
   return (
     <Card>
       <Card.Body className="bg-secondary">
-        <Card.Header className="d-flex align-items-center justify-content-between mb-4 bg-dark">
-          <div className="d-flex align-items-center gap-3">
+        <Card.Header className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-dark">
+          <div className="d-flex flex-wrap align-items-center gap-3">
             <Button
               variant="secondary"
               size="sm"
@@ -75,7 +75,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
               shape="rounded"
             />
             <div>
-              <div className="d-flex align-items-center gap-2">
+              <div className="d-flex flex-wrap align-items-center gap-2">
                 <h1 className="h4 mb-0 fw-bold">{inspectingOwner.name}</h1>
                 <Badge bg="warning" text="dark">
                   {t("Administration Inspection")}
@@ -93,7 +93,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
               </p>
             </div>
           </div>
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex flex-wrap align-items-center gap-2">
             <Dropdown as={ButtonGroup} size="sm">
               {renderTooltip(
                 t("Trigger background update_owner task (normal)"),
@@ -171,7 +171,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
             </p>
           </div>
 
-          <div className="d-flex align-items-center gap-3">
+          <div className="d-flex flex-wrap align-items-center gap-3">
             {renderTooltip(
               t("Show all blueprints"),
               <div
