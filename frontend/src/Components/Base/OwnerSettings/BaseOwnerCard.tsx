@@ -14,6 +14,7 @@ import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
+import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import styles from "@/Components/Base/OwnerSettings/OwnerSettings.module.css";
 import type { BaseOwner, BaseOwnerCardProps } from "@/Components/Base/OwnerSettings/types";
 
@@ -62,7 +63,7 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
     }
 
     return (
-      <span className={`${styles["status-badge"]} ${badgeClass}`}>
+      <span className={`d-inline-flex align-items-center gap-1 fw-semibold text-capitalize ${styles["status-badge"]} ${badgeClass}`}>
         {(isError || isTokenError) && (
           <span className="aa-pending-dot-container me-1" aria-hidden="true">
             <span className={isTokenError ? "aa-danger-dot-ping" : "aa-pending-dot-ping"} />
@@ -86,23 +87,17 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
 
   return (
     <article className={`bg-dark ${styles["char-card"]} ${cardClass}`}>
-      <div className={styles["char-header"]}>
-        {owner.avatar_url ? (
-          <img
-            src={owner.avatar_url}
-            alt={owner.name}
-            className={`${styles["portrait"]} ${type === "corporation" ? styles["portrait-corp"] : ""}`}
-          />
-        ) : (
-          <div
-            className={`${styles["portrait"]} d-flex align-items-center justify-content-center bg-secondary text-light`}
-          >
-            <TypeIcon size={24} />
-          </div>
-        )}
-        <div className={styles["char-info"]}>
+      <div className="d-flex align-items-center gap-3">
+        <OwnerPortrait
+          src={owner.avatar_url}
+          alt={owner.name}
+          type={type}
+          shape={type === "corporation" ? "rounded" : "circle"}
+          bordered
+        />
+        <div className={`flex-fill ${styles["char-info"]}`}>
           <div className="d-flex align-items-center justify-content-between gap-2">
-            <h3 className={styles["char-name"]} title={owner.name}>
+            <h3 className={`m-0 fw-semibold text-truncate ${styles["char-name"]}`} title={owner.name}>
               {owner.name}
             </h3>
             <span
@@ -112,7 +107,7 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
               {typeLabel}
             </span>
           </div>
-          {owner.subtitle && <p className={styles["char-corp"]}>{owner.subtitle}</p>}
+          {owner.subtitle && <p className={`m-0 text-truncate ${styles["char-corp"]}`}>{owner.subtitle}</p>}
         </div>
       </div>
 
@@ -123,7 +118,7 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
       )}
 
       {owner.sections && owner.sections.length > 0 && (
-        <div className={styles["sections-list"]}>
+        <div className={`d-flex flex-column gap-1 p-2 ${styles["sections-list"]}`}>
           {owner.sections.map((sec) => {
             let dotClass = styles["dot-muted"];
             if (sec.is_success === true) dotClass = styles["dot-ok"];
@@ -131,7 +126,7 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
             else if (sec.has_token_error) dotClass = styles["dot-error"];
 
             return (
-              <div key={sec.section} className={styles["section-item"]}>
+              <div key={sec.section} className={`d-flex align-items-center justify-content-between ${styles["section-item"]}`}>
                 <span className="d-inline-flex align-items-center gap-2">
                   <span className={`${styles["section-dot"]} ${dotClass}`} aria-hidden="true" />
                   <span>{sec.section_name}</span>
@@ -153,10 +148,10 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
 
       {renderCustomContent?.(owner)}
 
-      <div className={styles["badge-row"]}>
+      <div className={`d-flex align-items-center justify-content-between gap-2 mt-auto pt-2 ${styles["badge-row"]}`}>
         {renderStatusBadge()}
         <span
-          className={styles["last-sync"]}
+          className={`d-inline-flex align-items-center gap-1 ${styles["last-sync"]}`}
           title={owner.last_sync ? `${t("Last sync")}: ${owner.last_sync}` : undefined}
         >
           <Clock size={12} aria-hidden="true" />
@@ -172,7 +167,7 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
               <Button
                 variant="secondary"
                 size="sm"
-                className="aa-btn aa-btn-secondary aa-btn-sm d-flex align-items-center gap-1"
+                className="d-flex align-items-center gap-1"
                 disabled={isUpdating || cooldown > 0}
                 onClick={() => onTriggerUpdate(owner.id)}
                 aria-label={t("Update Owner")}
@@ -189,7 +184,7 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
               <Button
                 variant="danger"
                 size="sm"
-                className="aa-btn aa-btn-danger aa-btn-sm d-flex align-items-center gap-1"
+                className="d-flex align-items-center gap-1"
                 onClick={() => onDeleteClick(owner)}
                 aria-label={t("Delete Owner")}
               >

@@ -47,7 +47,8 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
     return (
         <Card className="bg-secondary text-light border-0 shadow-sm mb-4">
             <Card.Header
-                className={`d-flex align-items-center justify-content-between bg-transparent py-2 ${styles.cursorPointer}`}
+                className={`d-flex align-items-center justify-content-between bg-transparent py-2`}
+                role="button"
                 onClick={() => setShowPanel((prev) => !prev)}
             >
                 <div className="d-flex align-items-center gap-2">
@@ -106,7 +107,7 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
                                     {t("Notify these groups whenever any new order is placed.")}
                                 </p>
                                 <div
-                                    className={`p-2 border border-secondary-subtle rounded ${styles.groupScrollBox}`}
+                                    className={`p-2 border border-secondary-subtle rounded overflow-y-auto ${styles.groupScrollBox}`}
                                 >
                                     {groups?.map((g) => (
                                         <Form.Check
@@ -129,7 +130,7 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
                                     {t("Notify these groups whenever an order status changes.")}
                                 </p>
                                 <div
-                                    className={`p-2 border border-secondary-subtle rounded ${styles.groupScrollBox}`}
+                                    className={`p-2 border border-secondary-subtle rounded overflow-y-auto ${styles.groupScrollBox}`}
                                 >
                                     {groups?.map((g) => (
                                         <Form.Check
@@ -151,7 +152,7 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
                                 variant="primary"
                                 type="submit"
                                 disabled={isSaving}
-                                className="d-flex align-items-center gap-1 aa-btn aa-btn-primary"
+                                className="d-flex align-items-center gap-1"
                             >
                                 {isSaving ? (
                                     <Spinner size="sm" animation="border" />

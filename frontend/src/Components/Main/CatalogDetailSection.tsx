@@ -2,18 +2,18 @@
 import React from "react";
 
 // Third Party
-import { ArrowLeft, RefreshCw, ShoppingBag } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Alert, Badge, Button, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
+import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import { OrderFloatingBar } from "@/Components/Main/OrderFloatingBar";
 import { OrderModal } from "@/Components/Main/OrderModal";
 import type { CartItem } from "@/Components/Main/OrderModal";
-import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
@@ -73,35 +73,25 @@ export const CatalogDetailSection: React.FC<CatalogDetailSectionProps> = ({
                 variant="secondary"
                 size="sm"
                 onClick={onBackToDirectory}
-                className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                className="d-flex align-items-center gap-1"
                 title={t("Back to all catalogs")}
               >
                 <ArrowLeft size={16} />
                 <span className="d-none d-sm-inline">{t("All Catalogs")}</span>
               </Button>
-              {selectedOwner.character_id ? (
-                <img
-                  src={imageServer("characters", selectedOwner.character_id, 64)}
-                  alt={selectedOwner.name}
-                  width={44}
-                  height={44}
-                  className="rounded"
-                />
-              ) : selectedOwner.corporation_id ? (
-                <img
-                  src={imageServer("corporations", selectedOwner.corporation_id, 64)}
-                  alt={selectedOwner.name}
-                  width={44}
-                  height={44}
-                  className="rounded"
-                />
-              ) : (
-                <div
-                  className={`rounded d-flex align-items-center justify-content-center bg-secondary text-light ${styles.ownerCardAvatar}`}
-                >
-                  <ShoppingBag size={20} />
-                </div>
-              )}
+              <OwnerPortrait
+                src={
+                  selectedOwner.character_id
+                    ? imageServer("characters", selectedOwner.character_id, 64)
+                    : selectedOwner.corporation_id
+                      ? imageServer("corporations", selectedOwner.corporation_id, 64)
+                      : null
+                }
+                alt={selectedOwner.name}
+                type={selectedOwner.character_id ? "character" : "corporation"}
+                size="md"
+                shape="rounded"
+              />
               <div>
                 <div className="d-flex align-items-center gap-2">
                   <h4 className="mb-0 fw-bold">{selectedOwner.name}</h4>
@@ -124,7 +114,7 @@ export const CatalogDetailSection: React.FC<CatalogDetailSectionProps> = ({
                   variant="secondary"
                   size="sm"
                   onClick={onRefetchBlueprints}
-                  className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                  className="d-flex align-items-center gap-1"
                 >
                   <RefreshCw size={14} />
                   <span className="d-none d-sm-inline">{t("Refresh")}</span>

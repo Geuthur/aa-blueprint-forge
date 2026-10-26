@@ -3,11 +3,12 @@ import React, { useMemo, useState } from "react";
 
 // Third Party
 import { Layers, Search, ShoppingCart } from "lucide-react";
-import { Badge, Button, ButtonGroup, Form } from "react-bootstrap";
+import { Badge, Button, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import { BaseTable } from "@/Components/Base/BaseTable";
+import { FilterButtonGroup } from "@/Components/Base/FilterButtonGroup";
 import { getBlueprintColumns } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
@@ -120,29 +121,16 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
               <Layers size={14} />
               {t("Type:")}
             </span>
-            <ButtonGroup size="sm">
-              <Button
-                variant={activeTypeFilter === "all" ? "primary" : "outline-secondary"}
-                onClick={() => setTypeFilter("all")}
-                className={activeTypeFilter === "all" ? "aa-btn aa-btn-primary text-light" : "aa-btn aa-btn-secondary"}
-              >
-                {t("All")}
-              </Button>
-              <Button
-                variant={activeTypeFilter === "bpo" ? "primary" : "outline-secondary"}
-                onClick={() => setTypeFilter("bpo")}
-                className={activeTypeFilter === "bpo" ? "aa-btn aa-btn-primary text-light" : "aa-btn aa-btn-secondary"}
-              >
-                {t("BPO (Original)")}
-              </Button>
-              <Button
-                variant={activeTypeFilter === "bpc" ? "info" : "outline-secondary"}
-                onClick={() => setTypeFilter("bpc")}
-                className={activeTypeFilter === "bpc" ? "aa-btn aa-btn-info text-light" : "aa-btn aa-btn-secondary"}
-              >
-                {t("BPC (Copy)")}
-              </Button>
-            </ButtonGroup>
+            <FilterButtonGroup<"all" | "bpo" | "bpc">
+              options={[
+                { value: "all", label: t("All") },
+                { value: "bpo", label: t("BPO (Original)") },
+                { value: "bpc", label: t("BPC (Copy)"), activeVariant: "info" },
+              ]}
+              value={activeTypeFilter}
+              onChange={setTypeFilter}
+              ariaLabel={t("Filter blueprints by type")}
+            />
           </div>
 
           {/* Review Order Button next to Type filter when selection exists */}
@@ -150,7 +138,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
             <Button
               size="sm"
               onClick={onOpenOrderModal}
-              className="d-flex align-items-center gap-2 aa-btn aa-btn-primary"
+              variant="primary" className="d-flex align-items-center gap-2"
               data-testid="top-review-order-btn"
             >
               <ShoppingCart size={15} />

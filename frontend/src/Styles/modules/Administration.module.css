@@ -1,16 +1,9 @@
 .groupScrollBox {
   max-height: 180px;
-  overflow-y: auto;
 }
 
 .ownerModalScrollBox {
   max-height: 160px;
-  overflow-y: auto;
-}
-
-.avatarFallback {
-  width: 32px;
-  height: 32px;
 }
 
 .dropdownMenu {
@@ -33,9 +26,6 @@
   transform: translateY(0);
 }
 
-.cursorPointer {
-  cursor: pointer;
-}
-.statusBadgeClickable {
-  cursor: pointer;
+.searchContainer {
+  max-width: 300px;
 }

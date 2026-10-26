@@ -1,27 +1,21 @@
 // React
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 // Third Party
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Settings2, Store, Users } from "lucide-react";
 import { Button, ButtonGroup, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import {
-  deleteOwner,
-  loadUserOwners,
-  loadUserSettings,
-  triggerOwnerUpdate,
-  triggerUpdateAllUserOwners,
-  updateOwnerSetting,
-  updateUserSettings,
-} from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
-import type { OwnerSettingSchema, UserSettingsSchema } from "@/Api/schema";
 import { BaseOwnerSettingsSection } from "@/Components/Base/OwnerSettings";
 import type { BaseOwner } from "@/Components/Base/OwnerSettings/types";
 import { BpoSelectionModal } from "@/Components/Settings/BpoSelectionModal";
+import {
+  useOwnerActions,
+  useUpdateOwnerSetting,
+  useUserOwners,
+  useUserSettings,
+} from "@/Components/Settings/Hooks";
 import { UserSettingsCard } from "@/Components/Settings/UserSettingsCard";
 import styles from "@/Styles/modules/SettingsPage.module.css";
 import { renderTooltip } from "@/Utils";
@@ -29,183 +23,21 @@ import { imageServer } from "@/Utils/eveOnline";
 
 export const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
 
   const [activeBpoModalOwner, setActiveBpoModalOwner] = useState<{
     id: number;
     name: string;
   } | null>(null);
 
-  // Cooldown & Feedback States
-  const [globalCooldown, setGlobalCooldown] = useState(0);
-  const [updatingOwnerId, setUpdatingOwnerId] = useState<number | null>(null);
-  const [ownerCooldowns, setOwnerCooldowns] = useState<Record<number, number>>({});
-  const [feedbackMsg, setFeedbackMsg] = useState<{ variant: "success" | "danger"; text: string } | null>(null);
-
-  useEffect(() => {
-    if (globalCooldown <= 0) return;
-    const timer = setInterval(() => {
-      setGlobalCooldown((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [globalCooldown]);
-
-  useEffect(() => {
-    const activeCooldowns = Object.values(ownerCooldowns).some((v) => v > 0);
-    if (!activeCooldowns) return;
-    const timer = setInterval(() => {
-      setOwnerCooldowns((prev) => {
-        const next: Record<number, number> = {};
-        for (const [key, val] of Object.entries(prev)) {
-          if (val > 1) next[Number(key)] = val - 1;
-        }
-        return next;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [ownerCooldowns]);
-
   const {
     data: settings,
     isLoading: isLoadingSettings,
     isError: isErrorSettings,
-  } = useQuery({
-    queryKey: queryKeys.UserSettings,
-    queryFn: loadUserSettings,
-  });
-
-  const {
-    data: owners,
-    isLoading: isLoadingOwners,
-    isError: isErrorOwners,
-  } = useQuery({
-    queryKey: queryKeys.UserOwners,
-    queryFn: loadUserOwners,
-  });
-
-  const invalidateOwnerQueries = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
-    queryClient.invalidateQueries({ queryKey: queryKeys.UserCharacterStatuses });
-    queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
-  };
-
-  const updateMutation = useMutation({
-    mutationFn: updateUserSettings,
-    onMutate: async (newSettings) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.UserSettings });
-      const previous = queryClient.getQueryData<UserSettingsSchema>(queryKeys.UserSettings);
-      queryClient.setQueryData<UserSettingsSchema>(queryKeys.UserSettings, newSettings);
-      return { previous };
-    },
-    onError: (_error, _settings, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(queryKeys.UserSettings, context.previous);
-      }
-    },
-    onSuccess: (savedSettings) => {
-      queryClient.setQueryData(queryKeys.UserSettings, savedSettings);
-    },
-  });
-
-  const updateOwnerMutation = useMutation({
-    mutationFn: updateOwnerSetting,
-    onMutate: async ({ ownerId, payload }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.UserOwners });
-      const previous = queryClient.getQueryData<OwnerSettingSchema[]>(queryKeys.UserOwners);
-      queryClient.setQueryData<OwnerSettingSchema[]>(queryKeys.UserOwners, (old) =>
-        old?.map((owner) =>
-          owner.id === ownerId
-            ? {
-              ...owner,
-              is_public:
-                payload.is_public !== undefined && payload.is_public !== null
-                  ? payload.is_public
-                  : owner.is_public,
-              public_type: payload.public_type || owner.public_type,
-              selective_bpo_enabled:
-                payload.selective_bpo_enabled !== undefined &&
-                  payload.selective_bpo_enabled !== null
-                  ? payload.selective_bpo_enabled
-                  : owner.selective_bpo_enabled,
-            }
-            : owner,
-        ),
-      );
-      return { previous };
-    },
-    onError: (_error, _variables, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(queryKeys.UserOwners, context.previous);
-      }
-    },
-    onSuccess: (updatedOwner) => {
-      queryClient.setQueryData<OwnerSettingSchema[]>(queryKeys.UserOwners, (old) =>
-        old?.map((owner) => (owner.id === updatedOwner.id ? updatedOwner : owner)),
-      );
-      queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
-    },
-  });
-
-  // Global Update All Mutation
-  const updateAllMutation = useMutation({
-    mutationFn: () => triggerUpdateAllUserOwners(false),
-    onSuccess: (res) => {
-      setFeedbackMsg({ variant: "success", text: res.message || t("Update tasks queued successfully.") });
-      setGlobalCooldown(60);
-      invalidateOwnerQueries();
-      setTimeout(() => setFeedbackMsg(null), 5000);
-    },
-    onError: (err: unknown) => {
-      setFeedbackMsg({
-        variant: "danger",
-        text: err instanceof Error ? err.message : t("Failed to trigger update all tasks."),
-      });
-      setTimeout(() => setFeedbackMsg(null), 5000);
-    },
-  });
-
-  // Single Owner Update Mutation
-  const updateSingleMutation = useMutation({
-    mutationFn: (ownerId: number) => triggerOwnerUpdate(ownerId, false),
-    onSuccess: (res, ownerId) => {
-      setFeedbackMsg({ variant: "success", text: res.message || t("Update task queued successfully.") });
-      setOwnerCooldowns((prev) => ({ ...prev, [ownerId]: 60 }));
-      invalidateOwnerQueries();
-      setTimeout(() => setFeedbackMsg(null), 5000);
-    },
-    onError: (err: unknown) => {
-      setFeedbackMsg({
-        variant: "danger",
-        text: err instanceof Error ? err.message : t("Failed to trigger owner update task."),
-      });
-      setTimeout(() => setFeedbackMsg(null), 5000);
-    },
-    onSettled: () => {
-      setUpdatingOwnerId(null);
-    },
-  });
-
-  const handleTriggerSingleUpdate = (ownerId: number) => {
-    setUpdatingOwnerId(ownerId);
-    updateSingleMutation.mutate(ownerId);
-  };
-
-  // Delete Owner Mutation
-  const deleteMutation = useMutation({
-    mutationFn: (ownerId: number) => deleteOwner(ownerId),
-    onSuccess: (res) => {
-      setFeedbackMsg({ variant: "success", text: res.message || t("Owner deleted successfully.") });
-      invalidateOwnerQueries();
-      setTimeout(() => setFeedbackMsg(null), 5000);
-    },
-    onError: (err: unknown) => {
-      setFeedbackMsg({
-        variant: "danger",
-        text: err instanceof Error ? err.message : t("Failed to delete owner."),
-      });
-      setTimeout(() => setFeedbackMsg(null), 5000);
-    },
-  });
+    updateMutation,
+  } = useUserSettings();
+  const { data: owners, isLoading: isLoadingOwners, isError: isErrorOwners } = useUserOwners();
+  const updateOwnerMutation = useUpdateOwnerSetting();
+  const actions = useOwnerActions();
 
   const mappedOwners: BaseOwner[] = useMemo(() => {
     if (!owners) return [];
@@ -388,8 +220,9 @@ export const SettingsPage: React.FC = () => {
                   {owner.selective_bpo_enabled && (
                     <Button
                       variant="primary"
+                      size="sm"
                       type="button"
-                      className={`aa-btn aa-btn-primary btn btn-sm ${styles["bpo-btn"]}`}
+                      className={styles["bpo-btn"]}
                       onClick={() =>
                         setActiveBpoModalOwner({ id: owner.id, name: owner.name })
                       }
@@ -484,16 +317,16 @@ export const SettingsPage: React.FC = () => {
             "No characters or corporations have been linked yet. Use the menu above to link your characters or corporations.",
           )}
           appName="Blueprint Forge"
-          onUpdateAll={() => updateAllMutation.mutate()}
-          isUpdatingAll={updateAllMutation.isPending}
-          globalCooldown={globalCooldown}
-          feedbackMessage={feedbackMsg}
-          onDismissFeedback={() => setFeedbackMsg(null)}
-          onTriggerSingleUpdate={handleTriggerSingleUpdate}
-          updatingOwnerId={updatingOwnerId}
-          ownerCooldowns={ownerCooldowns}
-          onDeleteOwner={(owner) => deleteMutation.mutateAsync(owner.id)}
-          isDeleting={deleteMutation.isPending}
+          onUpdateAll={actions.updateAll}
+          isUpdatingAll={actions.isUpdatingAll}
+          globalCooldown={actions.globalCooldown}
+          feedbackMessage={actions.feedback}
+          onDismissFeedback={actions.clearFeedback}
+          onTriggerSingleUpdate={actions.updateOwner}
+          updatingOwnerId={actions.updatingOwnerId}
+          ownerCooldowns={actions.ownerCooldowns}
+          onDeleteOwner={(owner) => actions.deleteOwner(owner.id)}
+          isDeleting={actions.isDeleting}
           deleteModalTitle={t("Delete Owner")}
           deleteModalDescription={() =>
             t(

@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { BlueprintItemSchema, OwnerSettingSchema } from "@/Api/schema";
+import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
 import styles from "@/Styles/modules/Administration.module.css";
 import { renderTooltip } from "@/Utils";
@@ -62,20 +63,17 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
               variant="secondary"
               size="sm"
               onClick={onBack}
-              className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+              className="d-flex align-items-center gap-1"
             >
               <ArrowLeft size={16} />
               <span>{t("Back to Administration Overview")}</span>
             </Button>
-            {avatarUrl && (
-              <img
-                src={avatarUrl}
-                alt=""
-                width={36}
-                height={36}
-                className="rounded"
-              />
-            )}
+            <OwnerPortrait
+              src={avatarUrl}
+              type={inspectingOwner.is_corporation ? "corporation" : "character"}
+              size="sm"
+              shape="rounded"
+            />
             <div>
               <div className="d-flex align-items-center gap-2">
                 <h1 className="h4 mb-0 fw-bold">{inspectingOwner.name}</h1>
@@ -104,7 +102,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
                   size="sm"
                   onClick={() => onTriggerUpdate(inspectingOwner.id, false)}
                   disabled={updatingOwnerId === inspectingOwner.id}
-                  className="d-flex align-items-center gap-1 aa-btn aa-btn-warning"
+                  className="d-flex align-items-center gap-1"
                 >
                   {updatingOwnerId === inspectingOwner.id ? (
                     <Spinner size="sm" animation="border" />
@@ -122,7 +120,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
                   size="sm"
                   aria-label={t("More update options")}
                   disabled={updatingOwnerId === inspectingOwner.id}
-                  className="aa-btn aa-btn-warning"
+                  
                 />
               )}
               <Dropdown.Menu
@@ -145,7 +143,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
               variant="secondary"
               size="sm"
               onClick={onRefetch}
-              className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+              className="d-flex align-items-center gap-1"
             >
               <RefreshCw size={14} />
               <span>{t("Refresh")}</span>

@@ -2,31 +2,28 @@
 import { useMemo, useState } from "react";
 
 // Third Party
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { Button, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import {
-  createOrder,
-  loadCatalogBlueprints,
-  loadPublicCatalogs,
-  searchPublicBlueprints,
-} from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
 import BaseSectionHeader from "@/Components/Base/BaseHeader";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import { CatalogDetailSection } from "@/Components/Main/CatalogDetailSection";
 import { CatalogDirectorySection } from "@/Components/Main/CatalogDirectorySection";
+import {
+  useCatalogBlueprints,
+  useCreateOrder,
+  usePublicCatalogs,
+  useSearchPublicBlueprints,
+} from "@/Components/Main/Hooks";
 import type { CartItem } from "@/Components/Main/OrderModal";
 import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 
 function MainPage() {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
 
   const [selectedCatalogId, setSelectedCatalogId] = useQueryState("catalog", parseAsInteger);
   const [legacyShopId] = useQueryState("shop", parseAsInteger);
@@ -43,10 +40,7 @@ function MainPage() {
     isLoading: isShopsLoading,
     isError: isShopsError,
     refetch: refetchShops,
-  } = useQuery({
-    queryKey: queryKeys.PublicCatalogs,
-    queryFn: loadPublicCatalogs,
-  });
+  } = usePublicCatalogs();
 
   const selectedOwner = shops.find((s) => s.id === activeCatalogId) ?? undefined;
 
@@ -55,25 +49,16 @@ function MainPage() {
     data: blueprints = [],
     isLoading: isBlueprintsLoading,
     refetch: refetchBlueprints,
-  } = useQuery({
-    queryKey: activeCatalogId ? queryKeys.CatalogBlueprints(activeCatalogId) : ["none"],
-    queryFn: () => (activeCatalogId ? loadCatalogBlueprints(activeCatalogId) : Promise.resolve([])),
-    enabled: Boolean(activeCatalogId),
-  });
+  } = useCatalogBlueprints(activeCatalogId);
 
   const trimmedSearch = searchTerm.trim();
   const isSearchingBlueprints = trimmedSearch.length >= 2;
 
   // Search blueprints across public catalogs when search term >= 2 characters
-  const {
-    data: searchResults = [],
-    isFetching: isSearchFetching,
-  } = useQuery({
-    queryKey: queryKeys.SearchPublicBlueprints(trimmedSearch),
-    queryFn: () => searchPublicBlueprints(trimmedSearch),
-    enabled: isSearchingBlueprints && !activeCatalogId,
-    staleTime: 10000,
-  });
+  const { data: searchResults = [], isFetching: isSearchFetching } = useSearchPublicBlueprints(
+    trimmedSearch,
+    isSearchingBlueprints && !activeCatalogId,
+  );
 
   const matchingByOwner = useMemo(() => {
     const map: Record<number, BlueprintItem[]> = {};
@@ -87,26 +72,20 @@ function MainPage() {
   }, [searchResults]);
 
   // Order submission mutation
-  const orderMutation = useMutation({
-    mutationFn: (note: string) => {
-      if (!activeCatalogId) throw new Error("No catalog selected.");
-      const items = Array.from(cart.values()).map((c) => ({
-        blueprint_id: c.blueprint.item_id,
-        quantity: c.quantity,
-        runs: c.runs,
-      }));
-      return createOrder({
-        owner_id: activeCatalogId,
-        note,
-        items,
-      });
-    },
-    onSuccess: () => {
-      setCart(new Map());
-      setShowOrderModal(false);
-      queryClient.invalidateQueries({ queryKey: queryKeys.Orders() });
-    },
+  const orderMutation = useCreateOrder(() => {
+    setCart(new Map());
+    setShowOrderModal(false);
   });
+
+  const submitOrder = (note: string) => {
+    if (!activeCatalogId) throw new Error("No catalog selected.");
+    const items = Array.from(cart.values()).map((c) => ({
+      blueprint_id: c.blueprint.item_id,
+      quantity: c.quantity,
+      runs: c.runs,
+    }));
+    return orderMutation.mutateAsync({ owner_id: activeCatalogId, note, items });
+  };
 
   // Cart operations
   const handleToggleSelect = (bp: BlueprintItem) => {
@@ -182,7 +161,7 @@ function MainPage() {
                 size="sm"
                 aria-label={t("All Blueprints")}
                 onClick={handleBackToDirectory}
-                className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                className="d-flex align-items-center gap-1"
               >
                 <span>{t("All Blueprints")}</span>
               </Button>
@@ -216,7 +195,7 @@ function MainPage() {
                 variant="secondary"
                 size="sm"
                 onClick={() => refetchShops()}
-                className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+                className="d-flex align-items-center gap-1"
               >
                 <RefreshCw size={14} />
                 <span className="d-none d-sm-inline">{t("Refresh")}</span>
@@ -260,7 +239,7 @@ function MainPage() {
           onOpenOrderModal={() => setShowOrderModal(true)}
           onCloseOrderModal={() => setShowOrderModal(false)}
           onSubmitOrder={async (note) => {
-            await orderMutation.mutateAsync(note);
+            await submitOrder(note);
           }}
           isSubmittingOrder={orderMutation.isPending}
           onBackToDirectory={handleBackToDirectory}

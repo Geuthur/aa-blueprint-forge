@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
+import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
@@ -34,21 +35,13 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
     <Card className="bg-dark h-100 shadow-sm border-0 d-flex flex-column justify-content-between">
       <Card.Body className="p-3">
         <div className="d-flex align-items-center gap-3 mb-3">
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={owner.name}
-              width={54}
-              height={54}
-              className={`rounded ${owner.is_corporation ? "" : "rounded-circle"} border border-secondary shadow-sm`}
-            />
-          ) : (
-            <div
-              className={`rounded d-flex align-items-center justify-content-center bg-secondary text-light ${styles.ownerCardAvatar}`}
-            >
-              <ShoppingBag size={24} />
-            </div>
-          )}
+          <OwnerPortrait
+            src={avatarUrl}
+            alt={owner.name}
+            type={owner.is_corporation ? "corporation" : "character"}
+            shape={owner.is_corporation ? "rounded" : "circle"}
+            bordered
+          />
           <div className="overflow-hidden">
             {renderTooltip(
               owner.name,
@@ -146,8 +139,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
               </span>
             </div>
             <div
-              className="d-flex flex-column gap-1 overflow-auto pe-1"
-              style={{ maxHeight: "160px" }}
+              className={`d-flex flex-column gap-1 overflow-auto pe-1 ${styles.matchingBlueprintList}`}
               data-testid="matching-blueprints-list"
             >
               {matchingBlueprints.slice(0, 10).map((bp) => (
@@ -160,7 +152,6 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
                   role="button"
                   tabIndex={0}
                   className={`d-flex align-items-center justify-content-between p-1 px-2 rounded border border-secondary-subtle small ${styles.matchingBlueprintItem}`}
-                  style={{ cursor: "pointer" }}
                 >
                   <div className="d-flex align-items-center gap-2 text-truncate me-2">
                     <img
@@ -194,7 +185,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
       <Card.Footer className="bg-transparent border-0 p-3 pt-0">
         <Button
           variant="primary"
-          className="w-100 d-flex align-items-center justify-content-center gap-2 aa-btn aa-btn-primary"
+          className="w-100 d-flex align-items-center justify-content-center gap-2"
           onClick={() => onSelect(owner)}
         >
           <ShoppingBag size={16} />

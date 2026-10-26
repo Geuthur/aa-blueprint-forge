@@ -100,10 +100,6 @@
   color: var(--aa-color-body-dark);
 }
 
-.capitalisewords {
-  text-transform: capitalize;
-}
-
 .popover {
   --bs-popover-bg: var(--aa-color-body);
   --bs-popover-border-color: var(--aa-border-light);

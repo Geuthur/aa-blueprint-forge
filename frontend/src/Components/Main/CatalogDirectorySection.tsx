@@ -71,8 +71,7 @@ export const CatalogDirectorySection: React.FC<CatalogDirectorySectionProps> = (
             />
             {isSearchFetching && (
               <div
-                className="position-absolute end-0 top-50 translate-middle-y me-3"
-                style={{ pointerEvents: "none" }}
+                className="position-absolute end-0 top-50 translate-middle-y me-3 pe-none"
               >
                 <Spinner animation="border" size="sm" variant="primary" />
               </div>

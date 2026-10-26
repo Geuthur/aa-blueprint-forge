@@ -2,7 +2,6 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     AlertTriangle,
     Building2,
@@ -15,23 +14,10 @@ import {
     User,
 } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { Badge, Button, ButtonGroup, Card, CardBody, Col, Form, Row, Spinner } from "react-bootstrap";
+import { Button, Card, CardBody, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import {
-    deleteAdministrationOwner,
-    loadAdministrationGroups,
-    loadAdministrationOwnerBlueprints,
-    loadAdministrationOwners,
-    loadAdministrationSettings,
-    loadUserData,
-    triggerAdministrationGlobalUpdate,
-    triggerAdministrationOwnerUpdate,
-    updateAdministrationOwner,
-    updateAdministrationSettings,
-} from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
 import type {
     OwnerSettingSchema,
     AdministrationOwnerUpdateRequest,
@@ -40,49 +26,41 @@ import { AdministrationInspectionView } from "@/Components/Administration/Admini
 import { AdministrationOwnerModal } from "@/Components/Administration/AdministrationOwnerModal";
 import { AdministrationOwnersTable } from "@/Components/Administration/AdministrationOwnersTable";
 import { GlobalNotificationSettingsCard } from "@/Components/Administration/GlobalNotificationSettingsCard";
+import {
+    useAdministrationGroups,
+    useAdministrationOwnerBlueprints,
+    useAdministrationOwners,
+    useAdministrationSettings,
+    useAdministrationTasks,
+    useIsSuperuser,
+    useUpdateAdministrationOwner,
+    useUpdateAdministrationSettings,
+} from "@/Components/Administration/Hooks";
 import { BaseModal } from "@/Components/Base/BaseModal";
+import { FilterButtonGroup } from "@/Components/Base/FilterButtonGroup";
 import styles from "@/Styles/modules/Administration.module.css";
+
+type TypeFilter = "all" | "character" | "corporation" | "issues";
 
 const AdministrationPage: React.FC = () => {
     const { t } = useTranslation();
-    const queryClient = useQueryClient();
 
-    // Superuser-only features (global task queue, force refresh) are hidden for administrators
-    const { data: userData } = useQuery({
-        queryKey: queryKeys.User,
-        queryFn: loadUserData,
-    });
-    const isSuperuser = Boolean(userData?.user.is_superuser);
-
-    // Queries
-    const {
-        data: groups,
-        isLoading: isLoadingGroups,
-    } = useQuery({
-        queryKey: queryKeys.AdministrationGroups,
-        queryFn: loadAdministrationGroups,
-    });
-
+    // Data
+    const isSuperuser = useIsSuperuser();
+    const { data: groups, isLoading: isLoadingGroups } = useAdministrationGroups();
     const {
         data: settings,
         isLoading: isLoadingSettings,
         isError: isErrorSettings,
-    } = useQuery({
-        queryKey: queryKeys.AdministrationSettings,
-        queryFn: loadAdministrationSettings,
-    });
-
+    } = useAdministrationSettings();
     const {
         data: owners,
         isLoading: isLoadingOwners,
         isError: isErrorOwners,
-    } = useQuery({
-        queryKey: queryKeys.AdministrationOwners,
-        queryFn: loadAdministrationOwners,
-    });
+    } = useAdministrationOwners();
 
     // Filter and search state
-    const [typeFilter, setTypeFilter] = useState<"all" | "character" | "corporation" | "issues">("all");
+    const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
     const [searchTerm, setSearchTerm] = useState("");
 
     // Global settings state
@@ -115,21 +93,16 @@ const AdministrationPage: React.FC = () => {
     };
 
     // Global settings mutation
-    const globalMutation = useMutation({
-        mutationFn: (payload: Parameters<typeof updateAdministrationSettings>[0]) =>
-            updateAdministrationSettings(payload),
-        onSuccess: (updated) => {
-            queryClient.setQueryData(queryKeys.AdministrationSettings, updated);
+    const globalMutation = useUpdateAdministrationSettings({
+        onSaved: () => {
             setUserCreatedGroupIds(null);
             setUserStatusGroupIds(null);
             setGlobalSavedSuccess(true);
             setGlobalErrorMsg(null);
             setTimeout(() => setGlobalSavedSuccess(false), 3000);
         },
-        onError: (err: unknown) => {
-            setGlobalErrorMsg(
-                err instanceof Error ? err.message : t("Failed to update global notification settings.")
-            );
+        onError: (message) => {
+            setGlobalErrorMsg(message);
             setGlobalSavedSuccess(false);
         },
     });
@@ -158,20 +131,9 @@ const AdministrationPage: React.FC = () => {
     };
 
     // Owner update mutation
-    const ownerMutation = useMutation({
-        mutationFn: ({ ownerId, payload }: { ownerId: number; payload: AdministrationOwnerUpdateRequest }) =>
-            updateAdministrationOwner(ownerId, payload),
-        onSuccess: (updatedOwner) => {
-            queryClient.setQueryData<OwnerSettingSchema[]>(queryKeys.AdministrationOwners, (old) =>
-                old?.map((o) => (o.id === updatedOwner.id ? updatedOwner : o))
-            );
-            queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
-            queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
-            closeOwnerModal();
-        },
-        onError: (err: unknown) => {
-            setOwnerEditError(err instanceof Error ? err.message : t("Failed to update owner."));
-        },
+    const ownerMutation = useUpdateAdministrationOwner({
+        onUpdated: closeOwnerModal,
+        onError: setOwnerEditError,
     });
 
     const handleSaveOwner = (payload: AdministrationOwnerUpdateRequest) => {
@@ -183,107 +145,19 @@ const AdministrationPage: React.FC = () => {
         });
     };
 
-    // Owner Task Update Mutation
-    const [updatingOwnerId, setUpdatingOwnerId] = useState<number | null>(null);
-    const [taskFeedback, setTaskFeedback] = useState<{
-        variant: "success" | "danger";
-        message: string;
-    } | null>(null);
-
-    const taskMutation = useMutation({
-        mutationFn: ({ ownerId, forceRefresh }: { ownerId: number; forceRefresh: boolean }) =>
-            triggerAdministrationOwnerUpdate(ownerId, forceRefresh),
-        onSuccess: (res) => {
-            setTaskFeedback({
-                variant: "success",
-                message: res.message || t("Update task queued successfully."),
-            });
-            queryClient.invalidateQueries({ queryKey: queryKeys.AdministrationOwners });
-            queryClient.invalidateQueries({ queryKey: queryKeys.UserCharacterStatuses });
-        },
-        onError: (err: unknown) => {
-            setTaskFeedback({
-                variant: "danger",
-                message:
-                    err instanceof Error
-                        ? err.message
-                        : t("Failed to trigger update task for owner."),
-            });
-        },
-        onSettled: () => {
-            setUpdatingOwnerId(null);
-        },
-    });
-
-    const handleTriggerOwnerUpdate = (ownerId: number, forceRefresh: boolean) => {
-        setUpdatingOwnerId(ownerId);
-        setTaskFeedback(null);
-        taskMutation.mutate({ ownerId, forceRefresh });
-    };
-
-    // Global Force Refresh & Queue Update Mutation
-    const [showTaskPanel, setShowTaskPanel] = useState(false);
-    const [forceRefreshGlobal, setForceRefreshGlobal] = useState(false);
-    const globalQueueMutation = useMutation({
-        mutationFn: ({
-            target,
-            forceRefresh,
-        }: {
-            target: "characters" | "corporations";
-            forceRefresh: boolean;
-        }) =>
-            triggerAdministrationGlobalUpdate({
-                target,
-                forceRefresh,
-            }),
-        onSuccess: (data) => {
-            setTaskFeedback({
-                variant: "success",
-                message: data.message || t("Global update tasks queued successfully."),
-            });
-            queryClient.invalidateQueries({ queryKey: queryKeys.AdministrationOwners });
-        },
-        onError: (err: unknown) => {
-            setTaskFeedback({
-                variant: "danger",
-                message:
-                    err instanceof Error
-                        ? err.message
-                        : t("Failed to trigger global update tasks."),
-            });
-        },
-    });
-
-    // Owner Deletion state & mutation
+    // Owner Deletion state
     const [ownerToDelete, setOwnerToDelete] = useState<OwnerSettingSchema | null>(null);
 
-    const deleteOwnerMutation = useMutation({
-        mutationFn: (ownerId: number) => deleteAdministrationOwner(ownerId),
-        onSuccess: (res) => {
-            setTaskFeedback({
-                variant: "success",
-                message: res.message || t("Owner deleted successfully."),
-            });
-            queryClient.invalidateQueries({ queryKey: queryKeys.AdministrationOwners });
-            queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
-            queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
-            setOwnerToDelete(null);
-        },
-        onError: (err: unknown) => {
-            setTaskFeedback({
-                variant: "danger",
-                message:
-                    err instanceof Error
-                        ? err.message
-                        : t("Failed to delete owner."),
-            });
-            setOwnerToDelete(null);
-        },
-    });
+    // Owner update tasks, global update queue and deletion
+    const tasks = useAdministrationTasks(() => setOwnerToDelete(null));
+
+    // Global Force Refresh & Queue Update panel state
+    const [showTaskPanel, setShowTaskPanel] = useState(false);
+    const [forceRefreshGlobal, setForceRefreshGlobal] = useState(false);
 
     const handleConfirmDelete = () => {
         if (!ownerToDelete) return;
-        deleteOwnerMutation.mutate(ownerToDelete.id);
+        tasks.deleteOwner(ownerToDelete.id);
     };
 
     // Owner Blueprints Inspection state via nuqs URL parameter
@@ -335,16 +209,7 @@ const AdministrationPage: React.FC = () => {
         isLoading: isLoadingOwnerBlueprints,
         isError: isErrorOwnerBlueprints,
         refetch: refetchOwnerBlueprints,
-    } = useQuery({
-        queryKey: inspectingOwner
-            ? queryKeys.AdministrationOwnerBlueprints(inspectingOwner.id)
-            : ["none"],
-        queryFn: () =>
-            inspectingOwner
-                ? loadAdministrationOwnerBlueprints(inspectingOwner.id)
-                : Promise.resolve([]),
-        enabled: Boolean(inspectingOwner),
-    });
+    } = useAdministrationOwnerBlueprints(inspectingOwner?.id ?? null);
 
     if (inspectingOwner) {
         return (
@@ -353,13 +218,13 @@ const AdministrationPage: React.FC = () => {
                 ownerBlueprints={ownerBlueprints}
                 isLoading={isLoadingOwnerBlueprints}
                 isError={isErrorOwnerBlueprints}
-                updatingOwnerId={updatingOwnerId}
-                taskFeedback={taskFeedback}
-                onDismissFeedback={() => setTaskFeedback(null)}
+                updatingOwnerId={tasks.updatingOwnerId}
+                taskFeedback={tasks.taskFeedback}
+                onDismissFeedback={tasks.clearTaskFeedback}
                 onBack={() => setInspectOwnerId(null)}
                 onRefetch={() => refetchOwnerBlueprints()}
                 isSuperuser={isSuperuser}
-                onTriggerUpdate={handleTriggerOwnerUpdate}
+                onTriggerUpdate={tasks.triggerOwnerUpdate}
             />
         );
     }
@@ -467,7 +332,8 @@ const AdministrationPage: React.FC = () => {
                 {isSuperuser && (
                 <Card className="bg-dark border-secondary mb-4 shadow-sm">
                     <Card.Header
-                        className={`border-secondary d-flex align-items-center justify-content-between py-2 ${styles.cursorPointer}`}
+                        className={`border-secondary d-flex align-items-center justify-content-between py-2`}
+                        role="button"
                         onClick={() => setShowTaskPanel((prev) => !prev)}
                     >
                         <div className="d-flex align-items-center gap-2">
@@ -514,17 +380,17 @@ const AdministrationPage: React.FC = () => {
                                             <Button
                                                 variant="primary"
                                                 size="sm"
-                                                disabled={globalQueueMutation.isPending}
+                                                disabled={tasks.isQueuing}
                                                 onClick={() =>
-                                                    globalQueueMutation.mutate({
+                                                    tasks.queueGlobalUpdate({
                                                         target: "characters",
                                                         forceRefresh: forceRefreshGlobal,
                                                     })
                                                 }
-                                                className="w-100 d-flex align-items-center justify-content-center gap-1 aa-btn aa-btn-primary"
+                                                className="w-100 d-flex align-items-center justify-content-center gap-1"
                                                 data-testid="update-all-characters-btn"
                                             >
-                                                {globalQueueMutation.isPending ? (
+                                                {tasks.isQueuing ? (
                                                     <Spinner size="sm" animation="border" />
                                                 ) : (
                                                     <User size={14} />
@@ -547,17 +413,17 @@ const AdministrationPage: React.FC = () => {
                                             <Button
                                                 variant="primary"
                                                 size="sm"
-                                                disabled={globalQueueMutation.isPending}
+                                                disabled={tasks.isQueuing}
                                                 onClick={() =>
-                                                    globalQueueMutation.mutate({
+                                                    tasks.queueGlobalUpdate({
                                                         target: "corporations",
                                                         forceRefresh: forceRefreshGlobal,
                                                     })
                                                 }
-                                                className="w-100 d-flex align-items-center justify-content-center gap-1 aa-btn aa-btn-primary"
+                                                className="w-100 d-flex align-items-center justify-content-center gap-1"
                                                 data-testid="update-all-corporations-btn"
                                             >
-                                                {globalQueueMutation.isPending ? (
+                                                {tasks.isQueuing ? (
                                                     <Spinner size="sm" animation="border" />
                                                 ) : (
                                                     <Building2 size={14} />
@@ -575,38 +441,19 @@ const AdministrationPage: React.FC = () => {
 
                 {/* Filter and Search Bar */}
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4 mb-2">
-                    <ButtonGroup size="sm">
-                        <Button
-                            variant={typeFilter === "all" ? "primary" : "secondary"}
-                            onClick={() => setTypeFilter("all")}
-                            className={`aa-btn ${typeFilter === "all" ? "aa-btn-primary" : "aa-btn-secondary"}`}
-                        >
-                            {t("All")} <Badge bg="secondary" className="ms-1">{totalCount}</Badge>
-                        </Button>
-                        <Button
-                            variant={typeFilter === "character" ? "primary" : "secondary"}
-                            onClick={() => setTypeFilter("character")}
-                            className={`aa-btn ${typeFilter === "character" ? "aa-btn-primary" : "aa-btn-secondary"}`}
-                        >
-                            {t("Characters")} <Badge bg="secondary" className="ms-1">{charCount}</Badge>
-                        </Button>
-                        <Button
-                            variant={typeFilter === "corporation" ? "primary" : "secondary"}
-                            onClick={() => setTypeFilter("corporation")}
-                            className={`aa-btn ${typeFilter === "corporation" ? "aa-btn-primary" : "aa-btn-secondary"}`}
-                        >
-                            {t("Corporations")} <Badge bg="secondary" className="ms-1">{corpCount}</Badge>
-                        </Button>
-                        <Button
-                            variant={typeFilter === "issues" ? "primary" : "secondary"}
-                            onClick={() => setTypeFilter("issues")}
-                            className={`aa-btn ${typeFilter === "issues" ? "aa-btn-primary" : "aa-btn-secondary"}`}
-                        >
-                            {t("Issues")} <Badge bg="secondary" className="ms-1">{issuesCount}</Badge>
-                        </Button>
-                    </ButtonGroup>
+                    <FilterButtonGroup<TypeFilter>
+                        options={[
+                            { value: "all", label: t("All"), count: totalCount },
+                            { value: "character", label: t("Characters"), count: charCount },
+                            { value: "corporation", label: t("Corporations"), count: corpCount },
+                            { value: "issues", label: t("Issues"), count: issuesCount },
+                        ]}
+                        value={typeFilter}
+                        onChange={setTypeFilter}
+                        ariaLabel={t("Filter owners by type")}
+                    />
 
-                    <div style={{ maxWidth: "300px", width: "100%" }}>
+                    <div className={`w-100 ${styles.searchContainer}`}>
                         <Form.Control
                             type="search"
                             placeholder={t("Search by name or corporation…")}
@@ -623,13 +470,13 @@ const AdministrationPage: React.FC = () => {
                     owners={filteredOwners}
                     isLoading={isLoadingOwners}
                     isError={isErrorOwners}
-                    updatingOwnerId={updatingOwnerId}
-                    taskFeedback={taskFeedback}
-                    onDismissFeedback={() => setTaskFeedback(null)}
+                    updatingOwnerId={tasks.updatingOwnerId}
+                    taskFeedback={tasks.taskFeedback}
+                    onDismissFeedback={tasks.clearTaskFeedback}
                     onInspect={(owner) => setInspectOwnerId(owner.id)}
                     onEdit={(owner) => openOwnerModal(owner)}
                     isSuperuser={isSuperuser}
-                    onTriggerUpdate={handleTriggerOwnerUpdate}
+                    onTriggerUpdate={tasks.triggerOwnerUpdate}
                     onDelete={(owner) => setOwnerToDelete(owner)}
                 />
 
@@ -645,7 +492,7 @@ const AdministrationPage: React.FC = () => {
 
                 <BaseModal
                     show={Boolean(ownerToDelete)}
-                    onHide={() => !deleteOwnerMutation.isPending && setOwnerToDelete(null)}
+                    onHide={() => !tasks.isDeleting && setOwnerToDelete(null)}
                     centered
                     title={
                         <div className="d-flex align-items-center gap-2 text-danger">
@@ -658,20 +505,20 @@ const AdministrationPage: React.FC = () => {
                             <Button
                                 variant="secondary"
                                 onClick={() => setOwnerToDelete(null)}
-                                disabled={deleteOwnerMutation.isPending}
-                                className="aa-btn aa-btn-secondary"
+                                disabled={tasks.isDeleting}
+                                
                             >
                                 {t("Cancel")}
                             </Button>
                             <Button
                                 variant="danger"
                                 onClick={handleConfirmDelete}
-                                disabled={deleteOwnerMutation.isPending}
-                                className="aa-btn aa-btn-danger d-flex align-items-center gap-1"
+                                disabled={tasks.isDeleting}
+                                className="d-flex align-items-center gap-1"
                             >
                                 <Trash2 size={14} />
                                 <span>
-                                    {deleteOwnerMutation.isPending
+                                    {tasks.isDeleting
                                         ? t("Deleting…")
                                         : t("Confirm Delete")}
                                 </span>

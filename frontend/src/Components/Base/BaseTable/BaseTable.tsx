@@ -32,7 +32,6 @@ import { useTranslation } from "react-i18next";
 // AA bpforge
 import BaseHeader from "@/Components/Base/BaseTable/BaseTableHeader";
 import BasePages from "@/Components/Base/BaseTable/BaseTablePages";
-import styles from "@/Styles/modules/BaseTable.module.css";
 
 export interface BaseTableProps<TData, TValue = unknown> {
   isFetching?: boolean;
@@ -164,8 +163,7 @@ const BaseTable = <TData, TValue = unknown>({
                     return (
                       <td
                         key={cell.id}
-                        className={`aa-table-cell ${styles["cell-middle"]} ${isRight ? styles["cell-right"] : ""
-                          }`}
+                        className={`aa-table-cell align-middle ${isRight ? "text-end" : ""}`}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
@@ -189,7 +187,7 @@ const BaseTable = <TData, TValue = unknown>({
                 size="sm"
                 value={pageSize}
                 onChange={(e) => table.setPageSize(Number(e.target.value))}
-                className={`aa-table-select ${styles["page-size-select"]}`}
+                className={"aa-table-select w-auto"}
               >
                 {pageSizeOptions.map((size) => (
                   <option key={size} value={size}>

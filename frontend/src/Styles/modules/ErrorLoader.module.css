@@ -15,14 +15,6 @@
     animation: br-shake 320ms ease-in-out infinite;
 }
 
-.flex-container-error {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
 .icon-96 {
     font-size: 96px;
-    color: #ff4d4f;
 }

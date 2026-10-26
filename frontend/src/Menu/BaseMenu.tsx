@@ -2,16 +2,14 @@
 import { Link, useLocation } from "react-router-dom";
 
 // Third Party
-import { useQuery } from "@tanstack/react-query";
 import { ShieldAlert } from "lucide-react";
 import { Nav } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { loadOrders, loadUserOwners } from "@/Api/ApiCalls";
 import type { components } from "@/Api/OpenApi";
-import { queryKeys } from "@/Api/query";
 import { ProjectName } from "@/constants";
+import { useMenuOpenOrderCount, useMenuUserOwners } from "@/Menu/Hooks";
 
 export type MenuLinkItem = components["schemas"]["MenuLink"];
 
@@ -45,16 +43,7 @@ export const OrdersMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath
     const path = useLocation();
     const hit = isLinkActive(link.link, path.pathname);
 
-    const { data: sellerOrders } = useQuery({
-        queryKey: queryKeys.Orders("seller"),
-        queryFn: () => loadOrders("seller"),
-        refetchInterval: 30000,
-        staleTime: 15000,
-    });
-
-    const openCount = (sellerOrders ?? []).filter(
-        (o) => o.status === "Pending" || o.status === "Accepted"
-    ).length;
+    const openCount = useMenuOpenOrderCount();
 
     const hasOpenOrders = openCount > 0;
 
@@ -87,12 +76,7 @@ export const SettingsMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPa
     const path = useLocation();
     const hit = isLinkActive(link.link, path.pathname);
 
-    const { data: owners } = useQuery({
-        queryKey: queryKeys.UserOwners,
-        queryFn: () => loadUserOwners(),
-        refetchInterval: 30000,
-        staleTime: 15000,
-    });
+    const { data: owners } = useMenuUserOwners();
 
     // An owner has an issue if its update status has error or token_error
     const issueCount = (owners ?? []).filter((o) => {

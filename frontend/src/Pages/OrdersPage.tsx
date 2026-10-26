@@ -2,35 +2,25 @@
 import { useSearchParams } from "react-router-dom";
 
 // Third Party
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Alert, Button, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import {
-  deleteOrder,
-  loadOrders,
-  loadUserData,
-  updateOrderStatus,
-} from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
 import BaseSectionHeader from "@/Components/Base/BaseHeader";
+import { useOpenOrderCount, useOrderActions, useOrders } from "@/Components/Orders/Hooks";
 import { OrderCard } from "@/Components/Orders/OrderCard";
 import { OrdersEmptyState } from "@/Components/Orders/OrdersEmptyState";
 import { OrdersTabBar, type OrderTab } from "@/Components/Orders/OrdersTabBar";
+import { useUserData } from "@/Hooks/useUserData";
 
 export function OrdersPage() {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlTab = searchParams.get("tab");
 
   // Load user data for identifying current user ID and manager status
-  const { data: userData } = useQuery({
-    queryKey: queryKeys.User,
-    queryFn: loadUserData,
-  });
+  const { data: userData } = useUserData();
 
   const currentUserId = userData?.user.user_id;
   const canManageOrders = Boolean(userData?.user.can_manage_orders);
@@ -50,74 +40,12 @@ export function OrdersPage() {
     });
   };
 
-  // Load orders
-  const {
-    data: orders = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: queryKeys.Orders(activeTab),
-    queryFn: () => loadOrders(activeTab),
-  });
+  // Orders of the selected tab and the open order counts for the tab badges
+  const { data: orders = [], isLoading, isError, refetch } = useOrders(activeTab);
+  const openSellerCount = useOpenOrderCount("seller");
+  const openManageCount = useOpenOrderCount("manage", canManageOrders);
 
-  // Dedicated query for seller orders to track open seller orders count and pulsing badge
-  const { data: sellerOrders = [] } = useQuery({
-    queryKey: queryKeys.Orders("seller"),
-    queryFn: () => loadOrders("seller"),
-    refetchInterval: 10000,
-    staleTime: 5000,
-  });
-
-  const openSellerCount = sellerOrders.filter(
-    (o) => o.status === "Pending" || o.status === "Accepted",
-  ).length;
-
-  // Dedicated query for manageable orders to track open orders count and pulsing badge for managers
-  const { data: manageOrders = [] } = useQuery({
-    queryKey: queryKeys.Orders("manage"),
-    queryFn: () => loadOrders("manage"),
-    enabled: canManageOrders,
-    refetchInterval: 10000,
-    staleTime: 5000,
-  });
-
-  const openManageCount = manageOrders.filter(
-    (o) => o.status === "Pending" || o.status === "Accepted",
-  ).length;
-
-  // Mutation for updating order status
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ orderId, status }: { orderId: number; status: string }) =>
-      updateOrderStatus(orderId, status),
-    onSuccess: async (_, variables) => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.Orders() }),
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.OrderDetail(variables.orderId),
-        }),
-      ]);
-    },
-  });
-
-  // Mutation for deleting an order
-  const deleteOrderMutation = useMutation({
-    mutationFn: (orderId: number) => deleteOrder(orderId),
-    onSuccess: async (_, orderId) => {
-      queryClient.removeQueries({
-        queryKey: queryKeys.OrderDetail(orderId),
-      });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.Orders() });
-    },
-  });
-
-  const handleUpdateStatus = async (orderId: number, status: string) => {
-    await updateStatusMutation.mutateAsync({ orderId, status });
-  };
-
-  const handleDeleteOrder = async (orderId: number) => {
-    await deleteOrderMutation.mutateAsync(orderId);
-  };
+  const { updateStatus, remove, isUpdating, isDeleting } = useOrderActions();
 
   return (
     <main className="d-flex flex-column gap-3">
@@ -126,7 +54,7 @@ export function OrdersPage() {
           variant="secondary"
           size="sm"
           onClick={() => refetch()}
-          className="d-flex align-items-center gap-1 aa-btn aa-btn-secondary"
+          className="d-flex align-items-center gap-1"
         >
           <RefreshCw size={14} />
           <span>{t("Refresh")}</span>
@@ -168,10 +96,10 @@ export function OrdersPage() {
             order={order}
             currentUserId={currentUserId}
             canManageOrders={canManageOrders}
-            onUpdateStatus={handleUpdateStatus}
-            onDeleteOrder={handleDeleteOrder}
-            isUpdating={updateStatusMutation.isPending}
-            isDeleting={deleteOrderMutation.isPending}
+            onUpdateStatus={updateStatus}
+            onDeleteOrder={remove}
+            isUpdating={isUpdating}
+            isDeleting={isDeleting}
           />
         ))}
       </section>

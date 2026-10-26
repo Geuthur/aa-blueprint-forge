@@ -268,7 +268,7 @@ export const SelectFilter = <TData,>({ column }: { column: Column<TData, unknown
               selectOptions.map((item) => (
                 <Dropdown.Item
                   key={item.value}
-                  className={Styles.capitalisewords}
+                  className="text-capitalize"
                   onClick={() => {
                     column.setFilterValue(item.value ? item.value : "");
                     document.body.click();
