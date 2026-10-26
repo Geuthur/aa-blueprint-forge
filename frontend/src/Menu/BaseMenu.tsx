@@ -119,7 +119,7 @@ export const AdministrationMenuItem = ({ link, toPath }: { link: MenuLinkItem } 
                 id={link.name}
                 key={link.name}
                 active={hit}
-                className="aa-nav-danger d-flex align-items-center gap-1"
+                className="aa-nav-danger text-danger d-flex align-items-center gap-1"
                 data-testid="administration-nav-link"
             >
                 <ShieldAlert size={15} className="text-danger flex-shrink-0" />

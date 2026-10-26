@@ -86,7 +86,7 @@ export function BaseOwnerCard<T extends BaseOwner = BaseOwner>({
       : "bg-info text-white border-black";
 
   return (
-    <article className={`bg-dark ${styles["char-card"]} ${cardClass}`}>
+    <article className={`d-flex flex-column gap-3 p-3 bg-dark ${styles["char-card"]} ${cardClass}`}>
       <div className="d-flex align-items-center gap-3">
         <OwnerPortrait
           src={owner.avatar_url}

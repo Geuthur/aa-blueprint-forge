@@ -32,6 +32,10 @@ Section Order:
 
 - [ADD] Frontend hooks per area (`Components/<Area>/Hooks`) that hold the queries and mutations of the Administration, Settings, Orders, Catalog, My Blueprints and menu views, plus the shared hooks `useFeedback`, `useCooldown` and `useUserData`.
 
+### Fixed
+
+- [FIX] Headers of the administration inspection view, the owner list and the section header wrap on small screens instead of overflowing the container, and the filter button groups scroll horizontally.
+
 ### Changed
 
 - [CHANGE] Buttons use the Bootstrap 5 variants (`variant`, `size`) with the theme look defined as overrides under `.aa-react`; the custom `aa-btn` classes were removed. The order tabs use the Bootstrap nav pills with the same override approach. Frontend inline styles were replaced by CSS classes, layout-only CSS was replaced by Bootstrap utility classes, and missing `index.ts` files were added.
@@ -40,9 +44,13 @@ Section Order:
 
 - [CHANGE] The generated `manifest.json` is excluded from the pre-commit end-of-file fixer.
 
+- [CHANGE] Layout CSS of the settings page, owner cards and tables was replaced by Bootstrap utility classes, badge backgrounds use the Bootstrap `bg-*` classes with theme overrides under `.aa-react`, and `!important` was dropped where Bootstrap classes make it unnecessary.
+
 ### Removed
 
 - [REMOVED] Unused copy of the blueprint components in `Components/Blueprint`.
+
+- [REMOVED] Unused CSS classes (`aa-bg-*`, `aa-color-*`, `aa-tab-*`, `aa-panel*` and others) and theme variables.
 
 <!-- Your changes go here -->
 

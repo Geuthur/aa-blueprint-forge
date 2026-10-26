@@ -101,11 +101,11 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
         cell: ({ row }) => {
           const owner = row.original;
           return owner.is_corporation ? (
-            <span className="badge aa-bg-info border border-info">
+            <span className="badge bg-info border border-info">
               {t("Corporation")}
             </span>
           ) : (
-            <span className="badge aa-bg-warning border border-warning">
+            <span className="badge bg-warning border border-warning">
               {t("Character")}
             </span>
           );
@@ -152,7 +152,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
           const owner = row.original;
           return (
             <span
-              className={`badge ${owner.is_public ? "aa-bg-success border border-success" : "aa-bg-secondary border border-secondary"
+              className={`badge ${owner.is_public ? "bg-success border border-success" : "bg-secondary border border-secondary"
                 }`}
             >
               {owner.is_public ? t("Public") : t("Private")}
@@ -180,7 +180,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
         cell: ({ row }) => {
           const owner = row.original;
           return owner.selective_bpo_enabled ? (
-            <span className="badge aa-bg-primary border border-primary">
+            <span className="badge bg-primary border border-primary">
               {t("Selective")}
             </span>
           ) : (
@@ -328,7 +328,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
 
   return (
     <Card className="bg-secondary text-light border-0 shadow-sm">
-      <Card.Header className="d-flex align-items-center justify-content-between bg-transparent py-3">
+      <Card.Header className="d-flex flex-wrap align-items-center justify-content-between gap-2 bg-transparent py-3">
         <div className="d-flex align-items-center gap-2">
           <Users size={18} className="text-primary" />
           <h2 className="h5 mb-0">{t("All Blueprint Owners")}</h2>

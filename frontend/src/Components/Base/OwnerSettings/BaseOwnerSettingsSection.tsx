@@ -68,7 +68,7 @@ export function BaseOwnerSettingsSection<
   };
 
   return (
-    <Card className={`${styles["section"]} border-0`}>
+    <Card className="mt-4 border-0">
       <Card.Body className="bg-secondary text-light">
         <Card.Header
           className={`mb-3 bg-secondary d-flex justify-content-between align-items-center flex-wrap gap-2`}
@@ -79,7 +79,7 @@ export function BaseOwnerSettingsSection<
               <h2 className={`m-0 fw-bold ${styles["section-title"]}`}>{title ?? t("Owner Status")}</h2>
               {owners && <span className={styles["section-count"]}>({owners.length})</span>}
             </div>
-            <p className={styles["section-description"]}>
+            <p className={`mt-1 mb-0 w-100 ${styles["section-description"]}`}>
               {description ?? t("ESI synchronization status of your linked owners.")}
             </p>
           </div>
@@ -126,7 +126,7 @@ export function BaseOwnerSettingsSection<
 
         {isError && (
           <Card className="bg-secondary border-0 shadow-sm" role="alert">
-            <Card.Body className={styles["error"]}>
+            <Card.Body className="text-danger">
               {errorMessage ?? t("Failed to load update status.")}
             </Card.Body>
           </Card>

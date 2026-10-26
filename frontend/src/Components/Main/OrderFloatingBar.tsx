@@ -29,7 +29,7 @@ export const OrderFloatingBar: React.FC<OrderFloatingBarProps> = ({
     <div
       className={`position-fixed bottom-0 start-50 translate-middle-x mb-4 z-3 shadow-lg ${styles.cartFloatingBar}`}
     >
-      <div className="aa-bg-primary text-light rounded-pill px-4 py-2 d-flex align-items-center justify-content-between gap-3 border border-light border-opacity-25 shadow">
+      <div className={`text-light rounded-pill px-4 py-2 d-flex align-items-center justify-content-between gap-3 border border-light border-opacity-25 shadow ${styles.cartBar}`}>
         <div className="d-flex align-items-center gap-2">
           <ShoppingCart size={20} />
           <span className="fw-bold">
