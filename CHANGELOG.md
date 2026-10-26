@@ -46,11 +46,15 @@ Section Order:
 
 - [CHANGE] Layout CSS of the settings page, owner cards and tables was replaced by Bootstrap utility classes, badge backgrounds use the Bootstrap `bg-*` classes with theme overrides under `.aa-react`, and `!important` was dropped where Bootstrap classes make it unnecessary.
 
+- [CHANGE] The table filter fields use Bootstrap utility classes for their layout and share a single clear button component.
+
 ### Removed
 
 - [REMOVED] Unused copy of the blueprint components in `Components/Blueprint`.
 
 - [REMOVED] Unused CSS classes (`aa-bg-*`, `aa-color-*`, `aa-tab-*`, `aa-panel*` and others) and theme variables.
+
+- [REMOVED] Unused `BaseModalQuery` mutation hooks.
 
 <!-- Your changes go here -->
 
