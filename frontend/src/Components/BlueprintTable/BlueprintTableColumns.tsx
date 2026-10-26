@@ -65,11 +65,11 @@ export function getBlueprintColumns({
       cell: ({ getValue }) => {
         const isBpo = Boolean(getValue());
         return isBpo ? (
-          <Badge bg="primary" className="aa-bg-primary border border-primary">
+          <Badge bg="primary" className="border border-primary">
             {t("Original (BPO)")}
           </Badge>
         ) : (
-          <Badge bg="info" className="aa-bg-primary-light border border-info">
+          <Badge bg="info" className="border border-info">
             {t("Copy (BPC)")}
           </Badge>
         );

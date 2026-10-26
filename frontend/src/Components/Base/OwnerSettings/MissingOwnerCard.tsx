@@ -21,7 +21,7 @@ export const MissingOwnerCard: React.FC<MissingOwnerCardProps<BaseMissingOwner>>
   const { t } = useTranslation();
 
   return (
-    <article className={`${styles["char-card"]} ${styles["missing-card"]}`}>
+    <article className={`d-flex flex-column gap-3 p-3 ${styles["char-card"]} ${styles["missing-card"]}`}>
       <div className="d-flex align-items-center gap-3">
         <OwnerPortrait src={missing.avatar_url} alt={missing.name} bordered />
         <div className={`flex-fill ${styles["char-info"]}`}>

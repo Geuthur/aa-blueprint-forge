@@ -77,7 +77,7 @@ export const SettingsPage: React.FC = () => {
 
     return (
       <div className="d-flex flex-column gap-2">
-        <div className={styles["owner-stats"]}>
+        <div className={`d-flex align-items-center flex-wrap gap-2 mt-1 text-light ${styles.textXs}`}>
           <span>{t("{{count}} Blueprints", { count: owner.blueprint_count })}</span>
           <span>•</span>
           <span>{owner.bpo_count} BPO</span>
@@ -88,7 +88,7 @@ export const SettingsPage: React.FC = () => {
         {renderTooltip(
           t("Toggle public shop visibility"),
           <div
-            className={`${styles["public-row"]} border rounded bg-secondary`}
+            className="d-flex align-items-center justify-content-between gap-2 px-3 py-2 mt-1 border rounded bg-secondary user-select-none"
             role="button"
             tabIndex={0}
             onClick={() => {
@@ -116,7 +116,7 @@ export const SettingsPage: React.FC = () => {
                 size={16}
                 className={owner.is_public ? "text-success" : "text-light"}
               />
-              <span className={styles["public-label"]}>
+              <span className="small fw-semibold">
                 {t("Public Shop")}
               </span>
             </div>
@@ -145,7 +145,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 variant="secondary"
                 size="sm"
-                className={`${styles.settingsTypeBtn} bg-secondary text-light border border-secondary ${
+                className={`flex-fill fw-semibold ${styles.settingsTypeBtn} bg-secondary text-light border border-secondary ${
                   !owner.public_type || owner.public_type === "all"
                     ? "border-light shadow fw-bold"
                     : "opacity-75"
@@ -165,7 +165,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 variant="primary"
                 size="sm"
-                className={`${styles.settingsTypeBtn} bg-primary text-light border border-primary ${
+                className={`flex-fill fw-semibold ${styles.settingsTypeBtn} bg-primary text-light border border-primary ${
                   owner.public_type === "bpo"
                     ? "border-light shadow fw-bold"
                     : "opacity-75"
@@ -185,7 +185,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 variant="info"
                 size="sm"
-                className={`${styles.settingsTypeBtn} bg-info border border-info ${
+                className={`flex-fill fw-semibold ${styles.settingsTypeBtn} bg-info border border-info ${
                   owner.public_type === "bpc"
                     ? "border-dark shadow fw-bold"
                     : "opacity-75"
@@ -205,12 +205,12 @@ export const SettingsPage: React.FC = () => {
             </ButtonGroup>
 
             {owner.public_type !== "bpc" && (
-              <div className={`card-body border ${styles["selective-row"]}`}>
+              <div className="card-body border d-flex align-items-center justify-content-between gap-2 p-2">
                 <div className="d-flex flex-column">
                   <span className="small fw-medium">
                     {t("Selective BPOs")}
                   </span>
-                  <span className={`text-muted ${styles.selectiveSubtext}`}>
+                  <span className={`text-muted ${styles.textXs}`}>
                     {owner.selective_bpo_enabled
                       ? t("Only chosen BPOs are offered")
                       : t("All BPOs are offered")}
@@ -222,7 +222,7 @@ export const SettingsPage: React.FC = () => {
                       variant="primary"
                       size="sm"
                       type="button"
-                      className={styles["bpo-btn"]}
+                      className="fw-semibold"
                       onClick={() =>
                         setActiveBpoModalOwner({ id: owner.id, name: owner.name })
                       }
@@ -269,7 +269,7 @@ export const SettingsPage: React.FC = () => {
   if (isErrorSettings || !settings) {
     return (
       <Card className="bg-secondary text-light border-0 shadow-sm" role="alert">
-        <Card.Body className={styles["error"]}>
+        <Card.Body className="text-danger">
           {t("Failed to load settings. Please try refreshing the page.")}
         </Card.Body>
       </Card>
@@ -277,14 +277,14 @@ export const SettingsPage: React.FC = () => {
   }
 
   return (
-    <Card className={`${styles["page"]}`}>
+    <Card className={`${styles.page} mx-auto`}>
       <Card.Body className="bg-dark">
         {/* Page Header */}
-        <Card.Header className={styles["header"] + " bg-secondary"}>
+        <Card.Header className="d-flex align-items-center gap-3 mb-4 bg-secondary">
           <Settings2 size={24} aria-hidden="true" color="royalblue" />
           <div>
-            <h1 className={styles["title"]}>{t("Settings")}</h1>
-            <p className={styles["description"] + " text-light"}>
+            <h1 className={`m-0 fs-4 fw-bold ${styles.title}`}>{t("Settings")}</h1>
+            <p className="mt-1 mb-0 small text-light">
               {t(
                 "Manage notifications and configure blueprint shop visibility for your linked characters and corporations.",
               )}

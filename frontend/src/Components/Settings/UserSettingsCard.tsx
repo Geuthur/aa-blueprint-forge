@@ -26,24 +26,24 @@ export const UserSettingsCard: React.FC<UserSettingsCardProps> = ({
 
   return (
     <Card className="bg-secondary text-light border-0 shadow-sm">
-      <Card.Body className={styles["setting-row"]}>
+      <Card.Body className="d-flex align-items-start align-items-sm-center justify-content-between gap-4">
         <div className={styles["setting-copy"]}>
-          <div className={styles["setting-title"]}>
+          <div className="d-flex align-items-center gap-2 fw-bold">
             <BellOff size={18} aria-hidden="true" />
             <label htmlFor="disable-notifications">{t("Disable all notifications")}</label>
           </div>
-          <p className={styles["setting-description"]}>
+          <p className="mt-2 mb-0 small">
             {t(
               "When enabled, Blueprint Shop will not send notifications to your Alliance Auth or Discord account.",
             )}
           </p>
           {isError && (
-            <p className={styles["error-message"]} role="alert">
+            <p className={`mt-2 mb-0 text-danger ${styles.textXs}`} role="alert">
               {t("Could not save this setting. Your previous preference was restored.")}
             </p>
           )}
           {isPending && (
-            <p className={styles["save-status"]} role="status">
+            <p className={`mt-2 mb-0 text-muted ${styles.textXs}`} role="status">
               {t("Saving…")}
             </p>
           )}

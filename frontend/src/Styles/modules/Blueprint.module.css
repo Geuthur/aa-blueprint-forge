@@ -3,13 +3,11 @@
   max-width: 400px;
 }
 
-.catalogSearchInput,
-.shopSearchInput {
+.catalogSearchInput {
   min-width: 260px;
 }
 
-.catalogSelectDropdown,
-.shopSelectDropdown {
+.catalogSelectDropdown {
   min-width: 200px;
   max-width: 320px;
 }
@@ -25,7 +23,6 @@
 }
 
 .clickable {
-  cursor: pointer;
   transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, filter 0.15s ease-in-out;
 }
 
@@ -40,7 +37,6 @@
 }
 
 .kpiFilterCard {
-  cursor: pointer;
   transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, filter 0.15s ease-in-out, opacity 0.15s ease-in-out;
 }
 
@@ -48,7 +44,6 @@
   transform: translateY(-2px);
   filter: brightness(1.15);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  opacity: 1 !important;
 }
 
 .kpiFilterCard:active {
@@ -73,4 +68,8 @@
 }
 .matchingBlueprintList {
   max-height: 160px;
+}
+
+.cartBar {
+  background-color: var(--aa-bg-blue-light);
 }

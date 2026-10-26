@@ -40,9 +40,13 @@ Section Order:
 
 - [CHANGE] The generated `manifest.json` is excluded from the pre-commit end-of-file fixer.
 
+- [CHANGE] Layout CSS of the settings page, owner cards and tables was replaced by Bootstrap utility classes, badge backgrounds use the Bootstrap `bg-*` classes with theme overrides under `.aa-react`, and `!important` was dropped where Bootstrap classes make it unnecessary.
+
 ### Removed
 
 - [REMOVED] Unused copy of the blueprint components in `Components/Blueprint`.
+
+- [REMOVED] Unused CSS classes (`aa-bg-*`, `aa-color-*`, `aa-tab-*`, `aa-panel*` and others) and theme variables.
 
 <!-- Your changes go here -->
 

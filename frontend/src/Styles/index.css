@@ -11,9 +11,6 @@
 
     /* Default dark theme tokens */
     --aa-body: #18181b;
-    --aa-panel-bg: #18181b;
-    --aa-panel-border: #343439;
-    --aa-panel-header-bg: #27272a;
 
     --aa-link-body: rgba(39, 39, 42, 1);
     --aa-link-body-light: rgb(61, 61, 66, 1);
@@ -91,9 +88,9 @@
     --aa-border-green: var(--aa-color-green);
     --aa-border-red: var(--aa-color-red);
 
-    --aa-border-solid: 1px solid var(--aa-panel-border, var(--aa-border-light));
-    --aa-border-solid-lg: 2px solid var(--aa-panel-border, var(--aa-border-light));
-    --aa-border-solid-xl: 3px solid var(--aa-panel-border, var(--aa-border-light));
+    --aa-border-solid: 1px solid var(--aa-color-grey-light, var(--aa-border-light));
+    --aa-border-solid-lg: 2px solid var(--aa-color-grey-light, var(--aa-border-light));
+    --aa-border-solid-xl: 3px solid var(--aa-color-grey-light, var(--aa-border-light));
     --aa-border-radius: 12px;
 
     --aa-bg-blue: color-mix(in srgb, var(--aa-color-blue) 45%, var(--aa-color-black));
@@ -120,10 +117,6 @@
     --aa-table-row-border: #343439;
     --aa-table-row-hover: color-mix(in srgb, #343439 55%, transparent);
 
-    --aa-tab-bar-bg: #0b0e14;
-    --aa-tab-btn-color: #808080;
-    --aa-tab-btn-active-bg: #343439;
-    --aa-tab-btn-active-color: #ffffff;
 
     --aa-input-bg: #18181b;
     --aa-input-color: #ffffff;
@@ -138,9 +131,6 @@
 html[data-theme="flatly"],
 html[data-bs-theme="light"] {
     --aa-body: var(--bs-body-bg, #ffffff);
-    --aa-panel-bg: var(--bs-card-bg, #ffffff);
-    --aa-panel-border: var(--bs-border-color, #dee2e6);
-    --aa-panel-header-bg: var(--bs-tertiary-bg, #f8f9fa);
 
     --aa-color-body: var(--bs-body-bg, #ffffff);
     --aa-color-body-dark: var(--bs-tertiary-bg, #ecf0f1);
@@ -168,10 +158,6 @@ html[data-bs-theme="light"] {
     --aa-table-row-border: var(--bs-border-color, #dee2e6);
     --aa-table-row-hover: rgba(0, 0, 0, 0.04);
 
-    --aa-tab-bar-bg: var(--bs-tertiary-bg, #ecf0f1);
-    --aa-tab-btn-color: #7b8a8b;
-    --aa-tab-btn-active-bg: var(--bs-card-bg, #ffffff);
-    --aa-tab-btn-active-color: var(--bs-body-color, #2c3e50);
 
     --aa-input-bg: var(--bs-body-bg, #ffffff);
     --aa-input-color: var(--bs-body-color, #2c3e50);
@@ -184,9 +170,6 @@ html[data-bs-theme="light"] {
 html[data-theme="darkly"],
 html[data-bs-theme="dark"] {
     --aa-body: #18181b;
-    --aa-panel-bg: #18181b;
-    --aa-panel-border: #343439;
-    --aa-panel-header-bg: #27272a;
 
     --aa-color-body: #18181b;
     --aa-color-body-dark: #0b0e14;
@@ -214,10 +197,6 @@ html[data-bs-theme="dark"] {
     --aa-table-row-border: #343439;
     --aa-table-row-hover: color-mix(in srgb, #343439 55%, transparent);
 
-    --aa-tab-bar-bg: #0b0e14;
-    --aa-tab-btn-color: #808080;
-    --aa-tab-btn-active-bg: #343439;
-    --aa-tab-btn-active-color: #ffffff;
 
     --aa-input-bg: #18181b;
     --aa-input-color: #ffffff;
@@ -228,62 +207,21 @@ html[data-bs-theme="dark"] {
 
 /* ═══ Background ═══════════════════════════════════════════════════════════════ */
 
-.aa-bg-primary {
-    background-color: var(--aa-bg-blue-light);
+/* Badge backgrounds: Bootstrap bg-* is !important, so the theme override needs it too */
+.aa-react .badge.bg-primary {
+    background-color: var(--aa-bg-blue-light) !important;
 }
 
-.aa-bg-secondary {
-    background-color: var(--aa-bg-grey-light);
+.aa-react .badge.bg-secondary {
+    background-color: var(--aa-bg-grey-light) !important;
 }
 
-.aa-bg-warning {
-    background-color: var(--aa-bg-amber-light);
+.aa-react .badge.bg-warning {
+    background-color: var(--aa-bg-amber-light) !important;
 }
 
-.aa-bg-danger {
-    background-color: var(--aa-bg-rose-light);
-}
-
-.aa-bg-success {
-    background-color: var(--aa-bg-emerald-light);
-}
-
-.aa-bg-dark {
-    background-color: var(--aa-bg-dark);
-}
-
-.aa-bg-light {
-    background-color: var(--aa-bg-light);
-}
-
-/* ═══ Colors ═══════════════════════════════════════════════════════════════ */
-
-.aa-color-primary {
-    color: var(--aa-color-blue-light);
-}
-
-.aa-color-secondary {
-    color: var(--aa-color-grey-light);
-}
-
-.aa-color-warning {
-    color: var(--aa-color-amber-light);
-}
-
-.aa-color-danger {
-    color: var(--aa-color-rose-light);
-}
-
-.aa-color-success {
-    color: var(--aa-color-emerald-light);
-}
-
-.aa-color-dark {
-    color: var(--aa-color-dark);
-}
-
-.aa-color-light {
-    color: var(--aa-color-light);
+.aa-react .badge.bg-success {
+    background-color: var(--aa-bg-emerald-light) !important;
 }
 
 /* ═══ General ═══════════════════════════════════════════════════════════════ */
@@ -298,42 +236,17 @@ html[data-bs-theme="dark"] {
     margin-right: auto;
 }
 
-.aa-badge,
-.aa-badge-xs {
+.aa-badge {
     display: inline-flex;
     align-items: center;
     font-family: ui-monospace, Menlo, Consolas, monospace;
     text-transform: uppercase;
     box-shadow: var(--aa-shadow-dark);
-}
-
-.aa-badge {
     padding: 2px 4px;
     border-radius: 4px;
     font-size: var(--aa-font-size-xs);
     font-weight: var(--aa-font-weight-bold);
     letter-spacing: .05em;
-}
-
-.aa-badge-xs {
-    padding: 1px 3px;
-    border-radius: 3px;
-    font-size: var(--aa-font-size-xs);
-    font-weight: var(--aa-font-weight-light);
-    letter-spacing: .03em;
-}
-
-.aa-badge-lg {
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: var(--aa-font-size-md);
-    font-weight: var(--aa-font-weight-bold);
-    letter-spacing: .05em;
-}
-
-.aa-cursor-pointer {
-    display: block;
-    cursor: pointer;
 }
 
 /* ═══ Scroll Bar ═══════════════════════════════════════════════════════════════ */
@@ -357,24 +270,14 @@ html[data-bs-theme="dark"] {
     background: #52525b;
 }
 
-/* ═══ Border ═══════════════════════════════════════════════════════════════ */
-
-.aa-border {
-    transition: border-color 150ms ease;
-}
-
-.aa-border:hover {
-    border-color: var(--aa-color-grey-light);
-}
-
 /* ═══ LOADER ════════════════════════════════════════════════════════════════ */
 
 .aa-loader-container {
     width: 100%;
-    background-color: var(--aa-panel-bg, var(--aa-body));
+    background-color: var(--aa-color-body-dark, var(--aa-body));
     border-radius: var(--aa-border-radius);
     border: var(--aa-border-solid);
-    border-color: var(--aa-panel-border, var(--aa-border-light));
+    border-color: var(--aa-border-light, var(--aa-border-light));
     color: var(--aa-text-primary);
     padding: 32px;
     display: flex;
@@ -384,128 +287,6 @@ html[data-bs-theme="dark"] {
     min-height: 120px;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-}
-
-/* ═══ HEADINGS ══════════════════════════════════════════════════════════════ */
-
-.aa-section-title {
-    color: var(--aa-text-title, var(--aa-text-white));
-    font-size: var(--aa-font-size-lg);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-}
-
-.aa-section-subtitle {
-    color: var(--aa-text-secondary);
-    font-size: var(--aa-font-size);
-}
-
-/* ═══ PANELS ═══════════════════════════════════════════════════════════════ */
-
-.aa-panel {
-    border-radius: var(--aa-border-radius);
-    border: var(--aa-border-solid);
-    border-color: var(--aa-panel-border, var(--aa-border-light));
-    background-color: var(--aa-panel-bg, var(--aa-body));
-    color: var(--aa-text-primary);
-    padding: 16px;
-    box-shadow: var(--aa-shadow);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-}
-
-.aa-panel-lg {
-    border-radius: var(--aa-border-radius);
-    border: var(--aa-border-solid);
-    border-color: var(--aa-panel-border, var(--aa-border-light));
-    background-color: var(--aa-panel-bg, var(--aa-body));
-    color: var(--aa-text-primary);
-    padding: 20px;
-    box-shadow: var(--aa-shadow);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-}
-
-.aa-panel-light {
-    border-radius: var(--aa-border-radius);
-    border: var(--aa-border-solid);
-    border-color: var(--aa-panel-border, var(--aa-border-light));
-    background-color: var(--aa-panel-header-bg, var(--aa-color-grey-light));
-    color: var(--aa-text-primary);
-    padding: 16px;
-    box-shadow: var(--aa-shadow);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-}
-
-@media (min-width: 640px) {
-    .aa-panel-lg {
-        padding: 24px;
-    }
-}
-
-/* ═══ TAB BAR ═══════════════════════════════════════════════════════════════ */
-
-.aa-tab-bar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px;
-    background-color: var(--aa-tab-bar-bg, var(--aa-bg-dark));
-    border: var(--aa-border-solid);
-    border-color: var(--aa-panel-border, var(--aa-border-light));
-    border-radius: 8px;
-    box-shadow: var(--aa-shadow);
-}
-
-.aa-tab-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: var(--aa-font-size);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    color: var(--aa-tab-btn-color, var(--aa-text-secondary));
-    background: transparent;
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: background-color 150ms ease, color 150ms ease;
-}
-
-.aa-tab-btn:not(.active):hover {
-    color: var(--aa-text-title, var(--aa-color-white-light));
-    background-color: rgba(128, 128, 128, .15);
-}
-
-.aa-tab-btn.active {
-    color: var(--aa-tab-btn-active-color, var(--aa-text-white));
-    background-color: var(--aa-tab-btn-active-bg, var(--aa-color-grey-light));
-    border-color: var(--aa-panel-border, var(--aa-border-light));
-}
-
-/* ═══ Portrait ═══════════════════════════════════════════════════════════════ */
-
-.aa-portrait img {
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    object-fit: cover;
-}
-
-/* ═══ HyperLink ═══════════════════════════════════════════════════════════════ */
-
-.aa-link {
-    color: var(--aa-link-body);
-    cursor: pointer;
-}
-
-.aa-link:hover {
-    color: var(--aa-link-body-light);
-    text-decoration: underline;
 }
 
 /* ═══ BUTTONS (Bootstrap 5.3 + Theme Overrides) ════════════════════════════════ */
@@ -702,7 +483,6 @@ html[data-bs-theme="dark"] {
     animation: aa-pending-glow 2s infinite ease-in-out;
 }
 
-.aa-pulse-danger,
 .aa-order-nav-pulse {
     animation: aa-danger-glow 2s infinite ease-in-out;
 }
@@ -786,12 +566,10 @@ html[data-bs-theme="dark"] {
 }
 
 .aa-nav-danger {
-    color: var(--aa-color-rose, #f43f5e) !important;
     font-weight: 600;
 }
 
 .aa-nav-danger:hover {
-    color: var(--aa-color-rose-light, #fda4af) !important;
     text-shadow: 0 0 8px rgba(244, 63, 94, 0.4);
 }
 
