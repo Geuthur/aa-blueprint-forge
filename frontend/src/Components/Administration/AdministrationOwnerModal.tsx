@@ -171,7 +171,7 @@ const AdministrationOwnerModalDialog: React.FC<AdministrationOwnerModalDialogPro
                                 {t("Order Created Notification Groups")}
                             </Form.Label>
                             <div
-                                className={`p-2 border border-secondary-subtle rounded ${styles.ownerModalScrollBox}`}
+                                className={`p-2 border border-secondary-subtle rounded overflow-y-auto ${styles.ownerModalScrollBox}`}
                             >
                                 {groups?.map((g) => (
                                     <Form.Check
@@ -192,7 +192,7 @@ const AdministrationOwnerModalDialog: React.FC<AdministrationOwnerModalDialogPro
                                 {t("Order Status Change Notification Groups")}
                             </Form.Label>
                             <div
-                                className={`p-2 border border-secondary-subtle rounded ${styles.ownerModalScrollBox}`}
+                                className={`p-2 border border-secondary-subtle rounded overflow-y-auto ${styles.ownerModalScrollBox}`}
                             >
                                 {groups?.map((g) => (
                                     <Form.Check

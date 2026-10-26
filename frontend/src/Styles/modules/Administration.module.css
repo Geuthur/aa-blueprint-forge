@@ -1,11 +1,9 @@
 .groupScrollBox {
   max-height: 180px;
-  overflow-y: auto;
 }
 
 .ownerModalScrollBox {
   max-height: 160px;
-  overflow-y: auto;
 }
 
 .dropdownMenu {
@@ -26,13 +24,6 @@
 
 .kpiCard:active {
   transform: translateY(0);
-}
-
-.cursorPointer {
-  cursor: pointer;
-}
-.statusBadgeClickable {
-  cursor: pointer;
 }
 
 .searchContainer {

@@ -332,7 +332,8 @@ const AdministrationPage: React.FC = () => {
                 {isSuperuser && (
                 <Card className="bg-dark border-secondary mb-4 shadow-sm">
                     <Card.Header
-                        className={`border-secondary d-flex align-items-center justify-content-between py-2 ${styles.cursorPointer}`}
+                        className={`border-secondary d-flex align-items-center justify-content-between py-2`}
+                        role="button"
                         onClick={() => setShowTaskPanel((prev) => !prev)}
                     >
                         <div className="d-flex align-items-center gap-2">

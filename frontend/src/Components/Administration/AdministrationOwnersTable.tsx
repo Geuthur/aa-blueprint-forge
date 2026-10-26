@@ -127,7 +127,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
           // Badge opens the error modal (keyboard accessible)
           return (
             <span
-              className={`${badgeClass} ${styles.statusBadgeClickable}`}
+              className={badgeClass}
               role="button"
               tabIndex={0}
               aria-label={t("Show error details for {{name}}", { name: owner.name })}

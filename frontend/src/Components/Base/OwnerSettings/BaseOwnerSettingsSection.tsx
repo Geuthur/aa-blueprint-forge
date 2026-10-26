@@ -71,12 +71,12 @@ export function BaseOwnerSettingsSection<
     <Card className={`${styles["section"]} border-0`}>
       <Card.Body className="bg-secondary text-light">
         <Card.Header
-          className={`${styles["section-header"]} bg-secondary d-flex justify-content-between align-items-center flex-wrap gap-2`}
+          className={`mb-3 bg-secondary d-flex justify-content-between align-items-center flex-wrap gap-2`}
         >
           <div>
-            <div className={styles["section-title-wrap"]}>
+            <div className={`d-flex align-items-center gap-2 ${styles["section-title-wrap"]}`}>
               {icon ?? <Users size={20} aria-hidden="true" />}
-              <h2 className={styles["section-title"]}>{title ?? t("Owner Status")}</h2>
+              <h2 className={`m-0 fw-bold ${styles["section-title"]}`}>{title ?? t("Owner Status")}</h2>
               {owners && <span className={styles["section-count"]}>({owners.length})</span>}
             </div>
             <p className={styles["section-description"]}>
@@ -134,7 +134,7 @@ export function BaseOwnerSettingsSection<
 
         {!isLoading && !isError && !hasOwners && !hasMissing && (
           <Card className="bg-secondary text-light border-0 shadow-sm">
-            <Card.Body className={styles["empty-state"]}>
+            <Card.Body className={`text-center ${styles["empty-state"]}`}>
               {emptyMessage ?? t("Nothing to show.")}
             </Card.Body>
           </Card>

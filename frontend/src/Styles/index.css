@@ -530,9 +530,9 @@ html[data-bs-theme="dark"] {
 }
 
 .aa-react .btn-primary:hover:not(:disabled) {
-    background-color: var(--aa-color-blue-light) !important;
-    color: var(--aa-color-white) !important;
-    border-color: var(--aa-color-blue-light) !important;
+    background-color: var(--aa-color-blue-light);
+    color: var(--aa-color-white);
+    border-color: var(--aa-color-blue-light);
 }
 
 .aa-react .btn-secondary {
@@ -542,9 +542,9 @@ html[data-bs-theme="dark"] {
 }
 
 .aa-react .btn-secondary:hover:not(:disabled) {
-    background-color: var(--aa-color-grey-light) !important;
-    color: var(--aa-color-white) !important;
-    border-color: var(--aa-color-grey-light) !important;
+    background-color: var(--aa-color-grey-light);
+    color: var(--aa-color-white);
+    border-color: var(--aa-color-grey-light);
 }
 
 .aa-react .btn-success {
@@ -554,9 +554,9 @@ html[data-bs-theme="dark"] {
 }
 
 .aa-react .btn-success:hover:not(:disabled) {
-    background-color: var(--aa-color-emerald) !important;
-    color: var(--aa-color-white) !important;
-    border-color: var(--aa-color-emerald) !important;
+    background-color: var(--aa-color-emerald);
+    color: var(--aa-color-white);
+    border-color: var(--aa-color-emerald);
 }
 
 .aa-react .btn-warning {
@@ -566,9 +566,9 @@ html[data-bs-theme="dark"] {
 }
 
 .aa-react .btn-warning:hover:not(:disabled) {
-    background-color: var(--aa-color-amber) !important;
-    color: var(--aa-color-black) !important;
-    border-color: var(--aa-color-amber) !important;
+    background-color: var(--aa-color-amber);
+    color: var(--aa-color-black);
+    border-color: var(--aa-color-amber);
 }
 
 .aa-react .btn-danger {
@@ -578,9 +578,9 @@ html[data-bs-theme="dark"] {
 }
 
 .aa-react .btn-danger:hover:not(:disabled) {
-    background-color: var(--aa-color-red) !important;
-    color: var(--aa-color-white) !important;
-    border-color: var(--aa-color-red) !important;
+    background-color: var(--aa-color-red);
+    color: var(--aa-color-white);
+    border-color: var(--aa-color-red);
 }
 
 .aa-react .btn-info {
@@ -590,9 +590,9 @@ html[data-bs-theme="dark"] {
 }
 
 .aa-react .btn-info:hover:not(:disabled) {
-    background-color: var(--aa-color-blue-light) !important;
-    color: var(--aa-color-white) !important;
-    border-color: var(--aa-color-blue-light) !important;
+    background-color: var(--aa-color-blue-light);
+    color: var(--aa-color-white);
+    border-color: var(--aa-color-blue-light);
 }
 
 .aa-react .btn:disabled,
