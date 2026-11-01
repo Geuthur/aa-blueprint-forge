@@ -1,12 +1,12 @@
 // Third Party
-import { createColumnHelper } from "@tanstack/react-table";
-import type { ColumnDef } from "@tanstack/react-table";
 import type { TFunction } from "i18next";
 import { Plus, Check } from "lucide-react";
 import { Badge, Button } from "react-bootstrap";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
+import { createBaseColumnHelper } from "@/Components/Base/BaseTable/tableFeatures";
+import type { BaseColumnDef } from "@/Components/Base/BaseTable/tableFeatures";
 import styles from "@/Styles/modules/Blueprint.module.css";
 import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
@@ -27,10 +27,10 @@ export function getBlueprintColumns({
   onToggleSelect,
   showSelectColumn = true,
   showLocationColumn = false,
-}: BlueprintTableColumnsOptions): ColumnDef<BlueprintItem, unknown>[] {
-  const columnHelper = createColumnHelper<BlueprintItem>();
+}: BlueprintTableColumnsOptions): BaseColumnDef<BlueprintItem, unknown>[] {
+  const columnHelper = createBaseColumnHelper<BlueprintItem>();
 
-  const columns: ColumnDef<BlueprintItem, unknown>[] = [];
+  const columns: BaseColumnDef<BlueprintItem, unknown>[] = [];
 
   columns.push(
     columnHelper.accessor("type_name", {
@@ -167,7 +167,7 @@ export function getBlueprintColumns({
             </div>
           );
         },
-      }) as ColumnDef<BlueprintItem, unknown>
+      }) as BaseColumnDef<BlueprintItem, unknown>
     );
   }
 

@@ -1,16 +1,17 @@
 // Third Party
-import type { Table as TanStackTable } from "@tanstack/react-table";
+import type { RowData, Table as TanStackTable } from "@tanstack/react-table";
 import { Button, ButtonGroup, ButtonToolbar } from "react-bootstrap";
 
 // AA bpforge
 import { BaseTableForm } from "@/Components/Base/BaseTable/BaseTableForm";
+import type { BaseTableFeatures } from "@/Components/Base/BaseTable/tableFeatures";
 import pageStyles from "@/Styles/modules/BaseTablePages.module.css";
 
-export interface TableToolbarProps<TData> {
-  table: TanStackTable<TData>;
+export interface TableToolbarProps<TData extends RowData> {
+  table: TanStackTable<BaseTableFeatures, TData>;
 }
 
-export const BaseToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
+export const BaseToolbar = <TData extends RowData,>({ table }: TableToolbarProps<TData>) => {
   return (
     <ButtonToolbar>
       <ButtonGroup className={pageStyles["button-group"]}>

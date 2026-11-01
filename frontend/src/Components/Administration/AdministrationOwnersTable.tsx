@@ -2,8 +2,6 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
-import { createColumnHelper } from "@tanstack/react-table";
-import type { ColumnDef } from "@tanstack/react-table";
 import { Edit2, Eye, RefreshCw, Trash2, Users } from "lucide-react";
 import { Alert, Button, ButtonGroup, Card, Dropdown, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -13,6 +11,8 @@ import type { OwnerSettingSchema } from "@/Api/schema";
 import { AdministrationErrorModal } from "@/Components/Administration/AdministrationErrorModal";
 import { getEsiStatusBadgeClass } from "@/Components/Administration/esiStatus";
 import BaseTable from "@/Components/Base/BaseTable/BaseTable";
+import { createBaseColumnHelper } from "@/Components/Base/BaseTable/tableFeatures";
+import type { BaseColumnDef } from "@/Components/Base/BaseTable/tableFeatures";
 import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import styles from "@/Styles/modules/Administration.module.css";
 import { renderTooltip } from "@/Utils";
@@ -49,8 +49,8 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
   // Owner whose ESI error is shown in the modal
   const [errorOwner, setErrorOwner] = useState<OwnerSettingSchema | null>(null);
 
-  const columns = useMemo<ColumnDef<OwnerSettingSchema, unknown>[]>(() => {
-    const columnHelper = createColumnHelper<OwnerSettingSchema>();
+  const columns = useMemo<BaseColumnDef<OwnerSettingSchema, unknown>[]>(() => {
+    const columnHelper = createBaseColumnHelper<OwnerSettingSchema>();
 
     return [
       columnHelper.display({
