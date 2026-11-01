@@ -2,8 +2,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 // Third Party
-import { createColumnHelper } from "@tanstack/react-table";
-import type { ColumnDef } from "@tanstack/react-table";
 import { Check, CheckSquare, Search, Square, X } from "lucide-react";
 import { Alert, Badge, Button, Form, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -12,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import type { components } from "@/Api/OpenApi";
 import { BaseModal } from "@/Components/Base/BaseModal";
 import { BaseTable } from "@/Components/Base/BaseTable";
+import { createBaseColumnHelper } from "@/Components/Base/BaseTable/tableFeatures";
+import type { BaseColumnDef } from "@/Components/Base/BaseTable/tableFeatures";
 import { useOwnerBpos, useSaveOwnerBpos } from "@/Components/Settings/Hooks";
 import styles from "@/Styles/modules/SettingsPage.module.css";
 import { imageServer } from "@/Utils/eveOnline";
@@ -117,8 +117,8 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
         saveMutation.mutate(Array.from(selectedIds));
     };
 
-    const columns = useMemo<ColumnDef<OwnerBpoItem, unknown>[]>(() => {
-        const columnHelper = createColumnHelper<OwnerBpoItem>();
+    const columns = useMemo<BaseColumnDef<OwnerBpoItem, unknown>[]>(() => {
+        const columnHelper = createBaseColumnHelper<OwnerBpoItem>();
 
         return [
             columnHelper.display({
