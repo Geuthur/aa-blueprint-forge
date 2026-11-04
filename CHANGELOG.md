@@ -34,6 +34,8 @@ Section Order:
 
 - [ADD] Frontend hooks per area (`Components/<Area>/Hooks`) that hold the queries and mutations of the Administration, Settings, Orders, Catalog, My Blueprints and menu views, plus the shared hooks `useFeedback`, `useCooldown` and `useUserData`.
 
+- [ADD] Order history: orders stay traceable when the shop, its corporation or a user is deleted. Open orders of a deleted shop or buyer are cancelled, the buyer of a deleted shop gets a notification. The new "History" tab lists closed orders, the other tabs list open orders only. Includes a migration that fills the new order fields for existing orders.
+
 - [ADD] The item table of an order shows the location of each blueprint to the seller and to order managers. Buyers do not see it, like in the catalog.
 
 ### Fixed
@@ -46,6 +48,8 @@ Section Order:
 - Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
 
 ### Changed
+
+- [CHANGE] The "Decline" button of an order uses the warning color, so it is no longer mistaken for "Delete".
 
 - [CHANGE] The orders menu badge also counts the open orders an order manager can manage, not only the user's own seller orders.
 

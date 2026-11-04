@@ -192,7 +192,7 @@ export async function createOrder(
 }
 
 export async function loadOrders(
-  role: "all" | "buyer" | "seller" | "manage" = "all",
+  role: "all" | "buyer" | "seller" | "manage" | "history" = "all",
 ): Promise<components["schemas"]["OrderSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/orders/`, {
     params: {

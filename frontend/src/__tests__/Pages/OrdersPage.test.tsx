@@ -207,6 +207,49 @@ describe("OrdersPage Component", () => {
     });
   });
 
+  it("loads closed orders in the history tab", async () => {
+    // Test Data
+    vi.spyOn(ApiCalls, "loadUserData").mockResolvedValue({ user: { user_id: 99 } as never });
+    const loadOrders = vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([] as never);
+
+    // Test Action
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <MemoryRouter>
+          <OrdersPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+    fireEvent.click(await screen.findByRole("tab", { name: /History/ }));
+
+    // Expected Result
+    await waitFor(() => expect(loadOrders).toHaveBeenCalledWith("history"));
+    expect(await screen.findByText("No closed orders found.")).toBeInTheDocument();
+  });
+
+  it("uses the warning color for Decline and keeps Delete in the danger color", async () => {
+    // Test Data
+    vi.spyOn(ApiCalls, "loadUserData").mockResolvedValue({
+      user: { user_id: 99, can_manage_orders: true } as never,
+    });
+    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([
+      { id: 10, status: "Pending", requesting_user_id: 1, owner_id: 1, items: [] },
+    ] as never);
+
+    // Test Action
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <MemoryRouter>
+          <OrdersPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    // Expected Result
+    expect((await screen.findByRole("button", { name: "Decline" })).className).toContain("btn-warning");
+    expect(screen.getByRole("button", { name: "Delete" }).className).toContain("btn-danger");
+  });
+
   it("activates manage tab when URL query contains tab=manage", async () => {
     // Test Data
     const mockManagerUser = {

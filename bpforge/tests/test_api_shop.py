@@ -3,11 +3,15 @@
 # Standard Library
 from http import HTTPStatus
 from importlib import import_module
+from unittest.mock import patch
 
 # Django
 from django.apps import apps as django_apps
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+from django.utils import timezone
 
 # Alliance Auth
 from allianceauth.groupmanagement.models import Group
@@ -996,3 +1000,294 @@ class TestApiOrders(AuthTestCase):
         # Expected Result
         self.assertIn("?tab=seller", msg)
         self.assertIn("View Catalog Orders", msg)
+
+
+class TestOrderHistory(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        self.eve_type, _ = ItemType.objects.get_or_create(
+            id=688,
+            defaults={
+                "name": "Rifter Blueprint",
+                "group": ItemGroup.objects.get_or_create(
+                    id=105, defaults={"name": "Frigate Blueprint"}
+                )[0],
+            },
+        )
+        self.location = LocationFactory(location_id=60003760, name="Jita IV - 4")
+        self.seller_user = UserMainFactory()
+        self.seller_owner = OwnerFactory(user=self.seller_user, is_public=True)
+        self.seller_name = self.seller_owner.name
+        self.blueprint = BlueprintFactory(
+            item_id=300001,
+            owner=self.seller_owner,
+            eve_type=self.eve_type,
+            location=self.location,
+        )
+        self.buyer_name = self.user.profile.main_character.character_name
+
+    def _order(self, status=RequestStatus.PENDING, buyer=None):
+        order = OrderFactory(
+            owner=self.seller_owner,
+            requesting_user=buyer or self.user,
+            status=status,
+        )
+        RequestFactory(order=order, blueprint=self.blueprint, status=status)
+        return order
+
+    def _global_manager(self):
+        group = GroupFactory(name="Global Order Managers")
+        GeneralNotificationSettings.get_solo().order_created_groups.add(group)
+        manager = UserMainFactory()
+        manager.groups.add(group)
+        return manager
+
+    def _list(self, user, role):
+        self.client.force_login(user)
+        return self.client.get("/bpforge/api/orders/", {"role": role})
+
+    def _ids(self, user, role):
+        return [order["id"] for order in self._list(user, role).json()]
+
+    def test_list_orders_should_separate_open_and_closed_orders(self):
+        # Test Data
+        open_order = self._order(RequestStatus.ACCEPTED)
+        closed_order = self._order(RequestStatus.DELIVERED)
+
+        # Test Action & Expected Result
+        for role in ("buyer", "all"):
+            self.assertEqual(self._ids(self.user, role), [open_order.pk])
+        self.assertEqual(self._ids(self.seller_user, "seller"), [open_order.pk])
+        self.assertEqual(self._ids(self.user, "history"), [closed_order.pk])
+        self.assertEqual(self._ids(self.seller_user, "history"), [closed_order.pk])
+
+    def test_history_should_not_show_orders_of_other_users(self):
+        # Test Data
+        self._order(RequestStatus.DELIVERED)
+
+        # Test Action & Expected Result
+        self.assertEqual(self._ids(UserMainFactory(), "history"), [])
+
+    @patch("bpforge.signals.notify_order_cancelled_by_shop_removal")
+    def test_deleting_owner_should_keep_orders_in_history(self, mock_notify):
+        # Test Data
+        open_order = self._order(RequestStatus.PENDING)
+        delivered_order = self._order(RequestStatus.DELIVERED)
+        closed_at = timezone.now()
+        Order.objects.filter(pk=delivered_order.pk).update(closed_at=closed_at)
+
+        # Test Action
+        self.seller_owner.delete()
+
+        # Expected Result
+        open_order.refresh_from_db()
+        delivered_order.refresh_from_db()
+        self.assertIsNone(open_order.owner)
+        self.assertEqual(open_order.status, RequestStatus.CANCELLED)
+        self.assertIsNotNone(open_order.closed_at)
+        self.assertEqual(open_order.items.get().status, RequestStatus.CANCELLED)
+        self.assertEqual(delivered_order.status, RequestStatus.DELIVERED)
+        self.assertEqual(delivered_order.closed_at, closed_at)
+        self.assertEqual(delivered_order.items.count(), 1)
+        mock_notify.assert_called_once()
+        self.assertEqual(mock_notify.call_args.args[0].pk, open_order.pk)
+
+        for user in (self.user, self.seller_user):
+            response = self._list(user, "history")
+            self.assertEqual(response.status_code, 200)
+            data = {order["id"]: order for order in response.json()}
+            self.assertEqual(set(data), {open_order.pk, delivered_order.pk})
+            self.assertIsNone(data[open_order.pk]["owner_id"])
+            self.assertEqual(data[open_order.pk]["owner_name"], self.seller_name)
+            self.assertEqual(
+                data[open_order.pk]["items"][0]["type_name"], "Rifter Blueprint"
+            )
+
+    @patch("bpforge.signals.notify_order_cancelled_by_shop_removal")
+    def test_deleting_owner_should_not_notify_about_own_orders(self, mock_notify):
+        # Test Data
+        self._order(RequestStatus.PENDING, buyer=self.seller_user)
+
+        # Test Action
+        self.seller_owner.delete()
+
+        # Expected Result
+        mock_notify.assert_not_called()
+
+    def test_deleting_owner_should_notify_buyer(self):
+        # Test Data
+        order = self._order(RequestStatus.PENDING)
+
+        # Test Action
+        with patch("bpforge.thirdparty.discord.send_user_notification") as mock_send:
+            self.seller_owner.delete()
+
+        # Expected Result
+        mock_send.assert_called_once()
+        self.assertEqual(mock_send.call_args.kwargs["user_id"], self.user.pk)
+        self.assertIn(f"#{order.pk}", mock_send.call_args.kwargs["message"])
+        self.assertIn(self.seller_name, mock_send.call_args.kwargs["message"])
+
+    @patch("bpforge.signals.notify_order_cancelled_by_shop_removal")
+    def test_deleting_seller_user_should_keep_orders(self, mock_notify):
+        # Test Data
+        order = self._order(RequestStatus.ACCEPTED)
+
+        # Test Action
+        self.seller_user.delete()
+
+        # Expected Result
+        order.refresh_from_db()
+        self.assertIsNone(order.owner)
+        self.assertIsNone(order.seller_user)
+        self.assertEqual(order.status, RequestStatus.CANCELLED)
+        self.assertEqual(order.owner_name, self.seller_name)
+        mock_notify.assert_called_once()
+
+    def test_deleting_buyer_should_keep_order_for_seller(self):
+        # Test Data
+        buyer = UserMainFactory()
+        buyer_name = buyer.profile.main_character.character_name
+        order = self._order(RequestStatus.PENDING, buyer=buyer)
+
+        # Test Action
+        buyer.delete()
+
+        # Expected Result
+        order.refresh_from_db()
+        self.assertEqual(order.status, RequestStatus.CANCELLED)
+        response = self._list(self.seller_user, "history")
+        data = response.json()[0]
+        self.assertEqual(data["id"], order.pk)
+        self.assertIsNone(data["requesting_user_id"])
+        self.assertEqual(data["requesting_user_name"], buyer_name)
+        self.assertEqual(data["owner_id"], self.seller_owner.pk)
+
+    def test_deleting_buyer_through_django_user_model_should_cancel_order(self):
+        # Test Data
+        buyer = UserMainFactory()
+        order = self._order(RequestStatus.PENDING, buyer=buyer)
+
+        # Test Action
+        get_user_model().objects.get(pk=buyer.pk).delete()
+
+        # Expected Result
+        order.refresh_from_db()
+        self.assertIsNone(order.requesting_user)
+        self.assertEqual(order.status, RequestStatus.CANCELLED)
+
+    @patch("bpforge.signals.notify_order_cancelled_by_shop_removal")
+    def test_deleting_corporation_should_keep_orders_of_corporation_shop(self, _):
+        # Test Data
+        corporation = EveCorporationInfoFactory()
+        self.seller_owner.corporation = corporation
+        self.seller_owner.save()
+        order = self._order(RequestStatus.PENDING)
+
+        # Test Action
+        corporation.delete()
+
+        # Expected Result
+        order.refresh_from_db()
+        self.assertIsNone(order.owner)
+        self.assertEqual(order.status, RequestStatus.CANCELLED)
+        self.assertEqual(order.owner_name, corporation.corporation_name)
+
+    def test_removing_character_ownership_should_keep_owner_and_order(self):
+        # Test Data
+        order = self._order(RequestStatus.PENDING)
+
+        # Test Action
+        self.seller_owner.character.delete()
+
+        # Expected Result
+        order.refresh_from_db()
+        self.seller_owner.refresh_from_db()
+        self.assertIsNone(self.seller_owner.character)
+        self.assertEqual(order.owner, self.seller_owner)
+        self.assertEqual(order.status, RequestStatus.PENDING)
+
+    @patch("bpforge.signals.notify_order_cancelled_by_shop_removal")
+    def test_update_status_should_reject_order_of_deleted_shop(self, _):
+        # Test Data
+        order = self._order(RequestStatus.PENDING)
+        self.seller_owner.delete()
+        manager = self._global_manager()
+        self.client.force_login(manager)
+
+        # Test Action
+        response = self.client.post(
+            f"/bpforge/api/orders/{order.pk}/status/",
+            data={"status": RequestStatus.ACCEPTED},
+            content_type="application/json",
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        order.refresh_from_db()
+        self.assertEqual(order.status, RequestStatus.CANCELLED)
+
+    @patch("bpforge.signals.notify_order_cancelled_by_shop_removal")
+    def test_global_manager_should_see_all_of_history(self, _):
+        # Test Data
+        order = self._order(RequestStatus.PENDING)
+        self.seller_owner.delete()
+        manager = self._global_manager()
+
+        # Test Action & Expected Result
+        self.assertEqual(self._ids(manager, "history"), [order.pk])
+
+    @patch("bpforge.signals.notify_order_cancelled_by_shop_removal")
+    def test_corp_manager_should_see_order_of_deleted_shop_of_own_corporation(self, _):
+        # Test Data
+        order = self._order(RequestStatus.PENDING)
+        corporation_id = self.seller_owner.corporation_id_of_shop
+        self.seller_owner.delete()
+        other_order = OrderFactory(
+            owner=None,
+            requesting_user=None,
+            status=RequestStatus.DELIVERED,
+            owner_corporation_id=corporation_id + 1,
+        )
+        manager = UserMainFactory()
+        manager.user_permissions.add(
+            Permission.objects.get(
+                content_type__app_label="bpforge", codename="manage_access"
+            )
+        )
+        Order.objects.filter(pk=order.pk).update(
+            owner_corporation_id=manager.profile.main_character.corporation_id
+        )
+        Order.objects.filter(pk=other_order.pk).update(
+            owner_corporation_id=manager.profile.main_character.corporation_id + 1
+        )
+
+        # Test Action & Expected Result
+        self.assertEqual(self._ids(manager, "history"), [order.pk])
+        self.client.force_login(manager)
+        response = self.client.get(f"/bpforge/api/orders/{order.pk}/")
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(f"/bpforge/api/orders/{other_order.pk}/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_migration_should_fill_copy_of_existing_orders(self):
+        # Test Data
+        order = self._order(RequestStatus.PENDING)
+        expected_corporation_id = self.seller_owner.corporation_id_of_shop
+        Order.objects.filter(pk=order.pk).update(
+            owner_name="",
+            requesting_user_name="",
+            seller_user=None,
+            owner_corporation_id=None,
+        )
+        migration = import_module("bpforge.migrations.0007_order_history")
+
+        # Test Action
+        migration.fill_order_copy(django_apps, None)
+
+        # Expected Result
+        order.refresh_from_db()
+        self.assertEqual(order.owner_name, self.seller_name)
+        self.assertEqual(order.requesting_user_name, self.buyer_name)
+        self.assertEqual(order.seller_user, self.seller_user)
+        self.assertEqual(order.owner_corporation_id, expected_corporation_id)

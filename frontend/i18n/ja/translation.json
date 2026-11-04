@@ -363,5 +363,9 @@
   "Select by station:": "Select by station:",
   "Unknown location": "Unknown location",
   "Filter owners by type": "Filter owners by type",
-  "Blueprint no longer available": "Blueprint no longer available"
+  "Blueprint no longer available": "Blueprint no longer available",
+  "You have no open blueprint orders.": "You have no open blueprint orders.",
+  "Your shop has no open orders.": "Your shop has no open orders.",
+  "No closed orders found.": "No closed orders found.",
+  "History": "History"
 }

@@ -14,3 +14,8 @@ class BlueprintForgeConfig(AppConfig):
     name = "bpforge"
     label = "bpforge"
     verbose_name = f"Blueprint Forge v{__version__}"
+
+    def ready(self):
+        # AA Blueprint Forge
+        # pylint: disable=import-outside-toplevel, unused-import
+        import bpforge.signals

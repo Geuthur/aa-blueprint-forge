@@ -164,6 +164,15 @@ class Owner(UpdateManagerMixin, models.Model):
         """Whether this owner is a corporation."""
         return bool(self.corporation_id)
 
+    @property
+    def corporation_id_of_shop(self) -> int | None:
+        """EVE ID of the corporation this shop belongs to."""
+        if self.corporation:
+            return self.corporation.corporation_id
+        if self.character:
+            return self.character.character.corporation_id
+        return None
+
     def __str__(self) -> str:
         return self.name
 

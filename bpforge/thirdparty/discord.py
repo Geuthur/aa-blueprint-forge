@@ -242,6 +242,24 @@ def notify_order_created(order) -> None:
 
 
 # pylint: disable=too-many-locals
+def notify_order_cancelled_by_shop_removal(order) -> None:
+    """Notify the buyer that an open order was cancelled because its shop was deleted."""
+    message = (
+        f"Order **#{order.pk}** for **{order.display_owner_name}** was cancelled "
+        "because the shop was removed."
+    )
+    send_user_notification(
+        user_id=order.requesting_user_id,
+        title=f"Blueprint Order #{order.pk} Status: Cancelled",
+        message=_build_order_notification_message(
+            order=order,
+            base_message=message,
+            recipient=order.requesting_user,
+        ),
+        level="danger",
+    )
+
+
 def notify_order_status_updated(
     order, old_status: str, new_status: str, actor: User
 ) -> None:

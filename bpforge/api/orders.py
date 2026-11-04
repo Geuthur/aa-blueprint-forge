@@ -8,6 +8,7 @@ from ninja import NinjaAPI
 
 # Django
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 
@@ -16,7 +17,7 @@ from bpforge.api import schema
 from bpforge.models.blueprint import Blueprint, Owner
 from bpforge.models.general import General
 from bpforge.models.helpers.core import RequestStatus
-from bpforge.models.request import Order, Request
+from bpforge.models.request import OPEN_ORDER_STATUSES, Order, Request
 from bpforge.thirdparty.discord import (
     notify_order_created,
     notify_order_status_updated,
@@ -142,7 +143,10 @@ class ApiEndpoints:
             summary="List orders (either placed as buyer or received as seller)",
         )
         def list_orders(request, role: str = "all"):
-            """Role can be 'buyer', 'seller', 'manage', or 'all'."""
+            """Role can be 'buyer', 'seller', 'manage', 'all' or 'history'.
+
+            The first four list open orders, 'history' lists the closed ones.
+            """
             if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
@@ -155,18 +159,27 @@ class ApiEndpoints:
 
             manage_filter = General.get_manageable_orders_filter(request.user)
 
-            if role == "buyer":
-                queryset = queryset.filter(requesting_user=request.user)
-            elif role == "seller":
-                queryset = queryset.filter(owner__user=request.user)
-            elif role == "manage":
+            own_orders = Q(requesting_user=request.user) | Q(seller_user=request.user)
+
+            if role == "history":
+                queryset = queryset.exclude(status__in=OPEN_ORDER_STATUSES)
+                # An empty filter means a global manager, who sees every order
                 if manage_filter is None:
-                    return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-                queryset = queryset.filter(manage_filter)
+                    queryset = queryset.filter(own_orders)
+                elif manage_filter:
+                    queryset = queryset.filter(own_orders | manage_filter)
             else:
-                queryset = queryset.filter(
-                    requesting_user=request.user
-                ) | queryset.filter(owner__user=request.user)
+                queryset = queryset.filter(status__in=OPEN_ORDER_STATUSES)
+                if role == "buyer":
+                    queryset = queryset.filter(requesting_user=request.user)
+                elif role == "seller":
+                    queryset = queryset.filter(seller_user=request.user)
+                elif role == "manage":
+                    if manage_filter is None:
+                        return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+                    queryset = queryset.filter(manage_filter)
+                else:
+                    queryset = queryset.filter(own_orders)
 
             orders = list(queryset.distinct().order_by("-created_at"))
 
@@ -184,7 +197,7 @@ class ApiEndpoints:
             return HTTPStatus.OK, [
                 _serialize_order(
                     order,
-                    order.owner.user_id == request.user.id
+                    order.seller_user_id == request.user.id
                     or order.id in manageable_ids,
                 )
                 for order in orders
@@ -215,7 +228,7 @@ class ApiEndpoints:
             )
 
             is_buyer = order.requesting_user == request.user
-            is_seller = order.owner.user == request.user
+            is_seller = order.seller_user_id == request.user.id
             is_manager = General.can_manage_order(request.user, order)
 
             if not (is_buyer or is_seller or is_manager):
@@ -256,6 +269,13 @@ class ApiEndpoints:
             if payload.status not in valid_statuses:
                 return HTTPStatus.BAD_REQUEST, {
                     "error": _(f"Invalid status. Must be one of: {valid_statuses}")
+                }
+
+            if order.owner is None or order.requesting_user is None:
+                return HTTPStatus.BAD_REQUEST, {
+                    "error": _(
+                        "This order is closed because its shop or buyer was deleted."
+                    )
                 }
 
             can_edit = General.can_manage_order(request.user, order)
@@ -322,7 +342,7 @@ class ApiEndpoints:
 
 def _can_see_location(user, order: Order) -> bool:
     """Only the seller and order managers see where the blueprints of an order are."""
-    return order.owner.user_id == user.id or General.can_manage_order(user, order)
+    return order.seller_user_id == user.id or General.can_manage_order(user, order)
 
 
 def _get_item_values(item: Request) -> dict:
@@ -348,14 +368,6 @@ def _get_item_values(item: Request) -> dict:
 
 
 def _serialize_order(order: Order, include_location: bool) -> schema.OrderSchema:
-    owner = order.owner
-    owner_name = owner.name
-
-    try:
-        buyer_name = order.requesting_user.profile.main_character.character_name
-    except AttributeError:
-        buyer_name = order.requesting_user.username
-
     items_schema: list[schema.OrderItemSchema] = []
     for item in order.items.all():
         values = _get_item_values(item)
@@ -374,10 +386,10 @@ def _serialize_order(order: Order, include_location: bool) -> schema.OrderSchema
 
     return schema.OrderSchema(
         id=order.id,
-        owner_id=owner.id,
-        owner_name=owner_name,
+        owner_id=order.owner_id,
+        owner_name=order.display_owner_name,
         requesting_user_id=order.requesting_user_id,
-        requesting_user_name=buyer_name,
+        requesting_user_name=order.display_buyer_name,
         status=order.status,
         note=order.note,
         items=items_schema,

@@ -12,6 +12,8 @@ from allianceauth.authentication.models import User
 from bpforge.models.blueprint import Blueprint
 from bpforge.models.helpers.core import RequestStatus
 
+OPEN_ORDER_STATUSES = (RequestStatus.PENDING, RequestStatus.ACCEPTED)
+
 
 class Order(models.Model):
     """Represents a customer order placed with a blueprint shop/owner."""
@@ -22,16 +24,50 @@ class Order(models.Model):
 
     owner = models.ForeignKey(
         "bpforge.Owner",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="orders",
+        null=True,
+        blank=True,
         help_text=_("The shop/owner this order was placed with."),
     )
 
     requesting_user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="bpforge_orders",
+        null=True,
+        blank=True,
         help_text=_("The user who placed the order."),
+    )
+
+    # Copy of the parties, keeps the order traceable when they are deleted
+    owner_name = models.CharField(
+        max_length=254,
+        blank=True,
+        default="",
+        help_text=_("The name of the shop/owner when the order was placed."),
+    )
+
+    requesting_user_name = models.CharField(
+        max_length=254,
+        blank=True,
+        default="",
+        help_text=_("The name of the buyer when the order was placed."),
+    )
+
+    seller_user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        null=True,
+        blank=True,
+        help_text=_("The user who owned the shop when the order was placed."),
+    )
+
+    owner_corporation_id = models.BigIntegerField(
+        blank=True,
+        null=True,
+        help_text=_("The corporation ID of the shop when the order was placed."),
     )
 
     status = models.CharField(
@@ -65,12 +101,38 @@ class Order(models.Model):
 
     def __str__(self):
         return (
-            f"Order #{self.pk} - {self.owner} - {self.requesting_user} ({self.status})"
+            f"Order #{self.pk} - {self.display_owner_name} - "
+            f"{self.display_buyer_name} ({self.status})"
         )
+
+    @property
+    def display_owner_name(self) -> str:
+        """Current name of the shop, or the copy once it is gone."""
+        return self.owner.name if self.owner else self.owner_name
+
+    @property
+    def display_buyer_name(self) -> str:
+        """Current name of the buyer, or the copy once the user is gone."""
+        user = self.requesting_user
+        if user is None:
+            return self.requesting_user_name
+        try:
+            return user.profile.main_character.character_name
+        except AttributeError:
+            return user.username
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            self.owner_name = self.display_owner_name
+            self.requesting_user_name = self.display_buyer_name
+            if self.owner:
+                self.seller_user = self.owner.user
+                self.owner_corporation_id = self.owner.corporation_id_of_shop
+        super().save(*args, **kwargs)
 
     def handle_status(self, user: User, status: str, can_edit: bool = False) -> bool:
         """Update the order status and associated items."""
-        is_owner = self.owner.user == user
+        is_owner = self.seller_user_id == user.pk
         is_requester = self.requesting_user == user
 
         # Requester can cancel if still pending
@@ -168,8 +230,10 @@ class Request(models.Model):
 
     requesting_user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="+",
+        null=True,
+        blank=True,
         help_text=_("The user who made this request."),
     )
 

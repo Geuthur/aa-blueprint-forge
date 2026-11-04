@@ -237,7 +237,9 @@ export interface paths {
         };
         /**
          * List orders (either placed as buyer or received as seller)
-         * @description Role can be 'buyer', 'seller', 'manage', or 'all'.
+         * @description Role can be 'buyer', 'seller', 'manage', 'all' or 'history'.
+         *
+         *     The first four list open orders, 'history' lists the closed ones.
          */
         get: operations["bpforge_api_orders_list_orders"];
         put?: never;
@@ -931,11 +933,11 @@ export interface components {
             /** Id */
             id: number;
             /** Owner Id */
-            owner_id: number;
+            owner_id?: number | null;
             /** Owner Name */
             owner_name: string;
             /** Requesting User Id */
-            requesting_user_id: number;
+            requesting_user_id?: number | null;
             /** Requesting User Name */
             requesting_user_name: string;
             /** Status */

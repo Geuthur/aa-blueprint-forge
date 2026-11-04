@@ -28,7 +28,7 @@ export function OrdersPage() {
   const activeTab: OrderTab =
     urlTab === "manage" && canManageOrders
       ? "manage"
-      : urlTab === "seller" || urlTab === "all" || urlTab === "buyer"
+      : urlTab === "seller" || urlTab === "all" || urlTab === "buyer" || urlTab === "history"
         ? urlTab
         : "buyer";
 
