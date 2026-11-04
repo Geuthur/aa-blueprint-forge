@@ -2748,6 +2748,11 @@
             ],
             "title": "Location Name"
           },
+          "blueprint_available": {
+            "default": true,
+            "title": "Blueprint Available",
+            "type": "boolean"
+          },
           "status": {
             "title": "Status",
             "type": "string"

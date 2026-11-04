@@ -325,6 +325,28 @@ def _can_see_location(user, order: Order) -> bool:
     return order.owner.user_id == user.id or General.can_manage_order(user, order)
 
 
+def _get_item_values(item: Request) -> dict:
+    """Return the current blueprint values, or the copy once the blueprint is gone."""
+    bp = item.blueprint
+    if bp is None:
+        return {
+            "blueprint_id": item.item_id,
+            "type_id": item.type_id,
+            "type_name": item.type_name,
+            "material_efficiency": item.material_efficiency,
+            "time_efficiency": item.time_efficiency,
+            "location_name": item.location_name,
+        }
+    return {
+        "blueprint_id": bp.item_id,
+        "type_id": bp.eve_type_id,
+        "type_name": bp.eve_type.name,
+        "material_efficiency": bp.material_efficency,
+        "time_efficiency": bp.time_efficiency,
+        "location_name": schema.BlueprintItemSchema.get_location_name(bp),
+    }
+
+
 def _serialize_order(order: Order, include_location: bool) -> schema.OrderSchema:
     owner = order.owner
     owner_name = owner.name
@@ -336,23 +358,17 @@ def _serialize_order(order: Order, include_location: bool) -> schema.OrderSchema
 
     items_schema: list[schema.OrderItemSchema] = []
     for item in order.items.all():
-        bp = item.blueprint
+        values = _get_item_values(item)
+        location_name = values.pop("location_name")
         items_schema.append(
             schema.OrderItemSchema(
                 id=item.id,
-                blueprint_id=bp.item_id,
-                type_id=bp.eve_type_id,
-                type_name=bp.eve_type.name,
                 quantity=item.quantity,
                 runs=item.runs,
-                material_efficiency=bp.material_efficency,
-                time_efficiency=bp.time_efficiency,
-                location_name=(
-                    schema.BlueprintItemSchema.get_location_name(bp)
-                    if include_location
-                    else None
-                ),
+                location_name=location_name if include_location else None,
+                blueprint_available=item.blueprint is not None,
                 status=item.status,
+                **values,
             )
         )
 

@@ -122,9 +122,48 @@ class Request(models.Model):
 
     blueprint = models.ForeignKey(
         Blueprint,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="bpforge_requests",
+        null=True,
+        blank=True,
         help_text=_("The blueprint being requested."),
+    )
+
+    # Copy of the blueprint, keeps the item readable when ESI no longer returns it
+    item_id = models.BigIntegerField(
+        default=0,
+        help_text=_("The Eve ID of the blueprint when it was ordered."),
+    )
+
+    type_id = models.IntegerField(
+        default=0,
+        help_text=_("The Eve type ID of the blueprint when it was ordered."),
+    )
+
+    type_name = models.CharField(
+        max_length=250,
+        blank=True,
+        default="",
+        help_text=_("The Eve type name of the blueprint when it was ordered."),
+    )
+
+    material_efficiency = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text=_("The material efficiency of the blueprint when it was ordered."),
+    )
+
+    time_efficiency = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text=_("The time efficiency of the blueprint when it was ordered."),
+    )
+
+    location_name = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        help_text=_("The location name of the blueprint when it was ordered."),
     )
 
     requesting_user = models.ForeignKey(
@@ -173,7 +212,18 @@ class Request(models.Model):
     )
 
     def __str__(self):
-        return f"{self.blueprint} - {self.requesting_user} - {self.status}"
+        blueprint = self.blueprint or self.type_name
+        return f"{blueprint} - {self.requesting_user} - {self.status}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and self.blueprint:
+            self.item_id = self.blueprint.item_id
+            self.type_id = self.blueprint.eve_type_id
+            self.type_name = self.blueprint.eve_type.name
+            self.material_efficiency = self.blueprint.material_efficency
+            self.time_efficiency = self.blueprint.time_efficiency
+            self.location_name = self.blueprint.location_name
+        super().save(*args, **kwargs)
 
     def handle_request(
         self, user: User, status: str, closed: bool, can_edit: bool = False
