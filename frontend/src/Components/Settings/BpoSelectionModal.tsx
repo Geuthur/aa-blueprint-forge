@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from "react";
 
 // Third Party
 import { Check, CheckSquare, Search, Square, X } from "lucide-react";
-import { Alert, Badge, Button, Form, Spinner } from "react-bootstrap";
+import { Alert, Badge, Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -336,40 +336,51 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
                 </div>
 
                 {stations.length > 0 && (
-                    <div className="mb-3">
-                        <div className="mb-1 text-muted small">{t("Select by station:")}</div>
-                        <div className={styles.bpoStationList}>
-                            {stations.map(({ name, itemIds }, index) => {
-                                const selectedCount = itemIds.filter((itemId) =>
-                                    selectedIds.has(itemId)
-                                ).length;
-                                return (
-                                    <Form.Check
-                                        key={name}
-                                        id={`bpo-station-${index}`}
-                                        type="checkbox"
-                                        checked={selectedCount === itemIds.length}
-                                        ref={(input: HTMLInputElement | null) => {
-                                            if (input) {
-                                                input.indeterminate =
-                                                    selectedCount > 0 &&
-                                                    selectedCount < itemIds.length;
-                                            }
-                                        }}
-                                        onChange={() => handleToggleStation(itemIds)}
-                                        label={
-                                            <>
-                                                {name || t("Unknown location")}{" "}
-                                                <span className="text-muted small">
-                                                    ({selectedCount} / {itemIds.length})
-                                                </span>
-                                            </>
-                                        }
-                                    />
-                                );
-                            })}
-                        </div>
-                    </div>
+                    <Card className="bg-secondary border-0 shadow-sm mb-3">
+                        <Card.Body className="p-3">
+                            <div className="mb-2 text-muted small">{t("Select by station:")}</div>
+                            <Row
+                                xs={1}
+                                md={2}
+                                lg={3}
+                                className={`gx-3 gy-1 m-0 ${styles.bpoStationList}`}
+                            >
+                                {stations.map(({ name, itemIds }, index) => {
+                                    const selectedCount = itemIds.filter((itemId) =>
+                                        selectedIds.has(itemId)
+                                    ).length;
+                                    const stationName = name || t("Unknown location");
+                                    return (
+                                        <Col key={name}>
+                                            <Form.Check id={`bpo-station-${index}`} className="mb-0">
+                                                <Form.Check.Input
+                                                    type="checkbox"
+                                                    checked={selectedCount === itemIds.length}
+                                                    ref={(input: HTMLInputElement | null) => {
+                                                        if (input) {
+                                                            input.indeterminate =
+                                                                selectedCount > 0 &&
+                                                                selectedCount < itemIds.length;
+                                                        }
+                                                    }}
+                                                    onChange={() => handleToggleStation(itemIds)}
+                                                />
+                                                <Form.Check.Label
+                                                    className="d-flex gap-1 small"
+                                                    title={stationName}
+                                                >
+                                                    <span className="text-truncate">{stationName}</span>{" "}
+                                                    <span className="text-muted flex-shrink-0">
+                                                        ({selectedCount} / {itemIds.length})
+                                                    </span>
+                                                </Form.Check.Label>
+                                            </Form.Check>
+                                        </Col>
+                                    );
+                                })}
+                            </Row>
+                        </Card.Body>
+                    </Card>
                 )}
 
                 <div className="mb-2 text-muted small">

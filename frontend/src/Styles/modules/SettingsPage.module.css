@@ -29,7 +29,8 @@
 }
 
 .bpoStationList {
-    max-height: 160px;
+    max-height: 11rem;
+    overflow-x: hidden;
     overflow-y: auto;
 }
 
