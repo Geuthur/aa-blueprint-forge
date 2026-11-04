@@ -48,6 +48,8 @@ Section Order:
 
 - [CHANGE] The item table of an order uses `BaseTable` and can be sorted.
 
+- [CHANGE] The open order badges in the menu and on the order tabs look and pulse like the settings menu badge. The menu link and the tabs no longer glow.
+
 - [CHANGE] Buttons use the Bootstrap 5 variants (`variant`, `size`) with the theme look defined as overrides under `.aa-react`; the custom `aa-btn` classes were removed. The order tabs use the Bootstrap nav pills with the same override approach. Frontend inline styles were replaced by CSS classes, layout-only CSS was replaced by Bootstrap utility classes, and missing `index.ts` files were added.
 
 - [CHANGE] Both menus now share the same query options (5 minutes stale time, one retry, no refetch on window focus).

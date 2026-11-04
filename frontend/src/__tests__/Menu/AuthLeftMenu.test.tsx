@@ -107,7 +107,6 @@ describe('AuthLeftMenu', () => {
         const ordersLink = await screen.findByText('Orders');
         expect(ordersLink).toBeDefined();
         expect(screen.queryByTestId('orders-badge')).toBeNull();
-        expect(ordersLink.closest('a')?.classList.contains('aa-order-nav-pulse')).toBe(false);
     });
 
     it('should count the open manageable orders once for order managers', async () => {
@@ -162,10 +161,7 @@ describe('AuthLeftMenu', () => {
         const badge = await screen.findByTestId('orders-badge');
         expect(badge).toBeDefined();
         expect(badge.textContent).toBe('2');
-        expect(badge.classList.contains('aa-order-badge')).toBe(true);
-
-        const ordersLink = screen.getByText('Orders').closest('a');
-        expect(ordersLink?.classList.contains('aa-order-nav-pulse')).toBe(true);
+        expect(badge.classList.contains('aa-menu-badge-pulse')).toBe(true);
     });
 
     it('should render Settings link without pulse when all update statuses are ok', async () => {

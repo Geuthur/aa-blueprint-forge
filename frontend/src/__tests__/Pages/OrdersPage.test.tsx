@@ -99,10 +99,7 @@ describe("OrdersPage Component", () => {
     const badge = await screen.findByTestId("seller-orders-badge");
     expect(badge).toBeInTheDocument();
     expect(badge.textContent).toBe("2");
-    expect(badge.classList.contains("aa-order-badge")).toBe(true);
-
-    const sellerTab = screen.getByText("Catalog Orders (as Seller)");
-    expect(sellerTab.closest("button")?.classList.contains("aa-order-nav-pulse")).toBe(true);
+    expect(badge.classList.contains("aa-menu-badge-pulse")).toBe(true);
   });
 
   it("renders Order Management tab and badge when user is a manager", async () => {
