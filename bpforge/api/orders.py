@@ -22,6 +22,12 @@ from bpforge.thirdparty.discord import (
     notify_order_status_updated,
 )
 
+# Blueprints in a container resolve their name through the office to the station
+ORDER_ITEM_PREFETCH = (
+    "items__blueprint__eve_type",
+    "items__blueprint__location__parent__parent",
+)
+
 
 class ApiEndpoints:
     tags = ["Orders"]
@@ -122,7 +128,9 @@ class ApiEndpoints:
 
             notify_order_created(order)
 
-            return HTTPStatus.CREATED, _serialize_order(order)
+            return HTTPStatus.CREATED, _serialize_order(
+                order, _can_see_location(request.user, order)
+            )
 
         @api.get(
             "orders/",
@@ -143,9 +151,7 @@ class ApiEndpoints:
                 "owner__corporation",
                 "owner__user",
                 "requesting_user__profile__main_character",
-            ).prefetch_related(
-                "items__blueprint__eve_type",
-            )
+            ).prefetch_related(*ORDER_ITEM_PREFETCH)
 
             if role == "buyer":
                 queryset = queryset.filter(requesting_user=request.user)
@@ -164,7 +170,14 @@ class ApiEndpoints:
                 ) | queryset.filter(owner__user=request.user)
 
             orders = queryset.distinct().order_by("-created_at")
-            return HTTPStatus.OK, [_serialize_order(order) for order in orders]
+            return HTTPStatus.OK, [
+                # The manage filter already limits the list to manageable orders
+                _serialize_order(
+                    order,
+                    role == "manage" or _can_see_location(request.user, order),
+                )
+                for order in orders
+            ]
 
         @api.get(
             "orders/{int:order_id}/",
@@ -186,7 +199,7 @@ class ApiEndpoints:
                     "owner__corporation",
                     "owner__user",
                     "requesting_user__profile__main_character",
-                ).prefetch_related("items__blueprint__eve_type"),
+                ).prefetch_related(*ORDER_ITEM_PREFETCH),
                 id=order_id,
             )
 
@@ -197,7 +210,9 @@ class ApiEndpoints:
             if not (is_buyer or is_seller or is_manager):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
-            return HTTPStatus.OK, _serialize_order(order)
+            return HTTPStatus.OK, _serialize_order(
+                order, _can_see_location(request.user, order)
+            )
 
         @api.post(
             "orders/{int:order_id}/status/",
@@ -222,7 +237,7 @@ class ApiEndpoints:
                     "owner__corporation",
                     "owner__user",
                     "requesting_user__profile__main_character",
-                ).prefetch_related("items__blueprint__eve_type"),
+                ).prefetch_related(*ORDER_ITEM_PREFETCH),
                 id=order_id,
             )
 
@@ -254,7 +269,9 @@ class ApiEndpoints:
                     actor=request.user,
                 )
 
-            return HTTPStatus.OK, _serialize_order(order)
+            return HTTPStatus.OK, _serialize_order(
+                order, _can_see_location(request.user, order)
+            )
 
         @api.delete(
             "orders/{int:order_id}/",
@@ -292,7 +309,12 @@ class ApiEndpoints:
             )
 
 
-def _serialize_order(order: Order) -> schema.OrderSchema:
+def _can_see_location(user, order: Order) -> bool:
+    """Only the seller and order managers see where the blueprints of an order are."""
+    return order.owner.user_id == user.id or General.can_manage_order(user, order)
+
+
+def _serialize_order(order: Order, include_location: bool) -> schema.OrderSchema:
     owner = order.owner
     owner_name = owner.name
 
@@ -314,6 +336,11 @@ def _serialize_order(order: Order) -> schema.OrderSchema:
                 runs=item.runs,
                 material_efficiency=bp.material_efficency,
                 time_efficiency=bp.time_efficiency,
+                location_name=(
+                    schema.BlueprintItemSchema.get_location_name(bp)
+                    if include_location
+                    else None
+                ),
                 status=item.status,
             )
         )

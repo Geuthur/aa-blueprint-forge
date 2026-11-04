@@ -253,6 +253,8 @@ class OrderItemSchema(Schema):
     runs: int | None = None
     material_efficiency: int | None = None
     time_efficiency: int | None = None
+    # None: the user may not see the location, empty: the location has no known name
+    location_name: str | None = None
     status: str
 
 

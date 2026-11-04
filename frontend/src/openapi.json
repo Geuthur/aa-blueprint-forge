@@ -2737,6 +2737,17 @@
             ],
             "title": "Time Efficiency"
           },
+          "location_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Name"
+          },
           "status": {
             "title": "Status",
             "type": "string"

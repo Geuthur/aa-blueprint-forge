@@ -913,6 +913,8 @@ export interface components {
             material_efficiency?: number | null;
             /** Time Efficiency */
             time_efficiency?: number | null;
+            /** Location Name */
+            location_name?: string | null;
             /** Status */
             status: string;
         };

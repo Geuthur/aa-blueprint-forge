@@ -398,6 +398,109 @@ class TestApiOrders(AuthTestCase):
         order.refresh_from_db()
         self.assertEqual(order.status, RequestStatus.CANCELLED)
 
+    def _create_order_in_container(self):
+        """Create an order for a blueprint in an unnamed container inside a station."""
+        container = LocationFactory(
+            location_id=1000000000001, name="", parent=self.location
+        )
+        blueprint = BlueprintFactory(
+            item_id=200003,
+            owner=self.seller_owner,
+            eve_type=self.eve_type,
+            location=container,
+            location_flag="Hangar",
+        )
+        order = OrderFactory(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.PENDING,
+        )
+        RequestFactory(
+            order=order,
+            blueprint=blueprint,
+            requesting_user=self.user,
+            status=RequestStatus.PENDING,
+        )
+        return order
+
+    def test_list_orders_should_show_location_to_seller(self):
+        # Test Data
+        self._create_order_in_container()
+        self.client.force_login(self.seller_user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/?role=seller")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            response.json()[0]["items"][0]["location_name"], self.location.name
+        )
+
+    def test_list_orders_should_show_location_to_manager(self):
+        # Test Data
+        self._create_order_in_container()
+        global_group = GroupFactory(name="Global Order Managers")
+        GeneralNotificationSettings.get_solo().order_created_groups.add(global_group)
+        manager_user = UserMainFactory()
+        manager_user.groups.add(global_group)
+        self.client.force_login(manager_user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/?role=manage")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            response.json()[0]["items"][0]["location_name"], self.location.name
+        )
+
+    def test_list_orders_should_hide_location_from_buyer(self):
+        # Test Data
+        self._create_order_in_container()
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/?role=buyer")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNone(response.json()[0]["items"][0]["location_name"])
+
+    def test_get_order_should_hide_location_from_buyer(self):
+        # Test Data
+        order = self._create_order_in_container()
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get(f"/bpforge/api/orders/{order.id}/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNone(response.json()["items"][0]["location_name"])
+
+    def test_list_orders_should_return_empty_location_when_name_is_unknown(self):
+        # Test Data
+        order = self._create_order_in_container()
+        unnamed = LocationFactory(location_id=1000000000002, name="")
+        Request.objects.filter(order=order).update(
+            blueprint=BlueprintFactory(
+                item_id=200004,
+                owner=self.seller_owner,
+                eve_type=self.eve_type,
+                location=unnamed,
+                location_flag="Hangar",
+            )
+        )
+        self.client.force_login(self.seller_user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/?role=seller")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.json()[0]["items"][0]["location_name"], "")
+
     def test_list_orders_with_manage_role_should_return_403_for_unauthorized_user(
         self,
     ):

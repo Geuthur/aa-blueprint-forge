@@ -1,5 +1,5 @@
 // React
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 // Third Party
 import {
@@ -13,16 +13,20 @@ import {
   Truck,
   X,
 } from "lucide-react";
-import { Badge, Button, Card, Collapse, Table } from "react-bootstrap";
+import { Badge, Button, Card, Collapse } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
 import { BaseModal } from "@/Components/Base/BaseModal";
+import { BaseTable } from "@/Components/Base/BaseTable";
+import { createBaseColumnHelper } from "@/Components/Base/BaseTable/tableFeatures";
+import type { BaseColumnDef } from "@/Components/Base/BaseTable/tableFeatures";
 import { imageServer } from "@/Utils/eveOnline";
 import { formatDate } from "@/Utils/format";
 
 type Order = components["schemas"]["OrderSchema"];
+type OrderItem = components["schemas"]["OrderItemSchema"];
 
 interface OrderCardProps {
   order: Order;
@@ -48,6 +52,71 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const isBuyer = currentUserId === order.requesting_user_id;
+
+  // The API only sends a location to users who may see it
+  const showLocation = order.items.some((item) => typeof item.location_name === "string");
+
+  const itemColumns = useMemo<BaseColumnDef<OrderItem, unknown>[]>(() => {
+    const columnHelper = createBaseColumnHelper<OrderItem>();
+
+    return [
+      columnHelper.accessor("type_name", {
+        id: "type_name",
+        header: t("Blueprint"),
+        cell: ({ row }) => (
+          <div className="d-flex align-items-center gap-2">
+            <img
+              src={imageServer(row.original.runs ? "bpc" : "bpo", row.original.type_id, 32)}
+              alt={row.original.type_name}
+              width={24}
+              height={24}
+              className="rounded"
+            />
+            <span className="fw-semibold">{row.original.type_name}</span>
+          </div>
+        ),
+      }),
+      ...(showLocation
+        ? [
+            columnHelper.accessor("location_name", {
+              id: "location_name",
+              header: t("Location"),
+              cell: ({ getValue }) => (
+                <span className="small text-light">{String(getValue() || t("Unknown location"))}</span>
+              ),
+            }),
+          ]
+        : []),
+      columnHelper.accessor("quantity", {
+        id: "quantity",
+        header: t("Quantity"),
+        cell: ({ getValue }) => <span className="badge bg-secondary">{String(getValue())}</span>,
+      }),
+      columnHelper.accessor("runs", {
+        id: "runs",
+        header: t("Runs"),
+        cell: ({ getValue }) => (
+          <span className="text-light small">
+            {getValue() ? `${String(getValue())} ${t("runs")}` : t("Standard")}
+          </span>
+        ),
+      }),
+      columnHelper.display({
+        id: "efficiency",
+        header: t("Efficiency"),
+        cell: ({ row }) => (
+          <span className="small">
+            ME {row.original.material_efficiency ?? 0} / TE {row.original.time_efficiency ?? 0}
+          </span>
+        ),
+      }),
+      columnHelper.accessor("status", {
+        id: "status",
+        header: t("Item Status"),
+        cell: ({ getValue }) => <span className="small text-light">{String(getValue())}</span>,
+      }),
+    ];
+  }, [showLocation, t]);
 
   const handleConfirmDelete = async () => {
     if (onDeleteOrder) {
@@ -266,53 +335,15 @@ export const OrderCard: React.FC<OrderCardProps> = ({
           )}
 
           {/* Collapsible Items Table */}
-          <Collapse in={expanded}>
+          <Collapse in={expanded} mountOnEnter>
             <div className="mt-3 pt-3 border-top border-secondary-subtle">
-              <Table responsive hover size="sm" className="align-middle mb-0">
-                <thead className="small text-light">
-                  <tr>
-                    <th>{t("Blueprint")}</th>
-                    <th>{t("Quantity")}</th>
-                    <th>{t("Runs")}</th>
-                    <th>{t("Efficiency")}</th>
-                    <th>{t("Item Status")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.items.map((item) => (
-                    <tr key={item.id}>
-                      <td>
-                        <div className="d-flex align-items-center gap-2">
-                          <img
-                            src={imageServer(item.runs ? "bpc" : "bpo", item.type_id, 32)}
-                            alt={item.type_name}
-                            width={24}
-                            height={24}
-                            className="rounded"
-                          />
-                          <span className="fw-semibold">{item.type_name}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="badge bg-secondary">{item.quantity}</span>
-                      </td>
-                      <td>
-                        <span className="text-light small">
-                          {item.runs ? `${item.runs} ${t("runs")}` : t("Standard")}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="small">
-                          ME {item.material_efficiency ?? 0} / TE {item.time_efficiency ?? 0}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="small text-light">{item.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+              <BaseTable
+                data={order.items}
+                columns={itemColumns}
+                enableFilters={false}
+                showFooter={false}
+                initialState={{ pagination: { pageSize: order.items.length || 1 } }}
+              />
             </div>
           </Collapse>
         </Card.Body>
