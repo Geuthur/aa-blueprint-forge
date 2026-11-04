@@ -233,7 +233,7 @@ describe("OrdersPage Component", () => {
     expect(manageTab).toHaveAttribute("aria-selected", "true");
   });
 
-  const orderWithItem = (locationName?: string | null) => ({
+  const orderWithItem = (locationName?: string | null, blueprintAvailable = true) => ({
     id: 20,
     owner_id: 2,
     owner_name: "Vendor Corp",
@@ -253,14 +253,15 @@ describe("OrdersPage Component", () => {
         material_efficiency: 10,
         time_efficiency: 20,
         location_name: locationName,
+        blueprint_available: blueprintAvailable,
         status: "Pending",
       },
     ],
   });
 
-  const renderExpandedOrder = async (locationName?: string | null) => {
+  const renderExpandedOrder = async (locationName?: string | null, blueprintAvailable = true) => {
     vi.spyOn(ApiCalls, "loadUserData").mockResolvedValue({ user: { user_id: 1 } as never });
-    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([orderWithItem(locationName)] as never);
+    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([orderWithItem(locationName, blueprintAvailable)] as never);
 
     render(
       <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
@@ -289,6 +290,23 @@ describe("OrdersPage Component", () => {
 
     // Expected Result
     expect(screen.getByText("Unknown location")).toBeInTheDocument();
+  });
+
+  it("marks an order item whose blueprint is gone", async () => {
+    // Test Action
+    await renderExpandedOrder("Jita IV - 4", false);
+
+    // Expected Result
+    expect(screen.getByText("Blueprint no longer available")).toBeInTheDocument();
+    expect(screen.getByText("Rifter Blueprint")).toBeInTheDocument();
+  });
+
+  it("does not mark an order item whose blueprint still exists", async () => {
+    // Test Action
+    await renderExpandedOrder("Jita IV - 4", true);
+
+    // Expected Result
+    expect(screen.queryByText("Blueprint no longer available")).toBeNull();
   });
 
   it("hides the location column when the API sends no location", async () => {

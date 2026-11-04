@@ -326,6 +326,17 @@ class Blueprint(models.Model):
         """Return True if this blueprint is a corporation blueprint."""
         return self.owner.corporation is not None
 
+    @property
+    def location_name(self) -> str:
+        """Return the name of the first named location of this blueprint."""
+        # Containers and offices have no name, so walk up to the station or structure.
+        location = self.location
+        while location:
+            if location.name:
+                return location.name
+            location = location.parent
+        return ""
+
     def __str__(self):
         return f"{self.eve_type} ({self.runs})"
 

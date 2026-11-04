@@ -2,8 +2,10 @@
 
 # Standard Library
 from http import HTTPStatus
+from importlib import import_module
 
 # Django
+from django.apps import apps as django_apps
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 
@@ -14,6 +16,7 @@ from allianceauth.groupmanagement.models import Group
 from eve_sde.models import ItemGroup, ItemType, SolarSystem
 
 # AA Blueprint Forge
+from bpforge.models.blueprint import Blueprint
 from bpforge.models.general import GeneralNotificationSettings
 from bpforge.models.helpers.core import RequestStatus
 from bpforge.models.request import Order, Request
@@ -380,6 +383,117 @@ class TestApiOrders(AuthTestCase):
         order.refresh_from_db()
         self.assertEqual(order.status, RequestStatus.DELIVERED)
         self.assertIsNotNone(order.closed_at)
+
+    def _order_with_removed_blueprint(self):
+        container = LocationFactory(
+            location_id=1050000000001, name="", parent=self.location
+        )
+        blueprint = BlueprintFactory(
+            item_id=200003,
+            owner=self.seller_owner,
+            eve_type=self.eve_type,
+            location=container,
+            location_flag="Hangar",
+            material_efficency=8,
+            time_efficiency=16,
+        )
+        order = OrderFactory(owner=self.seller_owner, requesting_user=self.user)
+        RequestFactory(order=order, blueprint=blueprint, runs=5)
+        blueprint.delete()
+        return order
+
+    def test_list_orders_should_show_item_of_removed_blueprint_to_seller(self):
+        """
+        Test should return the copied values for an item whose blueprint is gone.
+        """
+        # Test Data
+        self._order_with_removed_blueprint()
+        self.client.force_login(self.seller_user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/", {"role": "seller"})
+
+        # Expected Result
+        self.assertEqual(response.status_code, 200)
+        item = response.json()[0]["items"][0]
+        self.assertFalse(item["blueprint_available"])
+        self.assertEqual(item["blueprint_id"], 200003)
+        self.assertEqual(item["type_id"], self.eve_type.id)
+        self.assertEqual(item["type_name"], "Rifter Blueprint")
+        self.assertEqual(item["runs"], 5)
+        self.assertEqual(item["material_efficiency"], 8)
+        self.assertEqual(item["time_efficiency"], 16)
+        self.assertEqual(item["location_name"], self.location.name)
+
+    def test_list_orders_should_hide_location_of_removed_blueprint_from_buyer(self):
+        """
+        Test should not reveal the copied location to the buyer.
+        """
+        # Test Data
+        self._order_with_removed_blueprint()
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/", {"role": "buyer"})
+
+        # Expected Result
+        self.assertEqual(response.status_code, 200)
+        item = response.json()[0]["items"][0]
+        self.assertFalse(item["blueprint_available"])
+        self.assertIsNone(item["location_name"])
+
+    def test_list_orders_should_prefer_current_blueprint_values(self):
+        """
+        Test should show current values as long as the blueprint exists.
+        """
+        # Test Data
+        order = OrderFactory(owner=self.seller_owner, requesting_user=self.user)
+        RequestFactory(order=order, blueprint=self.bp1)
+        Blueprint.objects.filter(pk=self.bp1.pk).update(material_efficency=3)
+        self.client.force_login(self.seller_user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/", {"role": "seller"})
+
+        # Expected Result
+        item = response.json()[0]["items"][0]
+        self.assertTrue(item["blueprint_available"])
+        self.assertEqual(item["material_efficiency"], 3)
+
+    def test_migration_should_fill_copy_of_existing_order_items(self):
+        """
+        Test should copy the blueprint values and walk up to the named location.
+        """
+        # Test Data
+        container = LocationFactory(
+            location_id=1050000000002, name="", parent=self.location
+        )
+        self.bp1.location = container
+        self.bp1.save()
+        item = RequestFactory(
+            order=OrderFactory(owner=self.seller_owner, requesting_user=self.user),
+            blueprint=self.bp1,
+        )
+        Request.objects.filter(pk=item.pk).update(
+            item_id=0,
+            type_id=0,
+            type_name="",
+            material_efficiency=None,
+            location_name="",
+        )
+        migration = import_module("bpforge.migrations.0006_request_blueprint_copy")
+
+        # Test Action
+        migration.fill_blueprint_copy(django_apps, None)
+
+        # Expected Result
+        item.refresh_from_db()
+        self.assertEqual(item.item_id, 200001)
+        self.assertEqual(item.type_id, self.eve_type.id)
+        self.assertEqual(item.type_name, "Rifter Blueprint")
+        self.assertEqual(item.material_efficiency, 10)
+        self.assertEqual(item.time_efficiency, 20)
+        self.assertEqual(item.location_name, self.location.name)
 
     def test_buyer_can_cancel_pending_order(self):
         # Test Data

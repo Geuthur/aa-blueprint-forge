@@ -915,6 +915,11 @@ export interface components {
             time_efficiency?: number | null;
             /** Location Name */
             location_name?: string | null;
+            /**
+             * Blueprint Available
+             * @default true
+             */
+            blueprint_available: boolean;
             /** Status */
             status: string;
         };

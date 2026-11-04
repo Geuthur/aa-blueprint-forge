@@ -12,12 +12,15 @@ from django.db import IntegrityError
 
 # AA Blueprint Forge
 from bpforge.models.blueprint import Blueprint, Location, Owner
+from bpforge.models.request import Order
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.bpforge import (
     BlueprintFactory,
     EsiBlueprintItemData,
     LocationFactory,
+    OrderFactory,
     OwnerFactory,
+    RequestFactory,
 )
 from bpforge.tests.testdata.utils import add_new_token
 
@@ -261,6 +264,49 @@ class BlueprintManagerTestCase(AuthTestCase):
             ).count(),
             1,
         )
+
+
+class BlueprintRemovalOrderItemTestCase(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        self.owner = OwnerFactory(user=self.user)
+        self.character = self.owner.character.character
+        add_new_token(self.user, self.character, Owner.get_character_scopes())
+        self.item_type = ItemTypeFactory(name="Rifter Blueprint")
+        self.location = LocationFactory()
+        self.blueprint = BlueprintFactory(
+            item_id=555111,
+            owner=self.owner,
+            eve_type=self.item_type,
+            location=self.location,
+        )
+        self.item = RequestFactory(
+            order=OrderFactory(owner=self.owner),
+            blueprint=self.blueprint,
+        )
+
+    def _mock_blueprints(self, blueprints: list[dict]):
+        pook.get(
+            f"{ESI_URL}/characters/{self.character.character_id}/blueprints",
+            reply=200,
+            response_json=blueprints,
+        )
+
+    @pook.on
+    def test_update_blueprints_should_keep_order_item_when_esi_drops_blueprint(self):
+        # Test Data
+        self._mock_blueprints([])
+
+        # Test Action
+        Blueprint.objects.update_or_create_blueprints(self.owner)
+
+        # Expected Result
+        self.assertFalse(Blueprint.objects.filter(item_id=555111).exists())
+        self.item.refresh_from_db()
+        self.assertIsNone(self.item.blueprint)
+        self.assertEqual(self.item.item_id, 555111)
+        self.assertEqual(self.item.type_name, "Rifter Blueprint")
+        self.assertTrue(Order.objects.filter(pk=self.item.order_id).exists())
 
 
 class LocationManagerTestCase(AuthTestCase):

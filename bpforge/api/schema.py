@@ -217,13 +217,7 @@ class BlueprintItemSchema(Schema):
     @classmethod
     def get_location_name(cls, bp):
         """Get the location name of a blueprint."""
-        # Containers and offices have no name, so walk up to the station or structure.
-        location = bp.location
-        while location:
-            if location.name:
-                return location.name
-            location = location.parent
-        return ""
+        return bp.location_name
 
 
 class OrderItemCreateSchema(Schema):
@@ -255,6 +249,8 @@ class OrderItemSchema(Schema):
     time_efficiency: int | None = None
     # None: the user may not see the location, empty: the location has no known name
     location_name: str | None = None
+    # False: the owner no longer has the blueprint, the values are from the order
+    blueprint_available: bool = True
     status: str
 
 

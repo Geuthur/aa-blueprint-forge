@@ -73,6 +73,9 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               className="rounded"
             />
             <span className="fw-semibold">{row.original.type_name}</span>
+            {row.original.blueprint_available === false && (
+              <Badge bg="secondary">{t("Blueprint no longer available")}</Badge>
+            )}
           </div>
         ),
       }),
