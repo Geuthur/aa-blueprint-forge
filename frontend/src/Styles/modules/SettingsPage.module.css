@@ -28,6 +28,12 @@
     max-width: 320px;
 }
 
+.bpoStationList {
+    max-height: 11rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 .colLocation {
     max-width: 200px;
 }

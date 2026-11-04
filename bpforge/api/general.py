@@ -497,7 +497,7 @@ class ApiEndpoints:
 
             bpos = (
                 owner.bpforge_blueprints.filter(Q(runs__isnull=True) | Q(runs=0))
-                .select_related("eve_type__group", "location")
+                .select_related("eve_type__group", "location__parent__parent")
                 .order_by("eve_type__name")
             )
 
@@ -511,7 +511,7 @@ class ApiEndpoints:
                         group_name=bp.eve_type.group.name if bp.eve_type.group else "",
                         material_efficiency=bp.material_efficency,
                         time_efficiency=bp.time_efficiency,
-                        location_name=bp.location.name if bp.location else "",
+                        location_name=schema.BlueprintItemSchema.get_location_name(bp),
                         is_offered=bp.is_offered,
                     )
                 )

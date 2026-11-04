@@ -217,13 +217,13 @@ class BlueprintItemSchema(Schema):
     @classmethod
     def get_location_name(cls, bp):
         """Get the location name of a blueprint."""
-        if bp.location:
-            if bp.location.parent:
-                return bp.location.parent.name
-            return bp.location.name
-        if bp.eve_solar_system:
-            return bp.eve_solar_system.name
-        return "Unknown"
+        # Containers and offices have no name, so walk up to the station or structure.
+        location = bp.location
+        while location:
+            if location.name:
+                return location.name
+            location = location.parent
+        return ""
 
 
 class OrderItemCreateSchema(Schema):

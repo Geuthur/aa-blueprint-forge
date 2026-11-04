@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from "react";
 
 // Third Party
 import { Check, CheckSquare, Search, Square, X } from "lucide-react";
-import { Alert, Badge, Button, Form, Spinner } from "react-bootstrap";
+import { Alert, Badge, Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -77,6 +77,22 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
         );
     }, [bpos, search]);
 
+    const stations = useMemo(() => {
+        const itemIdsByStation = new Map<string, number[]>();
+        for (const bp of bpos ?? []) {
+            const itemIds = itemIdsByStation.get(bp.location_name ?? "");
+            if (itemIds) {
+                itemIds.push(bp.item_id);
+            } else {
+                itemIdsByStation.set(bp.location_name ?? "", [bp.item_id]);
+            }
+        }
+        // BPOs without a known station are listed last
+        return Array.from(itemIdsByStation, ([name, itemIds]) => ({ name, itemIds })).sort(
+            (a, b) => Number(!a.name) - Number(!b.name) || a.name.localeCompare(b.name)
+        );
+    }, [bpos]);
+
     const handleToggle = useCallback(
         (itemId: number) => {
             setUserSelectedIds((prev) => {
@@ -107,6 +123,21 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
             const next = new Set(prev ?? initialOffered);
             for (const bp of filteredBpos) {
                 next.delete(bp.item_id);
+            }
+            return next;
+        });
+    };
+
+    const handleToggleStation = (itemIds: number[]) => {
+        setUserSelectedIds((prev) => {
+            const next = new Set(prev ?? initialOffered);
+            const allSelected = itemIds.every((itemId) => next.has(itemId));
+            for (const itemId of itemIds) {
+                if (allSelected) {
+                    next.delete(itemId);
+                } else {
+                    next.add(itemId);
+                }
             }
             return next;
         });
@@ -303,6 +334,54 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
                         </Button>
                     </div>
                 </div>
+
+                {stations.length > 0 && (
+                    <Card className="bg-secondary border-0 shadow-sm mb-3">
+                        <Card.Body className="p-3">
+                            <div className="mb-2 text-muted small">{t("Select by station:")}</div>
+                            <Row
+                                xs={1}
+                                md={2}
+                                lg={3}
+                                className={`gx-3 gy-1 m-0 ${styles.bpoStationList}`}
+                            >
+                                {stations.map(({ name, itemIds }, index) => {
+                                    const selectedCount = itemIds.filter((itemId) =>
+                                        selectedIds.has(itemId)
+                                    ).length;
+                                    const stationName = name || t("Unknown location");
+                                    return (
+                                        <Col key={name}>
+                                            <Form.Check id={`bpo-station-${index}`} className="mb-0">
+                                                <Form.Check.Input
+                                                    type="checkbox"
+                                                    checked={selectedCount === itemIds.length}
+                                                    ref={(input: HTMLInputElement | null) => {
+                                                        if (input) {
+                                                            input.indeterminate =
+                                                                selectedCount > 0 &&
+                                                                selectedCount < itemIds.length;
+                                                        }
+                                                    }}
+                                                    onChange={() => handleToggleStation(itemIds)}
+                                                />
+                                                <Form.Check.Label
+                                                    className="d-flex gap-1 small"
+                                                    title={stationName}
+                                                >
+                                                    <span className="text-truncate">{stationName}</span>{" "}
+                                                    <span className="text-muted flex-shrink-0">
+                                                        ({selectedCount} / {itemIds.length})
+                                                    </span>
+                                                </Form.Check.Label>
+                                            </Form.Check>
+                                        </Col>
+                                    );
+                                })}
+                            </Row>
+                        </Card.Body>
+                    </Card>
+                )}
 
                 <div className="mb-2 text-muted small">
                     {t("Offered:")} <strong>{offeredCount}</strong> / {totalCount} BPOs
