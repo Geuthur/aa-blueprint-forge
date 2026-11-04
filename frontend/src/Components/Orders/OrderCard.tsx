@@ -342,7 +342,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                 columns={itemColumns}
                 enableFilters={false}
                 showFooter={false}
-                initialState={{ pagination: { pageSize: order.items.length || 1 } }}
+                initialState={{ pagination: { pageSize: 1000000 } }}
               />
             </div>
           </Collapse>

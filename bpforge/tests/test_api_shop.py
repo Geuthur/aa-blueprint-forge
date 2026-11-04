@@ -3,6 +3,10 @@
 # Standard Library
 from http import HTTPStatus
 
+# Django
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
+
 # Alliance Auth
 from allianceauth.groupmanagement.models import Group
 
@@ -455,6 +459,67 @@ class TestApiOrders(AuthTestCase):
             response.json()[0]["items"][0]["location_name"], self.location.name
         )
 
+    def test_list_orders_should_show_location_to_corp_manager_of_buyer(self):
+        # Test Data
+        # Django
+        from django.contrib.auth.models import Permission
+
+        corp_manager = UserMainFactory()
+        corp_manager.user_permissions.add(
+            Permission.objects.get(
+                content_type__app_label="bpforge", codename="manage_access"
+            )
+        )
+        RequestFactory(
+            order=OrderFactory(
+                owner=self.seller_owner,
+                requesting_user=corp_manager,
+                status=RequestStatus.PENDING,
+            ),
+            blueprint=self.bp1,
+        )
+        self.client.force_login(corp_manager)
+
+        # Test Action
+        manage_response = self.client.get("/bpforge/api/orders/?role=manage")
+        buyer_response = self.client.get("/bpforge/api/orders/?role=buyer")
+
+        # Expected Result
+        for response in (manage_response, buyer_response):
+            self.assertEqual(response.status_code, HTTPStatus.OK)
+            self.assertEqual(
+                response.json()[0]["items"][0]["location_name"], self.location.name
+            )
+
+    def test_list_orders_should_not_query_permissions_per_order(self):
+        # Test Data
+        def create_order():
+            RequestFactory(
+                order=OrderFactory(
+                    owner=self.seller_owner,
+                    requesting_user=self.user,
+                    status=RequestStatus.PENDING,
+                ),
+                blueprint=self.bp1,
+            )
+
+        create_order()
+        self.client.force_login(self.user)
+        # The first request also fills caches of the login session
+        self.client.get("/bpforge/api/orders/?role=buyer")
+        with CaptureQueriesContext(connection) as one_order:
+            self.client.get("/bpforge/api/orders/?role=buyer")
+        create_order()
+        create_order()
+
+        # Test Action
+        with CaptureQueriesContext(connection) as three_orders:
+            response = self.client.get("/bpforge/api/orders/?role=buyer")
+
+        # Expected Result
+        self.assertEqual(len(response.json()), 3)
+        self.assertEqual(len(three_orders), len(one_order))
+
     def test_list_orders_should_hide_location_from_buyer(self):
         # Test Data
         self._create_order_in_container()
@@ -466,6 +531,34 @@ class TestApiOrders(AuthTestCase):
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNone(response.json()[0]["items"][0]["location_name"])
+
+    def test_list_orders_should_hide_location_from_buyer_in_all_role(self):
+        # Test Data
+        self._create_order_in_container()
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/orders/?role=all")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNone(response.json()[0]["items"][0]["location_name"])
+
+    def test_update_order_status_should_hide_location_from_buyer(self):
+        # Test Data
+        order = self._create_order_in_container()
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.post(
+            f"/bpforge/api/orders/{order.id}/status/",
+            data={"status": RequestStatus.CANCELLED},
+            content_type="application/json",
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNone(response.json()["items"][0]["location_name"])
 
     def test_get_order_should_hide_location_from_buyer(self):
         # Test Data

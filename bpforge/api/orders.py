@@ -153,14 +153,13 @@ class ApiEndpoints:
                 "requesting_user__profile__main_character",
             ).prefetch_related(*ORDER_ITEM_PREFETCH)
 
+            manage_filter = General.get_manageable_orders_filter(request.user)
+
             if role == "buyer":
                 queryset = queryset.filter(requesting_user=request.user)
             elif role == "seller":
                 queryset = queryset.filter(owner__user=request.user)
             elif role == "manage":
-                if not General.can_manage_orders(request.user):
-                    return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-                manage_filter = General.get_manageable_orders_filter(request.user)
                 if manage_filter is None:
                     return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
                 queryset = queryset.filter(manage_filter)
@@ -169,12 +168,24 @@ class ApiEndpoints:
                     requesting_user=request.user
                 ) | queryset.filter(owner__user=request.user)
 
-            orders = queryset.distinct().order_by("-created_at")
+            orders = list(queryset.distinct().order_by("-created_at"))
+
+            # Checked once per request instead of per order, the lists are polled
+            manageable_ids = (
+                set(
+                    Order.objects.filter(
+                        manage_filter, id__in=[order.id for order in orders]
+                    ).values_list("id", flat=True)
+                )
+                if manage_filter is not None
+                else set()
+            )
+
             return HTTPStatus.OK, [
-                # The manage filter already limits the list to manageable orders
                 _serialize_order(
                     order,
-                    role == "manage" or _can_see_location(request.user, order),
+                    order.owner.user_id == request.user.id
+                    or order.id in manageable_ids,
                 )
                 for order in orders
             ]
