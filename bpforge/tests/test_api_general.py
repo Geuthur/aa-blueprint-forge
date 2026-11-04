@@ -13,6 +13,7 @@ from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
 from bpforge.tests.testdata.bpforge import (
     BlueprintFactory,
+    LocationFactory,
     OwnerFactory,
     OwnerUpdateStatusFactory,
 )
@@ -188,6 +189,31 @@ class TestApiGeneral(AuthTestCase):
         bp2.refresh_from_db()
         self.assertTrue(bp1.is_offered)
         self.assertFalse(bp2.is_offered)
+
+    def test_get_owner_bpos_should_return_station_name_for_nested_locations(self):
+        # Test Data
+        self.client.force_login(self.user)
+        owner = OwnerFactory(user=self.user, is_public=True)
+        structure = LocationFactory(location_id=1000000000001, name="Sotiyo")
+        office = LocationFactory(location_id=1000000000002, name="", parent=structure)
+        container = LocationFactory(location_id=1000000000003, name="", parent=office)
+        unresolved = LocationFactory(location_id=1000000000004, name="")
+
+        BlueprintFactory(item_id=200011, owner=owner, runs=None, location=structure)
+        BlueprintFactory(item_id=200012, owner=owner, runs=None, location=office)
+        BlueprintFactory(item_id=200013, owner=owner, runs=None, location=container)
+        BlueprintFactory(item_id=200014, owner=owner, runs=None, location=unresolved)
+
+        # Test Action
+        response = self.client.get(f"/bpforge/api/settings/owners/{owner.id}/bpos/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        names = {bp["item_id"]: bp["location_name"] for bp in response.json()}
+        self.assertEqual(
+            names,
+            {200011: "Sotiyo", 200012: "Sotiyo", 200013: "Sotiyo", 200014: ""},
+        )
 
     def test_get_owner_bpos_should_return_forbidden_for_other_user(self):
         # Test Data

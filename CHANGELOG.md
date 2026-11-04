@@ -30,10 +30,13 @@ Section Order:
 
 - [ADD] Reusable frontend components `OwnerPortrait` and `FilterButtonGroup`, replacing several inline copies.
 
+- [ADD] The "Select Public BPOs" modal lists the stations of the owner's BPOs with a checkbox each, so all BPOs of a station can be selected or deselected with one click. BPOs without a known station are grouped under "Unknown location".
+
 - [ADD] Frontend hooks per area (`Components/<Area>/Hooks`) that hold the queries and mutations of the Administration, Settings, Orders, Catalog, My Blueprints and menu views, plus the shared hooks `useFeedback`, `useCooldown` and `useUserData`.
 
 ### Fixed
 
+- [FIX] The "Select Public BPOs" modal showed "-" as location for BPOs in containers. It now shows the name of the station or structure.
 - [FIX] Headers of the administration inspection view, the owner list and the section header wrap on small screens instead of overflowing the container, and the filter button groups scroll horizontally.
 - Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
 

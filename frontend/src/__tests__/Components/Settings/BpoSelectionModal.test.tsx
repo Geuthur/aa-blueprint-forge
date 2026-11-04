@@ -111,6 +111,64 @@ describe("BpoSelectionModal", () => {
     expect(onHide).toHaveBeenCalled();
   });
 
+  it("should select and deselect all BPOs of a station with one click", async () => {
+    // Test Data
+    const user = userEvent.setup();
+    const bpo = (item_id: number, type_name: string, location_name: string, is_offered = false) => ({
+      item_id,
+      type_id: item_id,
+      type_name,
+      group_name: "Frigate Blueprint",
+      material_efficiency: 10,
+      time_efficiency: 20,
+      location_name,
+      is_offered,
+    });
+    vi.mocked(ApiCalls.loadOwnerBpos).mockResolvedValue([
+      bpo(101, "Atron Blueprint", "Jita IV - 4"),
+      bpo(102, "Catalyst Blueprint", "Jita IV - 4", true),
+      bpo(103, "Rifter Blueprint", "Amarr VIII"),
+      bpo(104, "Thrasher Blueprint", ""),
+    ]);
+
+    // Test Action
+    renderModal({ show: true, onHide: vi.fn(), ownerId: 5, ownerName: "Industrial Corp" });
+
+    // Expected Result
+    const jita = await screen.findByRole("checkbox", { name: "Jita IV - 4 (1 / 2)" });
+    expect(jita).toBeInstanceOf(HTMLInputElement);
+    expect((jita as HTMLInputElement).indeterminate).toBe(true);
+    expect(jita).not.toBeChecked();
+
+    // Stations are sorted, BPOs without a station come last
+    const stationLabels = screen
+      .getAllByRole("checkbox")
+      .map((checkbox) => checkbox.getAttribute("id"))
+      .filter((id) => id?.startsWith("bpo-station-"))
+      .map((id) => document.querySelector(`label[for="${id}"]`)?.textContent);
+    expect(stationLabels).toEqual([
+      "Amarr VIII (0 / 1)",
+      "Jita IV - 4 (1 / 2)",
+      "Unknown location (0 / 1)",
+    ]);
+
+    // First click selects the rest of the station
+    await user.click(jita);
+    expect(screen.getByLabelText("Select Atron Blueprint")).toBeChecked();
+    expect(screen.getByLabelText("Select Catalyst Blueprint")).toBeChecked();
+    expect(screen.getByLabelText("Select Rifter Blueprint")).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Jita IV - 4 (2 / 2)" })).toBeChecked();
+
+    // Second click deselects the whole station
+    await user.click(screen.getByRole("checkbox", { name: "Jita IV - 4 (2 / 2)" }));
+    expect(screen.getByLabelText("Select Atron Blueprint")).not.toBeChecked();
+    expect(screen.getByLabelText("Select Catalyst Blueprint")).not.toBeChecked();
+
+    // BPOs without a station can be selected as well
+    await user.click(screen.getByRole("checkbox", { name: "Unknown location (0 / 1)" }));
+    expect(screen.getByLabelText("Select Thrasher Blueprint")).toBeChecked();
+  });
+
   it("should call onHide when Cancel button is clicked", async () => {
     // Test Data
     const user = userEvent.setup();
