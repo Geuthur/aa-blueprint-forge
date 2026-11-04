@@ -191,7 +191,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         <span>{t("Accept")}</span>
                       </Button>
                       <Button
-                        variant="warning"
+                        variant="danger"
                         size="sm"
                         disabled={isUpdating || isDeleting}
                         className="d-flex align-items-center gap-1"
@@ -199,16 +199,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                       >
                         <X size={14} />
                         <span>{t("Decline")}</span>
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        disabled={isUpdating || isDeleting}
-                        className="d-flex align-items-center gap-1"
-                        onClick={() => onUpdateStatus(order.id, "Cancelled")}
-                      >
-                        <X size={14} />
-                        <span>{t("Cancel")}</span>
                       </Button>
                     </>
                   )}
@@ -226,7 +216,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         <span>{t("Mark Delivered")}</span>
                       </Button>
                       <Button
-                        variant="warning"
+                        variant="danger"
                         size="sm"
                         disabled={isUpdating || isDeleting}
                         className="d-flex align-items-center gap-1"
@@ -235,31 +225,9 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         <X size={14} />
                         <span>{t("Decline")}</span>
                       </Button>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        disabled={isUpdating || isDeleting}
-                        className="d-flex align-items-center gap-1"
-                        onClick={() => onUpdateStatus(order.id, "Cancelled")}
-                      >
-                        <X size={14} />
-                        <span>{t("Cancel")}</span>
-                      </Button>
                     </>
                   )}
 
-                  {onDeleteOrder && (
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      disabled={isUpdating || isDeleting}
-                      className="d-flex align-items-center gap-1"
-                      onClick={() => setShowDeleteModal(true)}
-                    >
-                      <Trash2 size={14} />
-                      <span>{t("Delete")}</span>
-                    </Button>
-                  )}
                 </>
               ) : (
                 /* Standard Buyer / Seller Controls */
@@ -277,7 +245,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         <span>{t("Accept")}</span>
                       </Button>
                       <Button
-                        variant="warning"
+                        variant="danger"
                         size="sm"
                         disabled={isUpdating}
                         className="d-flex align-items-center gap-1"
@@ -302,19 +270,33 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                     </Button>
                   )}
 
-                  {isBuyer && order.status === "Pending" && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      disabled={isUpdating}
-                      className="d-flex align-items-center gap-1"
-                      onClick={() => onUpdateStatus(order.id, "Cancelled")}
-                    >
-                      <X size={14} />
-                      <span>{t("Cancel Order")}</span>
-                    </Button>
-                  )}
                 </>
+              )}
+
+              {isBuyer && order.status === "Pending" && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={isUpdating || isDeleting}
+                  className="d-flex align-items-center gap-1"
+                  onClick={() => onUpdateStatus(order.id, "Cancelled")}
+                >
+                  <X size={14} />
+                  <span>{t("Cancel Order")}</span>
+                </Button>
+              )}
+
+              {onDeleteOrder && (
+                <Button
+                  variant="danger"
+                  size="sm"
+                  disabled={isUpdating || isDeleting}
+                  className="d-flex align-items-center gap-1"
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  <Trash2 size={14} />
+                  <span>{t("Delete")}</span>
+                </Button>
               )}
 
               {/* Expand Items Toggle */}

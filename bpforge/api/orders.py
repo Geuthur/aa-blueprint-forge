@@ -308,29 +308,24 @@ class ApiEndpoints:
             "orders/{int:order_id}/",
             response={
                 HTTPStatus.OK: schema.TaskTriggerResponseSchema,
+                HTTPStatus.BAD_REQUEST: dict,
                 HTTPStatus.FORBIDDEN: dict,
                 HTTPStatus.NOT_FOUND: dict,
             },
             tags=self.tags,
-            summary="Delete an order completely (Managers only)",
+            summary="Delete a closed order completely (Superusers only)",
         )
         def delete_order(request, order_id: int):
-            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-
-            order = get_object_or_404(
-                Order.objects.select_related(
-                    "owner__character__character",
-                    "owner__corporation",
-                    "owner__user",
-                    "requesting_user__profile__main_character",
-                ),
-                id=order_id,
-            )
-
-            if not General.can_manage_order(request.user, order):
+            if not request.user.is_superuser:
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("You are not authorized to delete this order.")
+                }
+
+            order = get_object_or_404(Order, id=order_id)
+
+            if order.status in OPEN_ORDER_STATUSES:
+                return HTTPStatus.BAD_REQUEST, {
+                    "error": _("Only closed orders can be deleted.")
                 }
 
             order.delete()

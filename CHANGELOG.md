@@ -49,7 +49,9 @@ Section Order:
 
 ### Changed
 
-- [CHANGE] The "Decline" button of an order uses the warning color, so it is no longer mistaken for "Delete".
+- [CHANGE] Only the buyer can cancel an order, and only while it is pending. Sellers and managers decline instead.
+
+- [CHANGE] Only superusers can delete orders, and only closed orders from the "History" tab.
 
 - [CHANGE] The orders menu badge also counts the open orders an order manager can manage, not only the user's own seller orders.
 

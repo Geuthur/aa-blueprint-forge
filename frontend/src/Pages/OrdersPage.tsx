@@ -24,6 +24,7 @@ export function OrdersPage() {
 
   const currentUserId = userData?.user.user_id;
   const canManageOrders = Boolean(userData?.user.can_manage_orders);
+  const isSuperuser = Boolean(userData?.user.is_superuser);
 
   const activeTab: OrderTab =
     urlTab === "manage" && canManageOrders
@@ -97,7 +98,7 @@ export function OrdersPage() {
             currentUserId={currentUserId}
             canManageOrders={canManageOrders}
             onUpdateStatus={updateStatus}
-            onDeleteOrder={remove}
+            onDeleteOrder={isSuperuser && activeTab === "history" ? remove : undefined}
             isUpdating={isUpdating}
             isDeleting={isDeleting}
           />

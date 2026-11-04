@@ -262,7 +262,7 @@ export interface paths {
         get: operations["bpforge_api_orders_get_order"];
         put?: never;
         post?: never;
-        /** Delete an order completely (Managers only) */
+        /** Delete a closed order completely (Superusers only) */
         delete: operations["bpforge_api_orders_delete_order"];
         options?: never;
         head?: never;
@@ -1791,6 +1791,17 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TaskTriggerResponseSchema"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Forbidden */
