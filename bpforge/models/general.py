@@ -109,7 +109,8 @@ class General(models.Model):
         if cls.is_corp_order_manager(user):
             corp_ids = cls.get_user_corporation_ids(user)
             return (
-                models.Q(owner__corporation__corporation_id__in=corp_ids)
+                models.Q(owner__isnull=True, owner_corporation_id__in=corp_ids)
+                | models.Q(owner__corporation__corporation_id__in=corp_ids)
                 | models.Q(owner__character__character__corporation_id__in=corp_ids)
                 | models.Q(
                     requesting_user__profile__main_character__corporation_id__in=corp_ids
@@ -129,16 +130,13 @@ class General(models.Model):
             return True
         if cls.is_corp_order_manager(user):
             corp_ids = cls.get_user_corporation_ids(user)
-            if (
-                order.owner.corporation
-                and order.owner.corporation.corporation_id in corp_ids
-            ):
+            if order.owner is None:
+                if order.owner_corporation_id in corp_ids:
+                    return True
+            elif order.owner.corporation_id_of_shop in corp_ids:
                 return True
-            if (
-                order.owner.character
-                and order.owner.character.character.corporation_id in corp_ids
-            ):
-                return True
+            if order.requesting_user is None:
+                return False
             buyer_corps = set()
             try:
                 if order.requesting_user.profile.main_character:

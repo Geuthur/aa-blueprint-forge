@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteOrder, loadOrders, updateOrderStatus } from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
 
-type OrdersScope = "buyer" | "seller" | "all" | "manage";
+type OrdersScope = "buyer" | "seller" | "all" | "manage" | "history";
 
 const isOpen = (status: string) => status === "Pending" || status === "Accepted";
 

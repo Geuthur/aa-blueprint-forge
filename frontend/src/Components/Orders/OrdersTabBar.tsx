@@ -2,11 +2,11 @@
 import React from "react";
 
 // Third Party
-import { Inbox, Send, Shield } from "lucide-react";
+import { History, Inbox, Send, Shield } from "lucide-react";
 import { Badge, Nav } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
-export type OrderTab = "buyer" | "seller" | "all" | "manage";
+export type OrderTab = "buyer" | "seller" | "all" | "manage" | "history";
 
 interface OrdersTabBarProps {
   activeTab: OrderTab;
@@ -88,6 +88,13 @@ export const OrdersTabBar: React.FC<OrdersTabBarProps> = ({
           </Nav.Link>
         </Nav.Item>
       )}
+
+      <Nav.Item>
+        <Nav.Link as="button" type="button" eventKey="history" role="tab" aria-selected={activeTab === "history"} className={linkClass}>
+          <History size={15} />
+          <span>{t("History")}</span>
+        </Nav.Link>
+      </Nav.Item>
     </Nav>
   );
 };

@@ -191,7 +191,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         <span>{t("Accept")}</span>
                       </Button>
                       <Button
-                        variant="danger"
+                        variant="warning"
                         size="sm"
                         disabled={isUpdating || isDeleting}
                         className="d-flex align-items-center gap-1"
@@ -226,7 +226,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         <span>{t("Mark Delivered")}</span>
                       </Button>
                       <Button
-                        variant="danger"
+                        variant="warning"
                         size="sm"
                         disabled={isUpdating || isDeleting}
                         className="d-flex align-items-center gap-1"
@@ -277,7 +277,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         <span>{t("Accept")}</span>
                       </Button>
                       <Button
-                        variant="danger"
+                        variant="warning"
                         size="sm"
                         disabled={isUpdating}
                         className="d-flex align-items-center gap-1"

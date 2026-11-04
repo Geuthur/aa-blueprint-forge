@@ -952,7 +952,7 @@
             }
           }
         },
-        "description": "Role can be 'buyer', 'seller', 'manage', or 'all'.",
+        "description": "Role can be 'buyer', 'seller', 'manage', 'all' or 'history'.\n\nThe first four list open orders, 'history' lists the closed ones.",
         "tags": [
           "Orders"
         ],
@@ -2777,16 +2777,30 @@
             "type": "integer"
           },
           "owner_id": {
-            "title": "Owner Id",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Id"
           },
           "owner_name": {
             "title": "Owner Name",
             "type": "string"
           },
           "requesting_user_id": {
-            "title": "Requesting User Id",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requesting User Id"
           },
           "requesting_user_name": {
             "title": "Requesting User Name",
@@ -2829,9 +2843,7 @@
         },
         "required": [
           "id",
-          "owner_id",
           "owner_name",
-          "requesting_user_id",
           "requesting_user_name",
           "status",
           "note",

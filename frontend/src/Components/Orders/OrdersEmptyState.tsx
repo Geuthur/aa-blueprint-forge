@@ -6,8 +6,12 @@ import { ShoppingBag } from "lucide-react";
 import { Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
+// AA bpforge
+// AA Blueprint Forge
+import type { OrderTab } from "@/Components/Orders/OrdersTabBar";
+
 interface OrdersEmptyStateProps {
-  activeTab: "buyer" | "seller" | "all" | "manage";
+  activeTab: OrderTab;
 }
 
 export const OrdersEmptyState: React.FC<OrdersEmptyStateProps> = ({ activeTab }) => {
@@ -20,12 +24,14 @@ export const OrdersEmptyState: React.FC<OrdersEmptyStateProps> = ({ activeTab })
         <div className="fs-5">{t("No orders found.")}</div>
         <p className="small text-light mb-0">
           {activeTab === "buyer"
-            ? t("You have not placed any blueprint orders yet.")
+            ? t("You have no open blueprint orders.")
             : activeTab === "seller"
-              ? t("No orders have been received for your shop.")
+              ? t("Your shop has no open orders.")
               : activeTab === "manage"
                 ? t("No manageable orders found.")
-                : t("No orders found.")}
+                : activeTab === "history"
+                  ? t("No closed orders found.")
+                  : t("No orders found.")}
         </p>
       </Card.Body>
     </Card>

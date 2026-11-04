@@ -258,9 +258,10 @@ class OrderSchema(Schema):
     """Full customer order representation."""
 
     id: int
-    owner_id: int
+    # None: the shop or the buyer was deleted, the names are from the order
+    owner_id: int | None = None
     owner_name: str
-    requesting_user_id: int
+    requesting_user_id: int | None = None
     requesting_user_name: str
     status: str
     note: str
