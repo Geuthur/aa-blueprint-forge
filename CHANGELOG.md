@@ -35,6 +35,7 @@ Section Order:
 ### Fixed
 
 - [FIX] Headers of the administration inspection view, the owner list and the section header wrap on small screens instead of overflowing the container, and the filter button groups scroll horizontally.
+- Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
 
 ### Changed
 
