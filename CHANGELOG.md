@@ -40,6 +40,7 @@ Section Order:
 
 - [FIX] The "Select Public BPOs" modal showed "-" as location for BPOs in containers. It now shows the name of the station or structure.
 - [FIX] Headers of the administration inspection view, the owner list and the section header wrap on small screens instead of overflowing the container, and the filter button groups scroll horizontally.
+- [FIX] BPOs directly in the hangar of a station or structure, without a container or office of the owner, stayed under "Unknown location". The location update now also resolves the name of these locations. Structures the owner has no access to stay under "Unknown location".
 - Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
 
 ### Changed

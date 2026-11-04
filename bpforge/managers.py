@@ -369,6 +369,25 @@ class LocationManager(models.Manager["LocationContext"]):
                 defaults={"parent": parent, "eve_type": eve_type},
             )
 
+        # Blueprints directly in a hangar have no container whose parent names the location.
+        # Only the assets tell stations and structures apart from containers.
+        container_parent_ids = {
+            assets_by_id[location_id].location_id for location_id in asset_locations
+        }
+        root_location_ids = {
+            asset.location_id
+            for asset in objs
+            if asset.location_id not in assets_by_id
+            and asset.location_id not in container_parent_ids
+        }
+        blueprint_location_ids = set(
+            owner.bpforge_blueprints.filter(
+                location_id__in=root_location_ids
+            ).values_list("location_id", flat=True)
+        )
+        for location_id in blueprint_location_ids:
+            self.get_or_create_esi(location_id=location_id, token=owner.token)
+
     def get_or_create_esi(self, location_id: int, token: Token):
         """Get or Create location object with data fetched from ESI.
 
