@@ -483,10 +483,6 @@ html[data-bs-theme="dark"] {
     animation: aa-pending-glow 2s infinite ease-in-out;
 }
 
-.aa-order-nav-pulse {
-    animation: aa-danger-glow 2s infinite ease-in-out;
-}
-
 .aa-pending-dot-container {
     position: relative;
     display: inline-flex;

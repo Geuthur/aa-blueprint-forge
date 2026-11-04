@@ -45,8 +45,6 @@ export const OrdersMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath
 
     const openCount = useMenuOpenOrderCount();
 
-    const hasOpenOrders = openCount > 0;
-
     return (
         <Nav.Item as="li">
             <Nav.Link
@@ -55,14 +53,10 @@ export const OrdersMenuItem = ({ link, toPath }: { link: MenuLinkItem } & ToPath
                 id={link.name}
                 key={link.name}
                 active={hit}
-                className={`d-flex align-items-center justify-content-between ${hasOpenOrders ? "aa-order-nav-pulse" : ""}`}
             >
-                <span>{t(link.name)}</span>
-                {hasOpenOrders && (
-                    <span
-                        className="badge rounded-pill aa-order-badge ms-2"
-                        data-testid="orders-badge"
-                    >
+                {t(link.name)}
+                {openCount > 0 && (
+                    <span className="badge bg-danger ms-1 aa-menu-badge-pulse" data-testid="orders-badge">
                         {openCount}
                     </span>
                 )}

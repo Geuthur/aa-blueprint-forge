@@ -53,6 +53,7 @@ export interface BaseTableProps<TData extends RowData, TValue = unknown> {
   enableRowSelection?: boolean | ((row: Row<BaseTableFeatures, TData>) => boolean);
   getRowId?: (originalRow: TData, index: number, parent?: Row<BaseTableFeatures, TData>) => string;
   onRowClick?: (row: Row<BaseTableFeatures, TData>) => void;
+  showFooter?: boolean;
 }
 
 const BaseTable = <TData extends RowData, TValue = unknown>({
@@ -75,6 +76,7 @@ const BaseTable = <TData extends RowData, TValue = unknown>({
   enableRowSelection,
   getRowId,
   onRowClick,
+  showFooter = true,
 }: BaseTableProps<TData, TValue>) => {
   const location = useLocation();
   const { t } = useTranslation();
@@ -164,80 +166,82 @@ const BaseTable = <TData extends RowData, TValue = unknown>({
       </div>
 
       {/* DataTable Footer Controls */}
-      <div className="aa-table-footer d-flex flex-column align-items-center justify-content-between gap-3 p-3">
-        {/* Page Size Selector, Count Indicator & Export / Status */}
-        <div className="d-flex w-100 align-items-center justify-content-between gap-3">
-          <div className="d-flex align-items-center gap-3">
-            <div className="d-flex align-items-center gap-2">
-              <span>{t("Page Size:")}</span>
-              <Form.Select
-                size="sm"
-                value={pageSize}
-                onChange={(e) => table.setPageSize(Number(e.target.value))}
-                className={"aa-table-select w-auto"}
-              >
-                {pageSizeOptions.map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-                <option value={1000000}>{t("Show All")}</option>
-              </Form.Select>
+      {showFooter && (
+        <div className="aa-table-footer d-flex flex-column align-items-center justify-content-between gap-3 p-3">
+          {/* Page Size Selector, Count Indicator & Export / Status */}
+          <div className="d-flex w-100 align-items-center justify-content-between gap-3">
+            <div className="d-flex align-items-center gap-3">
+              <div className="d-flex align-items-center gap-2">
+                <span>{t("Page Size:")}</span>
+                <Form.Select
+                  size="sm"
+                  value={pageSize}
+                  onChange={(e) => table.setPageSize(Number(e.target.value))}
+                  className={"aa-table-select w-auto"}
+                >
+                  {pageSizeOptions.map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                  <option value={1000000}>{t("Show All")}</option>
+                </Form.Select>
+              </div>
             </div>
-          </div>
 
-          <BasePages table={table} isFetching={isFetching} fileName={fileName} showPageNumber={true} />
+            <BasePages table={table} isFetching={isFetching} fileName={fileName} showPageNumber={true} />
+          </div>
+          {/* Pagination Buttons */}
+          {pageCount > 1 && (
+            <div className="d-flex align-items-center gap-2">
+              <Button
+                size="sm"
+                disabled={!table.getCanPreviousPage()}
+                onClick={() => table.setPageIndex(0)}
+                className="aa-table-page-button"
+                title={t("First Page")}
+              >
+                <ChevronFirst className="aa-table-page-icon" />
+              </Button>
+              <Button
+                size="sm"
+                disabled={!table.getCanPreviousPage()}
+                onClick={() => table.previousPage()}
+                className="aa-table-page-button"
+                title={t("Previous Page")}
+              >
+                <ChevronLeft className="aa-table-page-icon" />
+              </Button>
+
+              <span className="aa-table-page-number px-2 fw-bold">
+                {t("Page {{page}} of {{total}}", {
+                  page: pageIndex + 1,
+                  total: pageCount,
+                })}
+              </span>
+
+              <Button
+                size="sm"
+                disabled={!table.getCanNextPage()}
+                onClick={() => table.nextPage()}
+                className="aa-table-page-button"
+                title={t("Next Page")}
+              >
+                <ChevronRight className="aa-table-page-icon" />
+              </Button>
+              <Button
+                size="sm"
+                disabled={!table.getCanNextPage()}
+                onClick={() => table.setPageIndex(pageCount - 1)}
+                className="aa-table-page-button"
+                title={t("Last Page")}
+              >
+                <ChevronLast className="aa-table-page-icon" />
+              </Button>
+            </div>
+          )}
         </div>
-        {/* Pagination Buttons */}
-        {pageCount > 1 && (
-          <div className="d-flex align-items-center gap-2">
-            <Button
-              size="sm"
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => table.setPageIndex(0)}
-              className="aa-table-page-button"
-              title={t("First Page")}
-            >
-              <ChevronFirst className="aa-table-page-icon" />
-            </Button>
-            <Button
-              size="sm"
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => table.previousPage()}
-              className="aa-table-page-button"
-              title={t("Previous Page")}
-            >
-              <ChevronLeft className="aa-table-page-icon" />
-            </Button>
-
-            <span className="aa-table-page-number px-2 fw-bold">
-              {t("Page {{page}} of {{total}}", {
-                page: pageIndex + 1,
-                total: pageCount,
-              })}
-            </span>
-
-            <Button
-              size="sm"
-              disabled={!table.getCanNextPage()}
-              onClick={() => table.nextPage()}
-              className="aa-table-page-button"
-              title={t("Next Page")}
-            >
-              <ChevronRight className="aa-table-page-icon" />
-            </Button>
-            <Button
-              size="sm"
-              disabled={!table.getCanNextPage()}
-              onClick={() => table.setPageIndex(pageCount - 1)}
-              className="aa-table-page-button"
-              title={t("Last Page")}
-            >
-              <ChevronLast className="aa-table-page-icon" />
-            </Button>
-          </div>
-        )}
-      </div>
+      )}
 
       {debugTable && (
         <div className="p-3">

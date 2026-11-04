@@ -50,12 +50,12 @@ export const OrdersTabBar: React.FC<OrdersTabBarProps> = ({
           eventKey="seller"
           role="tab"
           aria-selected={activeTab === "seller"}
-          className={`${linkClass} ${openSellerCount > 0 ? "aa-order-nav-pulse" : ""}`}
+          className={linkClass}
         >
           <Inbox size={15} />
           <span>{t("Catalog Orders (as Seller)")}</span>
           {openSellerCount > 0 && (
-            <Badge pill className="aa-order-badge ms-1" data-testid="seller-orders-badge">
+            <Badge bg="danger" className="ms-1 aa-menu-badge-pulse" data-testid="seller-orders-badge">
               {openSellerCount}
             </Badge>
           )}
@@ -76,12 +76,12 @@ export const OrdersTabBar: React.FC<OrdersTabBarProps> = ({
             eventKey="manage"
             role="tab"
             aria-selected={activeTab === "manage"}
-            className={`${linkClass} ${openManageCount > 0 ? "aa-order-nav-pulse" : ""}`}
+            className={linkClass}
           >
             <Shield size={15} />
             <span>{t("Order Management (Verwalter)")}</span>
             {openManageCount > 0 && (
-              <Badge pill className="aa-order-badge ms-1" data-testid="manage-orders-badge">
+              <Badge bg="danger" className="ms-1 aa-menu-badge-pulse" data-testid="manage-orders-badge">
                 {openManageCount}
               </Badge>
             )}

@@ -34,6 +34,8 @@ Section Order:
 
 - [ADD] Frontend hooks per area (`Components/<Area>/Hooks`) that hold the queries and mutations of the Administration, Settings, Orders, Catalog, My Blueprints and menu views, plus the shared hooks `useFeedback`, `useCooldown` and `useUserData`.
 
+- [ADD] The item table of an order shows the location of each blueprint to the seller and to order managers. Buyers do not see it, like in the catalog.
+
 ### Fixed
 
 - [FIX] The "Select Public BPOs" modal showed "-" as location for BPOs in containers. It now shows the name of the station or structure.
@@ -41,6 +43,12 @@ Section Order:
 - Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
 
 ### Changed
+
+- [CHANGE] The orders menu badge also counts the open orders an order manager can manage, not only the user's own seller orders.
+
+- [CHANGE] The item table of an order uses `BaseTable` and can be sorted.
+
+- [CHANGE] The open order badges in the menu and on the order tabs look and pulse like the settings menu badge. The menu link and the tabs no longer glow.
 
 - [CHANGE] Buttons use the Bootstrap 5 variants (`variant`, `size`) with the theme look defined as overrides under `.aa-react`; the custom `aa-btn` classes were removed. The order tabs use the Bootstrap nav pills with the same override approach. Frontend inline styles were replaced by CSS classes, layout-only CSS was replaced by Bootstrap utility classes, and missing `index.ts` files were added.
 

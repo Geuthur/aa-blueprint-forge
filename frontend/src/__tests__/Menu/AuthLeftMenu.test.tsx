@@ -107,7 +107,35 @@ describe('AuthLeftMenu', () => {
         const ordersLink = await screen.findByText('Orders');
         expect(ordersLink).toBeDefined();
         expect(screen.queryByTestId('orders-badge')).toBeNull();
-        expect(ordersLink.closest('a')?.classList.contains('aa-order-nav-pulse')).toBe(false);
+    });
+
+    it('should count the open manageable orders once for order managers', async () => {
+        // Test Data
+        const testData = [{ name: 'Orders', link: '/orders/' }];
+        vi.spyOn(ApiCalls, 'loadUserData').mockResolvedValue({
+            user: { can_manage_orders: true },
+        } as never);
+        vi.spyOn(ApiCalls, 'loadOrders').mockImplementation(async (role) =>
+            (role === 'manage'
+                ? [
+                      { id: 1, status: 'Pending' },
+                      { id: 2, status: 'Accepted' },
+                      { id: 3, status: 'Delivered' },
+                  ]
+                : [{ id: 1, status: 'Pending' }]) as never
+        );
+
+        // Test Action
+        render(
+            <QueryClientProvider client={createQueryClient()}>
+                <MemoryRouter initialEntries={[`/${ProjectName}/`]}>
+                    <AuthLeftMenu data={testData} isLoading={false} error={false} />
+                </MemoryRouter>
+            </QueryClientProvider>
+        );
+
+        // Expected Result
+        await waitFor(() => expect(screen.getByTestId('orders-badge').textContent).toBe('2'));
     });
 
     it('should render Orders link with pulse and badge count when seller has open orders', async () => {
@@ -133,10 +161,7 @@ describe('AuthLeftMenu', () => {
         const badge = await screen.findByTestId('orders-badge');
         expect(badge).toBeDefined();
         expect(badge.textContent).toBe('2');
-        expect(badge.classList.contains('aa-order-badge')).toBe(true);
-
-        const ordersLink = screen.getByText('Orders').closest('a');
-        expect(ordersLink?.classList.contains('aa-order-nav-pulse')).toBe(true);
+        expect(badge.classList.contains('aa-menu-badge-pulse')).toBe(true);
     });
 
     it('should render Settings link without pulse when all update statuses are ok', async () => {

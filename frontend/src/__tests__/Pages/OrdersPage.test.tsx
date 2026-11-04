@@ -99,10 +99,7 @@ describe("OrdersPage Component", () => {
     const badge = await screen.findByTestId("seller-orders-badge");
     expect(badge).toBeInTheDocument();
     expect(badge.textContent).toBe("2");
-    expect(badge.classList.contains("aa-order-badge")).toBe(true);
-
-    const sellerTab = screen.getByText("Catalog Orders (as Seller)");
-    expect(sellerTab.closest("button")?.classList.contains("aa-order-nav-pulse")).toBe(true);
+    expect(badge.classList.contains("aa-menu-badge-pulse")).toBe(true);
   });
 
   it("renders Order Management tab and badge when user is a manager", async () => {
@@ -234,5 +231,71 @@ describe("OrdersPage Component", () => {
     // Expected Result
     const manageTab = await screen.findByRole("tab", { name: /Order Management/i });
     expect(manageTab).toHaveAttribute("aria-selected", "true");
+  });
+
+  const orderWithItem = (locationName?: string | null) => ({
+    id: 20,
+    owner_id: 2,
+    owner_name: "Vendor Corp",
+    requesting_user_id: 1,
+    requesting_user_name: "Test Pilot",
+    status: "Pending",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    items: [
+      {
+        id: 1,
+        blueprint_id: 101,
+        type_id: 688,
+        type_name: "Rifter Blueprint",
+        quantity: 1,
+        runs: 10,
+        material_efficiency: 10,
+        time_efficiency: 20,
+        location_name: locationName,
+        status: "Pending",
+      },
+    ],
+  });
+
+  const renderExpandedOrder = async (locationName?: string | null) => {
+    vi.spyOn(ApiCalls, "loadUserData").mockResolvedValue({ user: { user_id: 1 } as never });
+    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([orderWithItem(locationName)] as never);
+
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <MemoryRouter>
+          <OrdersPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: /Items/ }));
+    await screen.findByText("Rifter Blueprint");
+  };
+
+  it("shows the location of an order item", async () => {
+    // Test Action
+    await renderExpandedOrder("Jita IV - 4");
+
+    // Expected Result
+    expect(screen.getByText("Location")).toBeInTheDocument();
+    expect(screen.getByText("Jita IV - 4")).toBeInTheDocument();
+  });
+
+  it("shows a placeholder for an order item without a known location name", async () => {
+    // Test Action
+    await renderExpandedOrder("");
+
+    // Expected Result
+    expect(screen.getByText("Unknown location")).toBeInTheDocument();
+  });
+
+  it("hides the location column when the API sends no location", async () => {
+    // Test Action
+    await renderExpandedOrder(null);
+
+    // Expected Result
+    expect(screen.queryByText("Location")).toBeNull();
   });
 });
