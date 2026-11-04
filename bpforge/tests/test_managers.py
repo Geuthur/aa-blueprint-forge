@@ -1,13 +1,17 @@
-"""Tests for BlueprintManager and blueprint uniqueness and deletion."""
+"""Tests for BlueprintManager, LocationManager and blueprint uniqueness and deletion."""
+
+# Standard Library
+from unittest.mock import patch
 
 # Third Party
-from evesde_factory.eve_sde import ItemTypeFactory
+import pook
+from evesde_factory.eve_sde import ItemTypeFactory, SolarSystemFactory
 
 # Django
 from django.db import IntegrityError
 
 # AA Blueprint Forge
-from bpforge.models.blueprint import Blueprint
+from bpforge.models.blueprint import Blueprint, Location, Owner
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.bpforge import (
     BlueprintFactory,
@@ -15,6 +19,13 @@ from bpforge.tests.testdata.bpforge import (
     LocationFactory,
     OwnerFactory,
 )
+from bpforge.tests.testdata.utils import add_new_token
+
+ESI_URL = "https://esi.evetech.net"
+UPDATE_STRUCTURE_TASK = "bpforge.tasks.update_structure_esi.apply_async"
+STRUCTURE_ID = 1049854533347
+CONTAINER_ID = 1050000000001
+STATION_ID = 60003466
 
 
 class BlueprintManagerTestCase(AuthTestCase):
@@ -250,3 +261,186 @@ class BlueprintManagerTestCase(AuthTestCase):
             ).count(),
             1,
         )
+
+
+class LocationManagerTestCase(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        self.owner = OwnerFactory(user=self.user)
+        self.character = self.owner.character.character
+        add_new_token(self.user, self.character, Owner.get_character_scopes())
+        self.item_type = ItemTypeFactory()
+
+    def _mock_assets(self, assets: list[dict]):
+        pook.get(
+            f"{ESI_URL}/characters/{self.character.character_id}/assets",
+            reply=200,
+            response_json=assets,
+        )
+
+    def _asset(self, item_id: int, location_id: int, location_type: str = "item"):
+        return {
+            "is_singleton": True,
+            "item_id": item_id,
+            "location_flag": "Hangar",
+            "location_id": location_id,
+            "location_type": location_type,
+            "quantity": 1,
+            "type_id": self.item_type.id,
+        }
+
+    def _blueprint_in(self, location_id: int):
+        return BlueprintFactory(
+            owner=self.owner,
+            eve_type=self.item_type,
+            location=LocationFactory(location_id=location_id, name=""),
+        )
+
+    @pook.on
+    @patch(UPDATE_STRUCTURE_TASK)
+    def test_update_locations_should_resolve_structure_of_blueprint_in_hangar(
+        self, mock_task
+    ):
+        # Test Data
+        blueprint = self._blueprint_in(STRUCTURE_ID)
+        self._mock_assets([self._asset(blueprint.item_id, STRUCTURE_ID)])
+
+        # Test Action
+        Location.objects.update_or_create_locations(self.owner)
+
+        # Expected Result
+        mock_task.assert_called_once()
+        self.assertEqual(
+            mock_task.call_args.kwargs["kwargs"]["structure_id"], STRUCTURE_ID
+        )
+
+    @pook.on
+    def test_update_locations_should_name_existing_station_of_blueprint_in_hangar(self):
+        # Test Data
+        blueprint = self._blueprint_in(STATION_ID)
+        solar_system = SolarSystemFactory()
+        self._mock_assets([self._asset(blueprint.item_id, STATION_ID, "station")])
+        pook.get(
+            f"{ESI_URL}/universe/stations/{STATION_ID}",
+            reply=200,
+            response_json={
+                "max_dockable_ship_volume": 50000000.0,
+                "name": "Test Station",
+                "office_rental_cost": 10000.0,
+                "owner": 1000035,
+                "position": {"x": 1.0, "y": 2.0, "z": 3.0},
+                "race_id": 1,
+                "reprocessing_efficiency": 0.5,
+                "reprocessing_stations_take": 0.05,
+                "services": ["factory"],
+                "station_id": STATION_ID,
+                "system_id": solar_system.id,
+                "type_id": self.item_type.id,
+            },
+        )
+        pook.post(
+            f"{ESI_URL}/universe/names",
+            reply=200,
+            response_json=[
+                {"category": "corporation", "id": 1000035, "name": "Test Corp"}
+            ],
+        )
+
+        # Test Action
+        Location.objects.update_or_create_locations(self.owner)
+
+        # Expected Result
+        location = Location.objects.get(location_id=STATION_ID)
+        self.assertEqual(location.name, "Test Station")
+        self.assertEqual(location.solar_system, solar_system)
+
+    @pook.on
+    @patch(UPDATE_STRUCTURE_TASK)
+    def test_update_locations_should_not_resolve_location_without_blueprints(
+        self, mock_task
+    ):
+        # Test Data
+        self._mock_assets([self._asset(1050000000002, STRUCTURE_ID)])
+
+        # Test Action
+        Location.objects.update_or_create_locations(self.owner)
+
+        # Expected Result
+        mock_task.assert_not_called()
+        self.assertFalse(Location.objects.filter(location_id=STRUCTURE_ID).exists())
+
+    @pook.on
+    @patch(UPDATE_STRUCTURE_TASK)
+    def test_update_locations_should_not_resolve_container_as_structure(
+        self, mock_task
+    ):
+        # Test Data
+        in_container = self._blueprint_in(CONTAINER_ID)
+        in_hangar = self._blueprint_in(STRUCTURE_ID)
+        self._mock_assets(
+            [
+                self._asset(CONTAINER_ID, STRUCTURE_ID),
+                self._asset(in_container.item_id, CONTAINER_ID),
+                self._asset(in_hangar.item_id, STRUCTURE_ID),
+            ]
+        )
+
+        # Test Action
+        Location.objects.update_or_create_locations(self.owner)
+
+        # Expected Result
+        mock_task.assert_called_once()
+        self.assertEqual(
+            mock_task.call_args.kwargs["kwargs"]["structure_id"], STRUCTURE_ID
+        )
+        container = Location.objects.get(location_id=CONTAINER_ID)
+        self.assertEqual(container.parent_id, STRUCTURE_ID)
+
+    @pook.on
+    def test_structure_update_should_store_name_from_esi(self):
+        # Test Data
+        solar_system = SolarSystemFactory()
+        pook.get(
+            f"{ESI_URL}/universe/structures/{STRUCTURE_ID}",
+            reply=200,
+            response_json={
+                "name": "Test Structure",
+                "owner_id": 1000035,
+                "position": {"x": 1.0, "y": 2.0, "z": 3.0},
+                "solar_system_id": solar_system.id,
+                "type_id": self.item_type.id,
+            },
+        )
+        pook.post(
+            f"{ESI_URL}/universe/names",
+            reply=200,
+            response_json=[
+                {"category": "corporation", "id": 1000035, "name": "Test Corp"}
+            ],
+        )
+
+        # Test Action
+        location, _ = Location.objects.structure_update_or_create_esi(
+            structure_id=STRUCTURE_ID, token=self.owner.token
+        )
+
+        # Expected Result
+        self.assertEqual(location.name, "Test Structure")
+
+    @pook.on
+    def test_structure_update_should_keep_empty_name_when_esi_denies_access(self):
+        # Test Data
+        pook.get(
+            f"{ESI_URL}/universe/structures/{STRUCTURE_ID}",
+            reply=403,
+            response_json={"error": "Forbidden"},
+        )
+
+        # Test Action
+        location, _ = Location.objects.structure_update_or_create_esi(
+            structure_id=STRUCTURE_ID, token=self.owner.token
+        )
+
+        # Expected Result
+        self.assertEqual(location.name, "")
+        self.assertEqual(location.location_id, STRUCTURE_ID)
