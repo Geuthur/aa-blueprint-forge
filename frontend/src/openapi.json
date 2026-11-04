@@ -1025,7 +1025,7 @@
       },
       "delete": {
         "operationId": "bpforge_api_orders_delete_order",
-        "summary": "Delete an order completely (Managers only)",
+        "summary": "Delete a closed order completely (Superusers only)",
         "parameters": [
           {
             "in": "path",
@@ -1044,6 +1044,18 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TaskTriggerResponseSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
                 }
               }
             }

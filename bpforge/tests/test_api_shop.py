@@ -809,7 +809,7 @@ class TestApiOrders(AuthTestCase):
         order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
-            status=RequestStatus.PENDING,
+            status=RequestStatus.DELIVERED,
         )
         self.client.force_login(self.user)
 
@@ -820,29 +820,36 @@ class TestApiOrders(AuthTestCase):
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
         self.assertTrue(Order.objects.filter(id=order.id).exists())
 
-    def test_delete_order_should_allow_global_manager_to_delete_order(self):
+    def test_delete_order_should_return_403_for_manager(self):
         # Test Data
         global_group = GroupFactory(name="Global Status Managers")
         global_settings = GeneralNotificationSettings.get_solo()
         global_settings.order_status_groups.add(global_group)
-
         manager_user = UserMainFactory()
         manager_user.groups.add(global_group)
-
         order = OrderFactory(
             owner=self.seller_owner,
             requesting_user=self.user,
-            status=RequestStatus.PENDING,
+            status=RequestStatus.DELIVERED,
         )
-        req = RequestFactory(
-            order=order,
-            blueprint=self.bp1,
-            requesting_user=self.user,
-            quantity=1,
-            status=RequestStatus.PENDING,
-        )
-
         self.client.force_login(manager_user)
+
+        # Test Action
+        response = self.client.delete(f"/bpforge/api/orders/{order.id}/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertTrue(Order.objects.filter(id=order.id).exists())
+
+    def test_delete_order_should_allow_superuser_to_delete_closed_order(self):
+        # Test Data
+        order = OrderFactory(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.DELIVERED,
+        )
+        req = RequestFactory(order=order, blueprint=self.bp1)
+        self.client.force_login(self.superuser)
 
         # Test Action
         response = self.client.delete(f"/bpforge/api/orders/{order.id}/")
@@ -852,50 +859,98 @@ class TestApiOrders(AuthTestCase):
         self.assertFalse(Order.objects.filter(id=order.id).exists())
         self.assertFalse(Request.objects.filter(id=req.id).exists())
 
-    def test_delete_order_should_allow_corp_manager_only_for_corp_order(self):
+    def test_delete_order_should_reject_open_order_for_superuser(self):
         # Test Data
-        # Django
-        from django.contrib.auth.models import Permission
-
-        corp_manager = UserMainFactory()
-        perm = Permission.objects.get(
-            content_type__app_label="bpforge", codename="manage_access"
-        )
-        corp_manager.user_permissions.add(perm)
-
-        # Order 1: In corp_manager's corp
-        order_corp = OrderFactory(
+        order = OrderFactory(
             owner=self.seller_owner,
-            requesting_user=corp_manager,
+            requesting_user=self.user,
+            status=RequestStatus.ACCEPTED,
+        )
+        self.client.force_login(self.superuser)
+
+        # Test Action
+        response = self.client.delete(f"/bpforge/api/orders/{order.id}/")
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertTrue(Order.objects.filter(id=order.id).exists())
+
+    def _post_cancel(self, order, user):
+        self.client.force_login(user)
+        return self.client.post(
+            f"/bpforge/api/orders/{order.id}/status/",
+            data={"status": RequestStatus.CANCELLED},
+            content_type="application/json",
+        )
+
+    def test_cancel_should_notify_seller(self):
+        # Test Data
+        order = OrderFactory(
+            owner=self.seller_owner,
+            requesting_user=self.user,
             status=RequestStatus.PENDING,
         )
-        # Order 2: Outside corp_manager's corp
-        other_user = UserMainFactory()
-        other_owner = OwnerFactory(
-            user=other_user,
-            is_public=True,
-        )
-        order_other = OrderFactory(
-            owner=other_owner,
-            requesting_user=other_user,
+
+        # Test Action
+        with patch("bpforge.thirdparty.discord.send_user_notification") as mock_send:
+            response = self._post_cancel(order, self.user)
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        recipients = {call.kwargs["user_id"] for call in mock_send.call_args_list}
+        self.assertIn(self.seller_user.pk, recipients)
+
+    def test_cancel_should_be_denied_for_seller(self):
+        # Test Data
+        order = OrderFactory(
+            owner=self.seller_owner,
+            requesting_user=self.user,
             status=RequestStatus.PENDING,
         )
 
-        self.client.force_login(corp_manager)
+        # Test Action
+        response = self._post_cancel(order, self.seller_user)
 
-        # Test Action 1: Delete other's order
-        response_other = self.client.delete(f"/bpforge/api/orders/{order_other.id}/")
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        order.refresh_from_db()
+        self.assertEqual(order.status, RequestStatus.PENDING)
 
-        # Expected Result 1
-        self.assertEqual(response_other.status_code, HTTPStatus.FORBIDDEN)
-        self.assertTrue(Order.objects.filter(id=order_other.id).exists())
+    def test_cancel_should_be_denied_for_manager(self):
+        # Test Data
+        global_group = GroupFactory(name="Global Cancel Managers")
+        GeneralNotificationSettings.get_solo().order_status_groups.add(global_group)
+        manager_user = UserMainFactory()
+        manager_user.groups.add(global_group)
+        order = OrderFactory(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.PENDING,
+        )
 
-        # Test Action 2: Delete corp's order
-        response_corp = self.client.delete(f"/bpforge/api/orders/{order_corp.id}/")
+        # Test Action
+        response = self._post_cancel(order, manager_user)
 
-        # Expected Result 2
-        self.assertEqual(response_corp.status_code, HTTPStatus.OK)
-        self.assertFalse(Order.objects.filter(id=order_corp.id).exists())
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        order.refresh_from_db()
+        self.assertEqual(order.status, RequestStatus.PENDING)
+
+    def test_cancel_should_be_denied_for_buyer_after_acceptance(self):
+        # Test Data
+        order = OrderFactory(
+            owner=self.seller_owner,
+            requesting_user=self.user,
+            status=RequestStatus.ACCEPTED,
+        )
+
+        # Test Action
+        response = self._post_cancel(order, self.user)
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        order.refresh_from_db()
+        self.assertEqual(order.status, RequestStatus.ACCEPTED)
 
     def test_update_order_status_should_allow_manager_to_update_status(self):
         # Test Data

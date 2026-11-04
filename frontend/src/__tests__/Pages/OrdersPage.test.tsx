@@ -156,55 +156,93 @@ describe("OrdersPage Component", () => {
     expect(manageBadge.textContent).toBe("2");
   });
 
-  it("allows a manager to delete an order via confirmation modal", async () => {
-    // Test Data
-    const mockManagerUser = {
-      user_id: 1,
-      character_id: 101,
-      character_name: "Admin Pilot",
-      can_manage_orders: true,
-      is_global_order_manager: true,
-    };
-    const mockOrders = [
+  const renderOrders = (url = "/") =>
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <MemoryRouter initialEntries={[url]}>
+          <OrdersPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+  const mockOrderOf = (status: string, requesterId: number, user: Record<string, unknown>) => {
+    vi.spyOn(ApiCalls, "loadUserData").mockResolvedValue({ user: user as never });
+    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([
       {
         id: 99,
-        status: "Pending",
-        requesting_user_id: 88,
+        status,
+        requesting_user_id: requesterId,
         requesting_user_name: "Requester Pilot",
         owner_id: 2,
         owner_name: "Shop Corp",
         created_at: new Date().toISOString(),
         items: [],
       },
-    ];
-    vi.spyOn(ApiCalls, "loadUserData").mockResolvedValue({ user: mockManagerUser as never });
-    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue(mockOrders as never);
+    ] as never);
+  };
+
+  it("allows a superuser to delete an order in the history via confirmation modal", async () => {
+    // Test Data
+    mockOrderOf("Delivered", 88, { user_id: 1, can_manage_orders: true, is_superuser: true });
     const deleteSpy = vi.spyOn(ApiCalls, "deleteOrder").mockResolvedValue({ success: true, message: "Deleted" });
 
     // Test Action
-    render(
-      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-        <MemoryRouter>
-          <OrdersPage />
-        </MemoryRouter>
-      </QueryClientProvider>
-    );
+    renderOrders("/?tab=history");
+    fireEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    expect(await screen.findByText("Are you sure you want to permanently delete this order?")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Confirm Delete" }));
 
     // Expected Result
-    const deleteBtn = await screen.findByRole("button", { name: /delete/i });
-    expect(deleteBtn).toBeInTheDocument();
-
-    // Click delete button to open modal
-    fireEvent.click(deleteBtn);
-    expect(await screen.findByText("Are you sure you want to permanently delete this order?")).toBeInTheDocument();
-
-    // Click confirm delete
-    const confirmBtn = screen.getByRole("button", { name: "Confirm Delete" });
-    fireEvent.click(confirmBtn);
-
     await waitFor(() => {
       expect(deleteSpy).toHaveBeenCalledWith(99);
     });
+  });
+
+  it("hides Delete for a manager who is no superuser", async () => {
+    // Test Data
+    mockOrderOf("Delivered", 88, { user_id: 1, can_manage_orders: true, is_superuser: false });
+
+    // Test Action
+    renderOrders("/?tab=history");
+    await screen.findByText(/Shop Corp/);
+
+    // Expected Result
+    expect(screen.queryByRole("button", { name: "Delete" })).toBeNull();
+  });
+
+  it("hides Delete for a superuser outside of the history", async () => {
+    // Test Data
+    mockOrderOf("Pending", 88, { user_id: 1, can_manage_orders: true, is_superuser: true });
+
+    // Test Action
+    renderOrders("/?tab=manage");
+    await screen.findByRole("button", { name: "Decline" });
+
+    // Expected Result
+    expect(screen.queryByRole("button", { name: "Delete" })).toBeNull();
+  });
+
+  it("offers Cancel only to the requester, also if the requester is a manager", async () => {
+    // Test Data
+    mockOrderOf("Pending", 1, { user_id: 1, can_manage_orders: true });
+
+    // Test Action
+    renderOrders("/?tab=manage");
+
+    // Expected Result
+    expect(await screen.findByRole("button", { name: "Cancel Order" })).toBeInTheDocument();
+  });
+
+  it("hides Cancel from a manager of a foreign order and shows Decline in red", async () => {
+    // Test Data
+    mockOrderOf("Pending", 88, { user_id: 1, can_manage_orders: true });
+
+    // Test Action
+    renderOrders("/?tab=manage");
+
+    // Expected Result
+    expect((await screen.findByRole("button", { name: "Decline" })).className).toContain("btn-danger");
+    expect(screen.queryByRole("button", { name: /Cancel/ })).toBeNull();
   });
 
   it("loads closed orders in the history tab", async () => {
@@ -213,41 +251,12 @@ describe("OrdersPage Component", () => {
     const loadOrders = vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([] as never);
 
     // Test Action
-    render(
-      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-        <MemoryRouter>
-          <OrdersPage />
-        </MemoryRouter>
-      </QueryClientProvider>
-    );
+    renderOrders();
     fireEvent.click(await screen.findByRole("tab", { name: /History/ }));
 
     // Expected Result
     await waitFor(() => expect(loadOrders).toHaveBeenCalledWith("history"));
     expect(await screen.findByText("No closed orders found.")).toBeInTheDocument();
-  });
-
-  it("uses the warning color for Decline and keeps Delete in the danger color", async () => {
-    // Test Data
-    vi.spyOn(ApiCalls, "loadUserData").mockResolvedValue({
-      user: { user_id: 99, can_manage_orders: true } as never,
-    });
-    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([
-      { id: 10, status: "Pending", requesting_user_id: 1, owner_id: 1, items: [] },
-    ] as never);
-
-    // Test Action
-    render(
-      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-        <MemoryRouter>
-          <OrdersPage />
-        </MemoryRouter>
-      </QueryClientProvider>
-    );
-
-    // Expected Result
-    expect((await screen.findByRole("button", { name: "Decline" })).className).toContain("btn-warning");
-    expect(screen.getByRole("button", { name: "Delete" }).className).toContain("btn-danger");
   });
 
   it("activates manage tab when URL query contains tab=manage", async () => {

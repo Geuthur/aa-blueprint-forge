@@ -135,12 +135,10 @@ class Order(models.Model):
         is_owner = self.seller_user_id == user.pk
         is_requester = self.requesting_user == user
 
-        # Requester can cancel if still pending
-        if (
-            is_requester
-            and status == RequestStatus.CANCELLED
-            and self.status == RequestStatus.PENDING
-        ):
+        # Only the requester can cancel, and only if still pending
+        if status == RequestStatus.CANCELLED:
+            if not is_requester or self.status != RequestStatus.PENDING:
+                return False
             self.status = RequestStatus.CANCELLED
             self.closed_at = timezone.now()
             self.save(update_fields=["status", "closed_at", "updated_at"])
@@ -150,11 +148,7 @@ class Order(models.Model):
         # Owner or user with manage/admin rights can accept, deliver, or decline
         if is_owner or can_edit:
             self.status = status
-            if status in [
-                RequestStatus.DELIVERED,
-                RequestStatus.DECLINED,
-                RequestStatus.CANCELLED,
-            ]:
+            if status in [RequestStatus.DELIVERED, RequestStatus.DECLINED]:
                 self.closed_at = timezone.now()
             else:
                 self.closed_at = None
