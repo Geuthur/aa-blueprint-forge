@@ -6,6 +6,7 @@ from unittest.mock import patch
 # Third Party
 import pook
 from evesde_factory.eve_sde import ItemTypeFactory, SolarSystemFactory
+from evesde_factory.utils import add_new_token
 
 # Django
 from django.db import IntegrityError
@@ -22,7 +23,6 @@ from bpforge.tests.testdata.bpforge import (
     OwnerFactory,
     RequestFactory,
 )
-from bpforge.tests.testdata.utils import add_new_token
 
 ESI_URL = "https://esi.evetech.net"
 UPDATE_STRUCTURE_TASK = "bpforge.tasks.update_structure_esi.apply_async"

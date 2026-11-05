@@ -3,6 +3,10 @@ import json
 from http import HTTPStatus
 from unittest.mock import patch
 
+# Third Party
+from evesde_factory.allianceauth import EveCharacterFactory
+from evesde_factory.utils import add_character_to_user
+
 # Django
 from django.urls import reverse
 
@@ -17,8 +21,6 @@ from bpforge.tests.testdata.bpforge import (
     OwnerFactory,
     OwnerUpdateStatusFactory,
 )
-from bpforge.tests.testdata.factory import EveCharacterFactory
-from bpforge.tests.testdata.utils import add_character_to_user
 
 
 class TestApiGeneral(AuthTestCase):

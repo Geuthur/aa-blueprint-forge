@@ -2,6 +2,12 @@
 from http import HTTPStatus
 from unittest.mock import Mock, patch
 
+# Third Party
+from evesde_factory.allianceauth import (
+    EveCharacterFactory,
+    EveCorporationInfoFactory,
+)
+
 # Django
 from django.urls import reverse
 
@@ -12,10 +18,6 @@ from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 from bpforge.models.blueprint import Owner
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
-from bpforge.tests.testdata.factory import (
-    EveCharacterFactory,
-    EveCorporationInfoFactory,
-)
 from bpforge.views import add_character, add_corporation, react_base
 
 
