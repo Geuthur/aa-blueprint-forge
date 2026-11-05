@@ -25,6 +25,7 @@ from bpforge.tests.testdata.bpforge import (
 )
 
 ESI_URL = "https://esi.evetech.net"
+MANAGERS_LOGGER = "extensions.bpforge.managers"
 UPDATE_STRUCTURE_TASK = "bpforge.tasks.update_structure_esi.apply_async"
 STRUCTURE_ID = 1049854533347
 CONTAINER_ID = 1050000000001
@@ -307,6 +308,56 @@ class BlueprintRemovalOrderItemTestCase(AuthTestCase):
         self.assertEqual(self.item.item_id, 555111)
         self.assertEqual(self.item.type_name, "Rifter Blueprint")
         self.assertTrue(Order.objects.filter(pk=self.item.order_id).exists())
+
+    @pook.on
+    def test_update_blueprints_should_warn_when_esi_returns_no_blueprints(self):
+        # Test Data
+        BlueprintFactory(
+            item_id=555222,
+            owner=self.owner,
+            eve_type=self.item_type,
+            location=self.location,
+        )
+        self._mock_blueprints([])
+
+        # Test Action
+        with self.assertLogs(MANAGERS_LOGGER, level="WARNING") as logs:
+            Blueprint.objects.update_or_create_blueprints(self.owner)
+
+        # Expected Result
+        self.assertEqual(len(logs.records), 1)
+        message = logs.records[0].getMessage()
+        self.assertIn(str(self.owner), message)
+        self.assertIn("deleting all 2 existing blueprints", message)
+        self.assertFalse(Blueprint.objects.filter(owner=self.owner).exists())
+
+    @pook.on
+    def test_update_blueprints_should_not_warn_when_esi_returns_blueprints(self):
+        # Test Data
+        self._mock_blueprints(
+            [
+                {
+                    "item_id": 555333,
+                    "type_id": self.item_type.id,
+                    "location_id": self.location.location_id,
+                    "location_flag": "Hangar",
+                    "quantity": -1,
+                    "runs": -1,
+                    "material_efficiency": 10,
+                    "time_efficiency": 20,
+                }
+            ]
+        )
+
+        # Test Action
+        with self.assertNoLogs(MANAGERS_LOGGER, level="WARNING"):
+            Blueprint.objects.update_or_create_blueprints(self.owner)
+
+        # Expected Result
+        self.assertFalse(Blueprint.objects.filter(item_id=555111).exists())
+        self.assertTrue(
+            Blueprint.objects.filter(owner=self.owner, item_id=555333).exists()
+        )
 
 
 class LocationManagerTestCase(AuthTestCase):
