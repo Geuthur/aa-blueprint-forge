@@ -50,6 +50,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] The blueprint update logs a warning with the owner and the number of deleted blueprints when ESI returns no blueprints and all existing blueprints of the owner are deleted. The deletion itself is unchanged.
+
 - [CHANGE] Only the buyer can cancel an order, and only while it is pending. Sellers and managers decline instead.
 
 - [CHANGE] Only superusers can delete orders, and only closed orders from the "History" tab.

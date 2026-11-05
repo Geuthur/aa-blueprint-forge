@@ -289,6 +289,12 @@ class BlueprintManager(AccessManager["BlueprintContext"]):
 
         to_delete_item_ids = set(existing_items.keys()) - seen_item_ids
         if to_delete_item_ids:
+            if not seen_item_ids:
+                logger.warning(
+                    "ESI returned no blueprints for %s, deleting all %s existing blueprints.",
+                    owner,
+                    len(to_delete_item_ids),
+                )
             self.filter(owner=owner, item_id__in=to_delete_item_ids).delete()
 
 
