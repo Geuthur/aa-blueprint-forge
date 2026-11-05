@@ -1,11 +1,11 @@
 # Third Party
 import factory
+from evesde_factory.allianceauth import UserFactory
 
 # AA Blueprint Forge
 from bpforge import __app_name__
 from bpforge.tests.testdata.factory import (
     EveCharacterFactory,
-    UserFactory,
 )
 from bpforge.tests.testdata.utils import add_character_to_user
 
