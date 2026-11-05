@@ -5,6 +5,13 @@ from http import HTTPStatus
 from importlib import import_module
 from unittest.mock import patch
 
+# Third Party
+from evesde_factory.allianceauth import (
+    EveAllianceInfoFactory,
+    EveCharacterFactory,
+    EveCorporationInfoFactory,
+)
+
 # Django
 from django.apps import apps as django_apps
 from django.contrib.auth import get_user_model
@@ -33,11 +40,6 @@ from bpforge.tests.testdata.bpforge import (
     OrderFactory,
     OwnerFactory,
     RequestFactory,
-)
-from bpforge.tests.testdata.factory import (
-    EveAllianceInfoFactory,
-    EveCharacterFactory,
-    EveCorporationInfoFactory,
 )
 
 

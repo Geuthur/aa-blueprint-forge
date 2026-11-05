@@ -41,6 +41,7 @@ Section Order:
 ### Fixed
 
 - [FIX] Order items no longer disappear when ESI stops returning their blueprint, for example after it was sold. The item keeps a copy of the blueprint values and is marked as "Blueprint no longer available". Includes a migration that fills the copy for existing items.
+- [FIX] Tests use the shared factories and helpers of `aa-evesde-factory` (`UserFactory`, `EveCharacterFactory`, `EveCorporationInfoFactory`, `EveAllianceInfoFactory`, `add_character_to_user`, `add_new_token`) instead of local copies, so generated usernames are unique and can no longer match the superuser of a test class.
 - [FIX] The "Select Public BPOs" modal showed "-" as location for BPOs in containers. It now shows the name of the station or structure.
 - [FIX] Headers of the administration inspection view, the owner list and the section header wrap on small screens instead of overflowing the container, and the filter button groups scroll horizontally.
 - [FIX] The pulsing menu and tab badges scaled up and down with their number. Only the glow around the badge pulses now.

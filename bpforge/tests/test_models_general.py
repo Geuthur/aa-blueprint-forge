@@ -1,5 +1,11 @@
 """Tests for the General model permission helpers."""
 
+# Third Party
+from evesde_factory.allianceauth import (
+    EveCharacterFactory,
+    EveCorporationInfoFactory,
+)
+
 # Django
 from django.contrib.auth.models import AnonymousUser
 
@@ -9,10 +15,6 @@ from bpforge.models.request import Order
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
 from bpforge.tests.testdata.bpforge import GroupFactory, OrderFactory, OwnerFactory
-from bpforge.tests.testdata.factory import (
-    EveCharacterFactory,
-    EveCorporationInfoFactory,
-)
 
 
 class TestGeneralPermissions(AuthTestCase):
