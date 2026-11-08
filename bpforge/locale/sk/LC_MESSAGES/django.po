@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AA Blueprint Forge\n"
 "Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-blueprint-forge/\n"
-"POT-Creation-Date: 2026-10-18 18:46+0200\n"
+"POT-Creation-Date: 2026-11-08 16:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,106 +16,201 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n "
-">= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
-#: bpforge/api/blueprints.py:35 bpforge/api/blueprints.py:133
-#: bpforge/api/blueprints.py:187 bpforge/api/general.py:237
-#: bpforge/api/general.py:293 bpforge/api/general.py:311
-#: bpforge/api/general.py:331 bpforge/api/general.py:372
-#: bpforge/api/general.py:416 bpforge/api/general.py:446
-#: bpforge/api/general.py:476 bpforge/api/general.py:482
-#: bpforge/api/general.py:521 bpforge/api/general.py:527
-#: bpforge/api/my_blueprints.py:32 bpforge/api/orders.py:48
-#: bpforge/api/orders.py:143 bpforge/api/orders.py:160
-#: bpforge/api/orders.py:163 bpforge/api/orders.py:185
-#: bpforge/api/orders.py:202 bpforge/api/orders.py:221
-#: bpforge/api/orders.py:275
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
+
+#: bpforge/admin.py:55
+msgid "Success"
+msgstr ""
+
+#: bpforge/admin.py:59
+msgid "Token OK"
+msgstr ""
+
+#: bpforge/admin.py:124
+msgid "Owner Name"
+msgstr ""
+
+#: bpforge/admin.py:128
+msgid "Type"
+msgstr ""
+
+#: bpforge/admin.py:130 bpforge/thirdparty/charlink_hook.py:161
+msgid "Corporation"
+msgstr ""
+
+#: bpforge/admin.py:130 bpforge/thirdparty/charlink_hook.py:146
+msgid "Character"
+msgstr ""
+
+#: bpforge/admin.py:132 bpforge/models/helpers/update_manager.py:136
+msgid "Blueprints"
+msgstr ""
+
+#: bpforge/admin.py:136
+msgid "Last Update"
+msgstr ""
+
+#: bpforge/admin.py:144
+msgid "Force update selected owners (bypass cache)"
+msgstr ""
+
+#: bpforge/admin.py:152
+#, python-format
+msgid "Force update queued for %(count)d owner(s)."
+msgstr ""
+
+#: bpforge/admin.py:156
+msgid "Update selected owners (cached)"
+msgstr ""
+
+#: bpforge/admin.py:164
+#, python-format
+msgid "Update queued for %(count)d owner(s)."
+msgstr ""
+
+#: bpforge/admin.py:185
+#, python-format
+msgid "Force update queued for %(name)s."
+msgstr ""
+
+#: bpforge/api/administration.py:40 bpforge/api/administration.py:60
+#: bpforge/api/administration.py:87 bpforge/api/administration.py:115
+#: bpforge/api/administration.py:165 bpforge/api/administration.py:233
+#: bpforge/api/administration.py:269 bpforge/api/administration.py:305
+msgid "Administration permission required."
+msgstr ""
+
+#: bpforge/api/administration.py:279 bpforge/api/administration.py:336
+msgid "Superuser permission required."
+msgstr ""
+
+#: bpforge/api/administration.py:288 bpforge/api/general.py:659
+#, python-brace-format
+msgid "Update task queued for {owner_name} (force_refresh={force_refresh})."
+msgstr ""
+
+#: bpforge/api/administration.py:318
+#, python-brace-format
+msgid "Owner {owner_name} and all associated data deleted successfully."
+msgstr ""
+
+#: bpforge/api/administration.py:348
+msgid "Queued Update All Characters"
+msgstr ""
+
+#: bpforge/api/administration.py:350
+msgid "Queued Update All Corporations"
+msgstr ""
+
+#: bpforge/api/administration.py:352
+msgid "Queued Update All Owners"
+msgstr ""
+
+#: bpforge/api/blueprints.py:36 bpforge/api/blueprints.py:147
+#: bpforge/api/blueprints.py:201 bpforge/api/general.py:282
+#: bpforge/api/general.py:339 bpforge/api/general.py:357
+#: bpforge/api/general.py:377 bpforge/api/general.py:418
+#: bpforge/api/general.py:462 bpforge/api/general.py:492
+#: bpforge/api/general.py:522 bpforge/api/general.py:528
+#: bpforge/api/general.py:567 bpforge/api/general.py:573
+#: bpforge/api/general.py:610 bpforge/api/general.py:640
+#: bpforge/api/general.py:649 bpforge/api/general.py:675
+#: bpforge/api/general.py:684 bpforge/api/my_blueprints.py:33
+#: bpforge/api/orders.py:51 bpforge/api/orders.py:151 bpforge/api/orders.py:179
+#: bpforge/api/orders.py:218 bpforge/api/orders.py:235
+#: bpforge/api/orders.py:256
 msgid "Permission Denied."
 msgstr ""
 
-#: bpforge/api/blueprints.py:199
+#: bpforge/api/blueprints.py:213
 msgid "This blueprint catalog is private."
 msgstr ""
 
-#: bpforge/api/general.py:190
+#: bpforge/api/general.py:221
 msgid "Overview"
 msgstr ""
 
-#: bpforge/api/general.py:192
+#: bpforge/api/general.py:223
 msgid "My Blueprints"
 msgstr ""
 
-#: bpforge/api/general.py:194
+#: bpforge/api/general.py:227
 msgid "Orders"
 msgstr ""
 
-#: bpforge/api/general.py:195
+#: bpforge/api/general.py:235
 msgid "Settings"
 msgstr ""
 
-#: bpforge/api/general.py:201
+#: bpforge/api/general.py:246
 msgid "Add Character"
 msgstr ""
 
-#: bpforge/api/general.py:208
+#: bpforge/api/general.py:253
 msgid "Add Corporation"
 msgstr ""
 
-#: bpforge/api/general.py:217
-msgid "Superuser"
+#: bpforge/api/general.py:262
+msgid "Administration"
 msgstr ""
 
-#: bpforge/api/orders.py:52
+#: bpforge/api/general.py:621
+#, python-format
+msgid "Queued updates for %(count)d owner(s)."
+msgstr ""
+
+#: bpforge/api/general.py:691
+#, python-format
+msgid "Owner %(name)s and associated data deleted."
+msgstr ""
+
+#: bpforge/api/orders.py:55
 msgid "Order must contain at least one blueprint item."
 msgstr ""
 
-#: bpforge/api/orders.py:64
+#: bpforge/api/orders.py:67
 msgid "Cannot order from a private shop."
 msgstr ""
 
-#: bpforge/api/orders.py:76
+#: bpforge/api/orders.py:79
 msgid "One or more blueprints are invalid or do not belong to this shop."
 msgstr ""
 
-#: bpforge/api/orders.py:88
+#: bpforge/api/orders.py:91
 msgid "This shop only offers blueprint originals (BPO)."
 msgstr ""
 
-#: bpforge/api/orders.py:94
+#: bpforge/api/orders.py:97
 msgid "This shop only offers blueprint copies (BPC)."
 msgstr ""
 
-#: bpforge/api/orders.py:102
+#: bpforge/api/orders.py:105
 msgid "One or more selected BPOs are not offered by this shop."
 msgstr ""
 
-#: bpforge/api/orders.py:236
+#: bpforge/api/orders.py:271
 #, python-brace-format
 msgid "Invalid status. Must be one of: {valid_statuses}"
 msgstr ""
 
-#: bpforge/api/orders.py:250
+#: bpforge/api/orders.py:277
+msgid "This order is closed because its shop or buyer was deleted."
+msgstr ""
+
+#: bpforge/api/orders.py:292
 msgid "You are not authorized to set this order status."
 msgstr ""
 
-#: bpforge/api/orders.py:289
+#: bpforge/api/orders.py:321
 msgid "You are not authorized to delete this order."
 msgstr ""
 
-#: bpforge/api/orders.py:295
+#: bpforge/api/orders.py:328
+msgid "Only closed orders can be deleted."
+msgstr ""
+
+#: bpforge/api/orders.py:334
 msgid "Order has been deleted successfully."
-msgstr ""
-
-#: bpforge/api/superuser.py:39 bpforge/api/superuser.py:59
-#: bpforge/api/superuser.py:86 bpforge/api/superuser.py:114
-#: bpforge/api/superuser.py:164 bpforge/api/superuser.py:232
-#: bpforge/api/superuser.py:268
-msgid "Superuser permission required."
-msgstr ""
-
-#: bpforge/api/superuser.py:283
-#, python-brace-format
-msgid "Update task queued for {owner_name} (force_refresh={force_refresh})."
 msgstr ""
 
 #: bpforge/models/blueprint.py:64
@@ -130,131 +225,139 @@ msgstr ""
 msgid "Only Copies (BPC)"
 msgstr ""
 
-#: bpforge/models/blueprint.py:89
+#: bpforge/models/blueprint.py:76
+msgid "Owner"
+msgstr ""
+
+#: bpforge/models/blueprint.py:77
+msgid "Owners"
+msgstr ""
+
+#: bpforge/models/blueprint.py:97
 msgid "The character that owns this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:102
+#: bpforge/models/blueprint.py:110
 msgid "The corporation that owns this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:107
+#: bpforge/models/blueprint.py:115
 msgid "Whether this owner's blueprints are public."
 msgstr ""
 
-#: bpforge/models/blueprint.py:114
+#: bpforge/models/blueprint.py:122
 msgid "Which types of blueprints are public for this owner."
 msgstr ""
 
-#: bpforge/models/blueprint.py:119
+#: bpforge/models/blueprint.py:127
 msgid "Whether only explicitly selected BPOs are offered."
 msgstr ""
 
-#: bpforge/models/blueprint.py:126
+#: bpforge/models/blueprint.py:134
 msgid "Groups to notify when a new order is created for this owner."
 msgstr ""
 
-#: bpforge/models/blueprint.py:133
+#: bpforge/models/blueprint.py:141
 msgid "Groups to notify when an order status changes for this owner."
 msgstr ""
 
-#: bpforge/models/blueprint.py:229
+#: bpforge/models/blueprint.py:268
 msgid "The Eve ID of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:236
+#: bpforge/models/blueprint.py:276
 msgid "The owner of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:243
+#: bpforge/models/blueprint.py:283
 msgid "The Eve type of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:250
+#: bpforge/models/blueprint.py:290
 msgid "The location of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:254
+#: bpforge/models/blueprint.py:294
 msgid "The flag of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:260
+#: bpforge/models/blueprint.py:300
 msgid "The quantity of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:267
+#: bpforge/models/blueprint.py:307
 msgid "The number of runs for this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:272
+#: bpforge/models/blueprint.py:312
 msgid "The material efficiency of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:278
+#: bpforge/models/blueprint.py:318
 msgid "The time efficiency of this blueprint."
 msgstr ""
 
-#: bpforge/models/blueprint.py:284
+#: bpforge/models/blueprint.py:324
 msgid "Whether this blueprint is offered when selective BPO mode is enabled."
 msgstr ""
 
-#: bpforge/models/blueprint.py:312
+#: bpforge/models/blueprint.py:363
 msgid "The Eve ID of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:317
+#: bpforge/models/blueprint.py:368
 msgid "The name of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:327
+#: bpforge/models/blueprint.py:378
 msgid "The parent location of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:337
+#: bpforge/models/blueprint.py:388
 msgid "The solar system of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:347
+#: bpforge/models/blueprint.py:398
 msgid "The Eve type of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:357
+#: bpforge/models/blueprint.py:408
 msgid "The owner of this location."
 msgstr ""
 
-#: bpforge/models/blueprint.py:392
+#: bpforge/models/blueprint.py:443
 msgid "The Eve ID of this entity."
 msgstr ""
 
-#: bpforge/models/blueprint.py:397
+#: bpforge/models/blueprint.py:448
 msgid "The name of this entity."
 msgstr ""
 
-#: bpforge/models/blueprint.py:402
+#: bpforge/models/blueprint.py:453
 msgid "The category of this entity."
 msgstr ""
 
-#: bpforge/models/general.py:20
+#: bpforge/models/general.py:21
 msgid "Can access this app"
 msgstr ""
 
-#: bpforge/models/general.py:21
+#: bpforge/models/general.py:22
 msgid "Can manage"
 msgstr ""
 
-#: bpforge/models/general.py:22
+#: bpforge/models/general.py:23
 msgid "Full access"
 msgstr ""
 
-#: bpforge/models/general.py:45 bpforge/models/general.py:46
+#: bpforge/models/general.py:176 bpforge/models/general.py:177
 msgid "Notification Settings"
 msgstr ""
 
-#: bpforge/models/general.py:52
+#: bpforge/models/general.py:183
 msgid "Groups to notify globally when a new order is created."
 msgstr ""
 
-#: bpforge/models/general.py:59
+#: bpforge/models/general.py:190
 msgid "Groups to notify globally when an order status changes."
 msgstr ""
 
@@ -774,84 +877,112 @@ msgstr ""
 msgid "In Progress"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:136
-msgid "Blueprints"
-msgstr ""
-
 #: bpforge/models/helpers/update_manager.py:137
 msgid "Locations"
 msgstr ""
 
-#: bpforge/models/request.py:27
+#: bpforge/models/request.py:31
 msgid "The shop/owner this order was placed with."
 msgstr ""
 
-#: bpforge/models/request.py:34
+#: bpforge/models/request.py:40
 msgid "The user who placed the order."
 msgstr ""
 
-#: bpforge/models/request.py:38
+#: bpforge/models/request.py:48
+msgid "The name of the shop/owner when the order was placed."
+msgstr ""
+
+#: bpforge/models/request.py:55
+msgid "The name of the buyer when the order was placed."
+msgstr ""
+
+#: bpforge/models/request.py:64
+msgid "The user who owned the shop when the order was placed."
+msgstr ""
+
+#: bpforge/models/request.py:70
+msgid "The corporation ID of the shop when the order was placed."
+msgstr ""
+
+#: bpforge/models/request.py:74
 msgid "The status of this order."
 msgstr ""
 
-#: bpforge/models/request.py:47
+#: bpforge/models/request.py:83
 msgid "Customer note or instructions for the order."
 msgstr ""
 
-#: bpforge/models/request.py:52
+#: bpforge/models/request.py:88
 msgid "The time this order was created."
 msgstr ""
 
-#: bpforge/models/request.py:57
+#: bpforge/models/request.py:93
 msgid "The time this order was last updated."
 msgstr ""
 
-#: bpforge/models/request.py:63
+#: bpforge/models/request.py:99
 msgid "The time this order was closed."
 msgstr ""
 
-#: bpforge/models/request.py:120
+#: bpforge/models/request.py:176
 msgid "The parent order for this blueprint item."
 msgstr ""
 
-#: bpforge/models/request.py:127
+#: bpforge/models/request.py:185
 msgid "The blueprint being requested."
 msgstr ""
 
-#: bpforge/models/request.py:134
+#: bpforge/models/request.py:191
+msgid "The Eve ID of the blueprint when it was ordered."
+msgstr ""
+
+#: bpforge/models/request.py:196
+msgid "The Eve type ID of the blueprint when it was ordered."
+msgstr ""
+
+#: bpforge/models/request.py:203
+msgid "The Eve type name of the blueprint when it was ordered."
+msgstr ""
+
+#: bpforge/models/request.py:209
+msgid "The material efficiency of the blueprint when it was ordered."
+msgstr ""
+
+#: bpforge/models/request.py:215
+msgid "The time efficiency of the blueprint when it was ordered."
+msgstr ""
+
+#: bpforge/models/request.py:222
+msgid "The location name of the blueprint when it was ordered."
+msgstr ""
+
+#: bpforge/models/request.py:231
 msgid "The user who made this request."
 msgstr ""
 
-#: bpforge/models/request.py:141
+#: bpforge/models/request.py:238
 msgid "The user assigned to this request."
 msgstr ""
 
-#: bpforge/models/request.py:148
+#: bpforge/models/request.py:245
 msgid "The quantity of copies/blueprints being requested."
 msgstr ""
 
-#: bpforge/models/request.py:154
+#: bpforge/models/request.py:251
 msgid "The number of runs being requested."
 msgstr ""
 
-#: bpforge/models/request.py:158
+#: bpforge/models/request.py:255
 msgid "The status of this request."
 msgstr ""
 
-#: bpforge/models/request.py:166
+#: bpforge/models/request.py:263
 msgid "The time this request was created."
 msgstr ""
 
-#: bpforge/models/request.py:172
+#: bpforge/models/request.py:269
 msgid "The time this request was closed."
-msgstr ""
-
-#: bpforge/thirdparty/charlink_hook.py:145
-msgid "Character"
-msgstr ""
-
-#: bpforge/thirdparty/charlink_hook.py:160
-msgid "Corporation"
 msgstr ""
 
 #: bpforge/views.py:50
