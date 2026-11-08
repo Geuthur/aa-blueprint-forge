@@ -16,14 +16,14 @@ module.exports = {
       extensions: [".js", ".jsx"],
     },
     trans: false,
-    lngs: ["en", "de", "es", "it-IT", "ko-KR", "fr-FR", "nl-NL", "pl-PL", "ru", "uk", "zh-Hans", "ja"],
+    lngs: ["en"],
     ns: ["translation"],
     defaultLng: "en",
     defaultNs: "translation",
-    // Only the English template gets the key as value. Other languages stay empty
-    // until translated on Weblate and fall back to English at runtime.
+    // Only the English template is maintained by the scanner. The other languages
+    // hold real translations as Weblate writes them; missing keys fall back to English.
     defaultValue: function (lng, ns, key) {
-      return lng === "en" ? key : "";
+      return key;
     },
     resource: {
       loadPath: "i18n/{{lng}}/{{ns}}.json",
