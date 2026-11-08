@@ -40,7 +40,7 @@ class TestApiGeneral(AuthTestCase):
 
         left_links = data["left_links"]
         overview_link = next(item for item in left_links if item["name"] == "Overview")
-        self.assertEqual(overview_link["link"], "/overview/")
+        self.assertEqual(overview_link["link"], "/")
 
         right_links = data["right_links"]
         right_link_names = [item["name"] for item in right_links]

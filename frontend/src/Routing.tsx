@@ -20,14 +20,14 @@ const queryClient = new QueryClient();
 function Routing() {
   return (
     <React.StrictMode>
-      <AaReactProvider projectName={ProjectName} appName={AppName}>
+      <AaReactProvider projectName={ProjectName} appName={AppName} menuRefetchInterval={30000}>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <NuqsAdapter>
               <Routes>
                 <Route path={`/${ProjectName}/`} element={<AuthBase />}>
                   <Route index element={<MainPage />} />
-                  <Route path="overview/" element={<MainPage />} />
+                  <Route path="overview/" element={<Navigate to={`/${ProjectName}/`} replace />} />
                   <Route path="my-blueprints/" element={<MyBlueprintsPage />} />
                   <Route path="orders/" element={<OrdersPage />} />
                   <Route path="settings/" element={<SettingsPage />} />

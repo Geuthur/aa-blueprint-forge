@@ -218,7 +218,7 @@ class ApiEndpoints:
                 open_orders = _count_open_orders(request.user)
 
             left_menu: list[schema.MenuLink] = []
-            left_menu.append(schema.MenuLink(name=_("Overview"), link="/overview/"))
+            left_menu.append(schema.MenuLink(name=_("Overview"), link="/"))
             left_menu.append(
                 schema.MenuLink(name=_("My Blueprints"), link="/my-blueprints/")
             )
