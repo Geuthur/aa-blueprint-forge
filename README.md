@@ -175,7 +175,7 @@ The shared frontend components (tables, modals, menu, loaders) come from the npm
 
 [![Translations](https://weblate.geuthur.de/widget/allianceauth/aa-blueprint-forge/multi-auto.svg)](https://weblate.geuthur.de/engage/allianceauth/)
 
-The texts of the app live in the namespace `translation` (`frontend/i18n/<lng>/translation.json`). The texts of the shared components live in the namespace `aa-geuthur-react`; the package bundles them and registers them with i18next itself, so the app neither copies nor loads them. Both are translated on Weblate, the package in its own component. Only `en` holds the English text as value; in the other languages untranslated strings are empty and fall back to English at runtime (`returnEmptyString: false`).
+The texts of the app live in the namespace `translation` (`frontend/i18n/<lng>/translation.json`). The texts of the shared components live in the namespace `aa-geuthur-react`; the package bundles them and registers them with i18next itself, so the app neither copies nor loads them. Both are translated on Weblate, the package in its own component. Only `en` is maintained by the scanner (`make react-translations`). The other language files hold only real translations, as Weblate writes them; keys that are not translated are missing and fall back to English at runtime.
 
 Help us translate this app into your language or improve existing translations. Join our team!"
 
