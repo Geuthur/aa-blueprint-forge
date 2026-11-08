@@ -18,6 +18,7 @@ from bpforge.tests.testdata.app import UserMainFactory
 from bpforge.tests.testdata.bpforge import (
     BlueprintFactory,
     LocationFactory,
+    OrderFactory,
     OwnerFactory,
     OwnerUpdateStatusFactory,
 )
@@ -39,7 +40,7 @@ class TestApiGeneral(AuthTestCase):
 
         left_links = data["left_links"]
         overview_link = next(item for item in left_links if item["name"] == "Overview")
-        self.assertEqual(overview_link["link"], "/overview/")
+        self.assertEqual(overview_link["link"], "/")
 
         right_links = data["right_links"]
         right_link_names = [item["name"] for item in right_links]
@@ -55,6 +56,60 @@ class TestApiGeneral(AuthTestCase):
         )
         self.assertEqual(add_corp["link"], reverse("bpforge:add_corporation"))
         self.assertTrue(add_corp["is_external"])
+
+    def test_get_menu_should_not_show_badges_without_open_orders_and_issues(self):
+        # Test Data
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/menu/")
+
+        # Expected Result
+        links = {item["name"]: item for item in response.json()["left_links"]}
+        self.assertIsNone(links["Orders"]["badge"])
+        self.assertFalse(links["Orders"]["has_errors"])
+        self.assertIsNone(links["Settings"]["badge"])
+        self.assertFalse(links["Settings"]["has_errors"])
+
+    def test_get_menu_should_count_open_seller_orders_in_orders_badge(self):
+        # Test Data
+        owner = OwnerFactory(user=self.user)
+        OrderFactory(owner=owner, status="Pending")
+        OrderFactory(owner=owner, status="Accepted")
+        OrderFactory(owner=owner, status="Completed")
+        OrderFactory(owner=OwnerFactory(), status="Pending")
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/menu/")
+
+        # Expected Result
+        links = {item["name"]: item for item in response.json()["left_links"]}
+        self.assertEqual(links["Orders"]["badge"], 2)
+        self.assertTrue(links["Orders"]["has_errors"])
+
+    def test_get_menu_should_count_owners_with_errors_in_settings_badge(self):
+        # Test Data
+        failing = OwnerFactory(user=self.user)
+        OwnerUpdateStatusFactory(
+            owner=failing, section=UpdateSection.BLUEPRINTS, is_success=False
+        )
+        OwnerUpdateStatusFactory(
+            owner=failing, section=UpdateSection.LOCATIONS, is_success=False
+        )
+        healthy = OwnerFactory(user=self.user)
+        OwnerUpdateStatusFactory(
+            owner=healthy, section=UpdateSection.BLUEPRINTS, is_success=True
+        )
+        self.client.force_login(self.user)
+
+        # Test Action
+        response = self.client.get("/bpforge/api/menu/")
+
+        # Expected Result
+        links = {item["name"]: item for item in response.json()["left_links"]}
+        self.assertEqual(links["Settings"]["badge"], 1)
+        self.assertTrue(links["Settings"]["has_errors"])
 
     def test_get_user_owners_should_return_only_current_user_owners(self):
         # Test Data

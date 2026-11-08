@@ -17,6 +17,7 @@ vi.mock("react-i18next", () => ({
     t: (key: string, options?: Record<string, string>) =>
       options?.name ? key.replace("{{name}}", options.name) : key,
   }),
+  withTranslation: () => (Component: unknown) => Component,
 }));
 
 const makeOwner = (overrides: Partial<OwnerSettingSchema> = {}): OwnerSettingSchema =>

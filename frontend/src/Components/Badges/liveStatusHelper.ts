@@ -1,9 +1,9 @@
 // React
 import { useEffect, useRef, useState } from 'react';
 
-// AA bpforge
+// Third Party
 // Voices of War
-import { formatEveTime } from '@/Utils/eveOnline';
+import { formatEveTime } from "aa-geuthur-react";
 
 /**
  * Formats a numeric timestamp into an EVE Online time string (HH:MM:SS EVE)

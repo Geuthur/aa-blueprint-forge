@@ -2,12 +2,12 @@
 import { useState } from "react";
 
 // Third Party
+import { BaseModal } from "aa-geuthur-react";
 import { AlertTriangle, RotateCw, Trash2, Users } from "lucide-react";
 import { Alert, Button, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { BaseModal } from "@/Components/Base/BaseModal";
 import { BaseOwnerCard } from "@/Components/Base/OwnerSettings/BaseOwnerCard";
 import { MissingOwnerCard } from "@/Components/Base/OwnerSettings/MissingOwnerCard";
 import styles from "@/Components/Base/OwnerSettings/OwnerSettings.module.css";

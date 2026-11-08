@@ -20,6 +20,7 @@ from bpforge.helpers.eveonline import (
 from bpforge.models.blueprint import Owner
 from bpforge.models.general import General, UserSettings
 from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.models.request import OPEN_ORDER_STATUSES, Order
 from bpforge.tasks import update_owner
 
 
@@ -170,6 +171,24 @@ def _build_owner_setting_schema(owner: Owner) -> schema.OwnerSettingSchema:
     )
 
 
+def _count_open_orders(user) -> int:
+    """
+    Count the open orders the user handles for the badge of the Orders menu link.
+
+    These are the orders the user sells and, for order managers, the manageable
+    orders. An order that is in both lists counts once.
+    """
+    orders = Order.objects.filter(status__in=OPEN_ORDER_STATUSES)
+    manage_filter = General.get_manageable_orders_filter(user)
+    if manage_filter is None:
+        return orders.filter(seller_user=user).count()
+    # An empty filter means a global manager, who handles every order; it
+    # disappears when it is combined with `|`, so it needs its own branch.
+    if not manage_filter:
+        return orders.count()
+    return orders.filter(Q(seller_user=user) | manage_filter).distinct().count()
+
+
 class ApiEndpoints:
     tags = ["General"]
 
@@ -183,27 +202,40 @@ class ApiEndpoints:
             summary="Get AA Blueprint Shop navigation menu",
         )
         def get_menu(request):
-            has_errors = False
+            issue_count = 0
+            open_orders = 0
             if request.user.is_authenticated:
-                user_owners = Owner.objects.filter(user=request.user)
-                for o in user_owners:
-                    if o.bpforge_update_status.filter(
-                        Q(has_token_error=True) | Q(is_success=False)
-                    ).exists():
-                        has_errors = True
-                        break
+                # An owner has an issue if one of its update sections failed or lost its token
+                issue_count = (
+                    Owner.objects.filter(user=request.user)
+                    .filter(
+                        Q(bpforge_update_status__has_token_error=True)
+                        | Q(bpforge_update_status__is_success=False)
+                    )
+                    .distinct()
+                    .count()
+                )
+                open_orders = _count_open_orders(request.user)
 
             left_menu: list[schema.MenuLink] = []
-            left_menu.append(schema.MenuLink(name=_("Overview"), link="/overview/"))
+            left_menu.append(schema.MenuLink(name=_("Overview"), link="/"))
             left_menu.append(
                 schema.MenuLink(name=_("My Blueprints"), link="/my-blueprints/")
             )
-            left_menu.append(schema.MenuLink(name=_("Orders"), link="/orders/"))
+            left_menu.append(
+                schema.MenuLink(
+                    name=_("Orders"),
+                    link="/orders/",
+                    badge=open_orders or None,
+                    has_errors=open_orders > 0,
+                )
+            )
             left_menu.append(
                 schema.MenuLink(
                     name=_("Settings"),
                     link="/settings/",
-                    has_errors=has_errors,
+                    badge=issue_count or None,
+                    has_errors=issue_count > 0,
                 )
             )
 

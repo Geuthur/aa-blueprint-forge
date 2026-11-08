@@ -4,8 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
-import importHeadingsRule from './eslint-rules/import-headings.js'
-import { ProjectName } from './src/constants.ts'
+import importHeadingsRule from 'aa-geuthur-react/eslint-rules/import-headings'
 
 const importHeadingsPlugin = {
   rules: {
@@ -38,8 +37,8 @@ export default defineConfig([
             { heading: '// Third Party', pattern: '^@?\\w' },
 
             // 3. AA (Eigene Komponenten, Helpers, API)
-            { heading: `// AA ${ProjectName}`, pattern: '^@/' },
-            { heading: `// AA ${ProjectName}`, pattern: '^\\.(?!.*\\.s?css$)' },
+            { heading: "// AA bpforge", pattern: '^@/' },
+            { heading: "// AA bpforge", pattern: '^\\.(?!.*\\.s?css$)' },
 
             // 4. Stylesheets & CSS-Module
             { heading: '// Styles', pattern: '\\.s?css$' },

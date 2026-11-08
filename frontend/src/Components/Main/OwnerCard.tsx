@@ -2,6 +2,7 @@
 import React from "react";
 
 // Third Party
+import { renderTooltip } from "aa-geuthur-react";
 import { ShoppingBag, Box, Layers, Building2, User } from "lucide-react";
 import { Card, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -11,7 +12,6 @@ import type { components } from "@/Api/OpenApi";
 import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
-import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
 type PublicOwner = components["schemas"]["OwnerPublicSchema"];

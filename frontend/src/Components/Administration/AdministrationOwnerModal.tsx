@@ -2,13 +2,13 @@
 import React, { useState } from "react";
 
 // Third Party
+import { BaseModal } from "aa-geuthur-react";
 import { Layers, Save } from "lucide-react";
 import { Alert, Badge, Button, Card, Form, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { GroupSchema, OwnerSettingSchema, AdministrationOwnerUpdateRequest } from "@/Api/schema";
-import { BaseModal } from "@/Components/Base/BaseModal";
 import styles from "@/Styles/modules/Administration.module.css";
 
 interface AdministrationOwnerModalProps {

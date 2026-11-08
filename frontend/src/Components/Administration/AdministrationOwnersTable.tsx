@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
+import { BaseTable, createBaseColumnHelper, type BaseColumnDef, renderTooltip } from "aa-geuthur-react";
 import { Edit2, Eye, RefreshCw, Trash2, Users } from "lucide-react";
 import { Alert, Button, ButtonGroup, Card, Dropdown, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -10,12 +11,8 @@ import { useTranslation } from "react-i18next";
 import type { OwnerSettingSchema } from "@/Api/schema";
 import { AdministrationErrorModal } from "@/Components/Administration/AdministrationErrorModal";
 import { getEsiStatusBadgeClass } from "@/Components/Administration/esiStatus";
-import BaseTable from "@/Components/Base/BaseTable/BaseTable";
-import { createBaseColumnHelper } from "@/Components/Base/BaseTable/tableFeatures";
-import type { BaseColumnDef } from "@/Components/Base/BaseTable/tableFeatures";
 import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import styles from "@/Styles/modules/Administration.module.css";
-import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
 interface AdministrationOwnersTableProps {

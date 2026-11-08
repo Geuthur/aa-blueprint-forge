@@ -1,5 +1,5 @@
-// AA bpforge
-import { getSecColor } from '@/Utils/eveOnline';
+// Third Party
+import { getSecColor } from "aa-geuthur-react";
 
 interface SecurityBadgeProps {
   sec: number;

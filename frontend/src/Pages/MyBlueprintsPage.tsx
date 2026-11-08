@@ -2,12 +2,12 @@
 import { useState } from "react";
 
 // Third Party
+import { BaseSectionHeader } from "aa-geuthur-react";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Alert, Button, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import BaseSectionHeader from "@/Components/Base/BaseHeader";
 import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
 import { useMyBlueprints } from "@/Components/MyBlueprints/Hooks";
 import { MyBlueprintsKpiSection } from "@/Components/MyBlueprints/MyBlueprintsKpiSection";

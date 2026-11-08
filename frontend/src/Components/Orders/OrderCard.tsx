@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
+import { BaseModal, BaseTable, createBaseColumnHelper, type BaseColumnDef, formatDate } from "aa-geuthur-react";
 import {
   AlertTriangle,
   Check,
@@ -18,12 +19,7 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
-import { BaseModal } from "@/Components/Base/BaseModal";
-import { BaseTable } from "@/Components/Base/BaseTable";
-import { createBaseColumnHelper } from "@/Components/Base/BaseTable/tableFeatures";
-import type { BaseColumnDef } from "@/Components/Base/BaseTable/tableFeatures";
 import { imageServer } from "@/Utils/eveOnline";
-import { formatDate } from "@/Utils/format";
 
 type Order = components["schemas"]["OrderSchema"];
 type OrderItem = components["schemas"]["OrderItemSchema"];
@@ -326,7 +322,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                 data={order.items}
                 columns={itemColumns}
                 enableFilters={false}
-                showFooter={false}
+                footerClassName="d-none"
                 initialState={{ pagination: { pageSize: 1000000 } }}
               />
             </div>

@@ -1,14 +1,12 @@
 // Third Party
+import { createBaseColumnHelper, type BaseColumnDef, renderTooltip } from "aa-geuthur-react";
 import type { TFunction } from "i18next";
 import { Plus, Check } from "lucide-react";
 import { Badge, Button } from "react-bootstrap";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
-import { createBaseColumnHelper } from "@/Components/Base/BaseTable/tableFeatures";
-import type { BaseColumnDef } from "@/Components/Base/BaseTable/tableFeatures";
 import styles from "@/Styles/modules/Blueprint.module.css";
-import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
 export type BlueprintItem = components["schemas"]["BlueprintItemSchema"];
