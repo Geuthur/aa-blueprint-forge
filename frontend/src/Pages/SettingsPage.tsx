@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
+import { renderTooltip } from "aa-geuthur-react";
 import { Settings2, Store, Users } from "lucide-react";
 import { Button, ButtonGroup, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,6 @@ import {
 } from "@/Components/Settings/Hooks";
 import { UserSettingsCard } from "@/Components/Settings/UserSettingsCard";
 import styles from "@/Styles/modules/SettingsPage.module.css";
-import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
 export const SettingsPage: React.FC = () => {

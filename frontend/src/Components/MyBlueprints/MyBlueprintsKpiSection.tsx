@@ -2,12 +2,12 @@
 import React from "react";
 
 // Third Party
+import { renderTooltip } from "aa-geuthur-react";
 import { Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import styles from "@/Styles/modules/Blueprint.module.css";
-import { renderTooltip } from "@/Utils";
 
 interface MyBlueprintsKpiSectionProps {
   totalCount: number;

@@ -2,12 +2,12 @@
 import React from 'react';
 
 // Third Party
+import { renderTooltip } from "aa-geuthur-react";
 import { useTranslation } from 'react-i18next';
 
 // AA bpforge
 // Voices of War
 import { formatLastFetch, useLivePing } from '@/Components/Badges/liveStatusHelper';
-import { renderTooltip } from '@/Utils';
 
 export interface LiveStatusProps {
     /** Whether a query or operation encountered an error */

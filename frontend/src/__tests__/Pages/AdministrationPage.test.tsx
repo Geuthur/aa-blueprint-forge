@@ -5,6 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useUserData } from "aa-geuthur-react";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -16,13 +17,18 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
+  withTranslation: () => (Component: unknown) => Component,
+}));
+
+vi.mock("aa-geuthur-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("aa-geuthur-react")>()),
+  useUserData: vi.fn(),
 }));
 
 vi.mock("@/Api/ApiCalls", () => ({
   deleteAdministrationOwner: vi.fn(),
   loadAdministrationGroups: vi.fn(),
   loadAdministrationSettings: vi.fn(),
-  loadUserData: vi.fn(),
   updateAdministrationSettings: vi.fn(),
   loadAdministrationOwners: vi.fn(),
   updateAdministrationOwner: vi.fn(),
@@ -63,7 +69,7 @@ const renderPage = () => {
 describe("AdministrationPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(ApiCalls.loadUserData).mockResolvedValue(mockUserData(false));
+    vi.mocked(useUserData).mockReturnValue({ data: mockUserData(false) } as never);
   });
 
   it("should render global notification groups and allow updating them", async () => {
@@ -365,7 +371,7 @@ describe("AdministrationPage", () => {
       order_status_group_ids: [],
     });
     vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.loadUserData).mockResolvedValue(mockUserData(true));
+    vi.mocked(useUserData).mockReturnValue({ data: mockUserData(true) } as never);
     vi.mocked(ApiCalls.triggerAdministrationOwnerUpdate).mockResolvedValue({
       success: true,
       message: "Update task queued for Enterprise Industrialists (force_refresh=True).",
@@ -537,7 +543,7 @@ describe("AdministrationPage", () => {
       order_status_group_ids: [],
     });
     vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadUserData).mockResolvedValue(mockUserData(true));
+    vi.mocked(useUserData).mockReturnValue({ data: mockUserData(true) } as never);
     vi.mocked(ApiCalls.triggerAdministrationGlobalUpdate).mockResolvedValue({
       success: true,
       message: "Queued Update All Characters",
@@ -613,7 +619,7 @@ describe("AdministrationPage", () => {
       order_status_group_ids: [],
     });
     vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.loadUserData).mockResolvedValue(mockUserData(false));
+    vi.mocked(useUserData).mockReturnValue({ data: mockUserData(false) } as never);
 
     // Test Action
     renderPage();

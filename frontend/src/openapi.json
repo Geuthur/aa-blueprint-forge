@@ -1683,7 +1683,7 @@
   "components": {
     "schemas": {
       "MenuLink": {
-        "description": "Represents a link in the menu.\n\nParameters:\n    name (str): The name of the menu link.\n    link (str): The URL or path the menu link points to.\n    is_external (bool): Indicates if the link is an external link.",
+        "description": "Represents a link in the menu.\n\nParameters:\n    name (str): The name of the menu link.\n    link (str): The URL or path the menu link points to.\n    is_external (bool): Indicates if the link is an external link.\n    badge (int | None): Number shown as badge next to the link, if any.\n    has_errors (bool): Whether the badge pulses because of active errors.",
         "properties": {
           "name": {
             "title": "Name",
@@ -1698,6 +1698,17 @@
             "default": false,
             "title": "Is External",
             "type": "boolean"
+          },
+          "badge": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Badge"
           },
           "has_errors": {
             "default": false,

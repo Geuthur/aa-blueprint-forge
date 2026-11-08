@@ -11,6 +11,12 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         setupFiles: ['./src/setupTests.ts'],
+        server: {
+            deps: {
+                // The package runs through Vite, so the mocks of the tests also apply to it.
+                inline: ['aa-geuthur-react'],
+            },
+        },
     },
     plugins: [react(),],
     server: {

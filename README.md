@@ -18,6 +18,7 @@ ______________________________________________________________________
     - [Step 4.1 - Migrate App and collect static](#step-41---migrate-app-and-collect-static)
     - [Step 5 - Setting up Permissions](#step-5---setting-up-permissions)
     - [Step 6 - (Optional) Setting up Compatibilies](#step-6---optional-setting-up-compatibilies)
+  - [Frontend](#frontend)
   - [Translations](#translations)
   - [Contributing](#contributing)
 
@@ -165,6 +166,10 @@ The Following Settings can be setting up in the `local.py`
 - BPFORGE_TASKS_TIME_LIMIT: `7200` - Defines the time (in seconds) a task will timeout
 
 If you set up BPFORGE_LOGGER_USE to `True` you need to add the following code below:
+
+## Frontend<a name="frontend"></a>
+
+The shared frontend components (tables, modals, menu, loaders) come from the npm package [aa-geuthur-react](https://github.com/Geuthur/aa-geuthur-react) and are translated once in its own Weblate component.
 
 ## Translations<a name="translations"></a>
 

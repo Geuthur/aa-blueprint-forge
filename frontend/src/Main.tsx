@@ -3,6 +3,7 @@ import React from 'react'
 import ReactDOM from "react-dom/client";
 
 // Third Party
+import { I18N_NAMESPACE } from "aa-geuthur-react";
 import i18n from "i18next";
 import Backend from "i18next-http-backend";
 import { initReactI18next } from "react-i18next";
@@ -11,7 +12,6 @@ import { initReactI18next } from "react-i18next";
 import { AppName, ProjectName } from "@/constants";
 import Routing from "@/Routing";
 import '@/Styles/index.css';
-import '@/Styles/table.css';
 
 // Read language directly from Django's LANGUAGE_CODE (set as lang="..." on root div)
 const djangoLanguage = typeof document !== "undefined" ? document.getElementById(`${AppName}-root`)?.getAttribute("lang") ?? "en" : "en";
@@ -22,6 +22,8 @@ i18n
   .init({
     lng: djangoLanguage,
     fallbackLng: "en",
+    ns: ["translation", I18N_NAMESPACE],
+    defaultNS: "translation",
     keySeparator: false,
     nsSeparator: false,
     interpolation: {

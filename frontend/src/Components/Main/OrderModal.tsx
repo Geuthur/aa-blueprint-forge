@@ -2,15 +2,14 @@
 import React, { useState } from "react";
 
 // Third Party
+import { BaseModal, renderTooltip } from "aa-geuthur-react";
 import { ShoppingCart, Send, Trash2, AlertCircle } from "lucide-react";
 import { Button, Form, Table, Badge, Alert, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { BaseModal } from "@/Components/Base/BaseModal";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
-import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
 export interface CartItem {

@@ -2,6 +2,7 @@
 import React from "react";
 
 // Third Party
+import { renderTooltip } from "aa-geuthur-react";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Alert, Badge, Button, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -14,7 +15,6 @@ import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableCo
 import { OrderFloatingBar } from "@/Components/Main/OrderFloatingBar";
 import { OrderModal } from "@/Components/Main/OrderModal";
 import type { CartItem } from "@/Components/Main/OrderModal";
-import { renderTooltip } from "@/Utils";
 import { imageServer } from "@/Utils/eveOnline";
 
 type PublicOwner = components["schemas"]["OwnerPublicSchema"];

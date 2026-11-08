@@ -2,11 +2,11 @@
 import React from "react";
 
 // Third Party
+import { BaseModal } from "aa-geuthur-react";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import { getEsiStatusBadgeClass } from "@/Components/Administration/esiStatus";
-import { BaseModal } from "@/Components/Base/BaseModal";
 
 /** Props of the modal that shows the full ESI error of an owner. */
 export interface AdministrationErrorModalProps {

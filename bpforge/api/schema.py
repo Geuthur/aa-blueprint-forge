@@ -117,11 +117,14 @@ class MenuLink(Schema):
         name (str): The name of the menu link.
         link (str): The URL or path the menu link points to.
         is_external (bool): Indicates if the link is an external link.
+        badge (int | None): Number shown as badge next to the link, if any.
+        has_errors (bool): Whether the badge pulses because of active errors.
     """
 
     name: str
     link: str = ""
     is_external: bool = False
+    badge: int | None = None
     has_errors: bool = False
 
 

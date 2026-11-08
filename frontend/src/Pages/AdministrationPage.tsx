@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
+import { BaseModal } from "aa-geuthur-react";
 import {
     AlertTriangle,
     Building2,
@@ -36,7 +37,6 @@ import {
     useUpdateAdministrationOwner,
     useUpdateAdministrationSettings,
 } from "@/Components/Administration/Hooks";
-import { BaseModal } from "@/Components/Base/BaseModal";
 import { FilterButtonGroup } from "@/Components/Base/FilterButtonGroup";
 import styles from "@/Styles/modules/Administration.module.css";
 

@@ -50,6 +50,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] The frontend uses the shared React base of the npm package [aa-geuthur-react](https://github.com/Geuthur/aa-geuthur-react): tables, modals, loaders, menu, hooks, the base page and the utils are no longer copied into the app. The pages now use the container width of the package (640 to 1280 px) instead of `aa-section`. The `menu/` endpoint delivers the badges of the Orders and Settings links (`badge`, `has_errors`), and `MenuLink` has the optional field `badge`.
+
 - [CHANGE] The blueprint update logs a warning with the owner and the number of deleted blueprints when ESI returns no blueprints and all existing blueprints of the owner are deleted. The deletion itself is unchanged.
 
 - [CHANGE] Only the buyer can cancel an order, and only while it is pending. Sellers and managers decline instead.

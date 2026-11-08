@@ -3,6 +3,7 @@ import { useState } from "react";
 
 // Third Party
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUserData } from "aa-geuthur-react";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
@@ -20,11 +21,11 @@ import {
 } from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
 import type { AdministrationOwnerUpdateRequest, OwnerSettingSchema } from "@/Api/schema";
-import { useUserData } from "@/Hooks/useUserData";
+import type { UserData } from "@/Api/schema";
 
 /** Tells whether the current user is a superuser (global task queue and force refresh are reserved for them). */
 export function useIsSuperuser() {
-  const { data } = useUserData();
+  const { data } = useUserData<UserData>();
   return Boolean(data?.user.is_superuser);
 }
 

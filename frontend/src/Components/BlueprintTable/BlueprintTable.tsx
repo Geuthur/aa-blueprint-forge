@@ -2,12 +2,12 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
+import { BaseTable } from "aa-geuthur-react";
 import { Layers, Search, ShoppingCart } from "lucide-react";
 import { Badge, Button, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { BaseTable } from "@/Components/Base/BaseTable";
 import { FilterButtonGroup } from "@/Components/Base/FilterButtonGroup";
 import { getBlueprintColumns } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";

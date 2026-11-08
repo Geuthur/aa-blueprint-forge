@@ -2,17 +2,17 @@
 import { useSearchParams } from "react-router-dom";
 
 // Third Party
+import { BaseSectionHeader, useUserData } from "aa-geuthur-react";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Alert, Button, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import BaseSectionHeader from "@/Components/Base/BaseHeader";
+import type { UserData } from "@/Api/schema";
 import { useOpenOrderCount, useOrderActions, useOrders } from "@/Components/Orders/Hooks";
 import { OrderCard } from "@/Components/Orders/OrderCard";
 import { OrdersEmptyState } from "@/Components/Orders/OrdersEmptyState";
 import { OrdersTabBar, type OrderTab } from "@/Components/Orders/OrdersTabBar";
-import { useUserData } from "@/Hooks/useUserData";
 
 export function OrdersPage() {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ export function OrdersPage() {
   const urlTab = searchParams.get("tab");
 
   // Load user data for identifying current user ID and manager status
-  const { data: userData } = useUserData();
+  const { data: userData } = useUserData<UserData>();
 
   const currentUserId = userData?.user.user_id;
   const canManageOrders = Boolean(userData?.user.can_manage_orders);
