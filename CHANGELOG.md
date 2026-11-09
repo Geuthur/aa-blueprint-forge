@@ -38,6 +38,8 @@ Section Order:
 
 - [ADD] The item table of an order shows the location of each blueprint to the seller and to order managers. Buyers do not see it, like in the catalog.
 
+- [ADD] Optional extra `tests-allianceauth-development` (test packages plus the Alliance Auth 6 pre-release) with separate test settings in `testauth/settings/development/` for the tox environment `allianceauth-development` and `make tox-tests-development`; a non-blocking CI job "AA Development" runs it on Python 3.13 and 3.14.
+
 ### Fixed
 
 - [FIX] Order items no longer disappear when ESI stops returning their blueprint, for example after it was sold. The item keeps a copy of the blueprint values and is marked as "Blueprint no longer available". Includes a migration that fills the copy for existing items.
