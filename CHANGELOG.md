@@ -51,6 +51,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] The `AppLogger` is created only once in `bpforge/providers.py`. `managers.py`, `models/helpers/update_manager.py`, `tasks.py` and `thirdparty/discord.py` import it with `from bpforge.providers import logger` instead of building their own; `models/blueprint.py` and `views.py` created a logger they never used, so it is removed there. Log records now carry the logger name `bpforge.providers` instead of the module name; the `[Blueprint Forge]` prefix is unchanged.
+
 - [CHANGE] Language files other than `en` hold only real translations as Weblate writes them; untranslated strings are no longer stored as empty values, and missing keys fall back to English. `i18next-scanner` now maintains only `frontend/i18n/en/translation.json`. Removed empty entries per language: cs 373, de 30, es 351, fr-FR 353, it-IT 353, ja 346, ko-KR 346, nl-NL 353, pl-PL 353, ru 352, sk 373, uk 352, zh-Hans 346.
 
 - [CHANGE] `aa-geuthur-react` raised to `^1.3.0`. The package bundles its own translations and registers them with i18next through `AaReactProvider`, so `Main.tsx` lists only the namespace `translation`, the copies under `bpforge/static/bpforge/i18n/<lng>/aa-geuthur-react.json` are removed and `make react-copy-translations` no longer copies them. Untranslated strings in `frontend/i18n/<lng>/translation.json` are empty instead of English (`i18next-scanner` writes the key as value only for `en`); `returnEmptyString: false` shows the English fallback at runtime. Translate on Weblate as before.

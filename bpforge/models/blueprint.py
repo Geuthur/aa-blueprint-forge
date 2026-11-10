@@ -9,7 +9,6 @@ from django.utils.translation import gettext_lazy as _
 from allianceauth.authentication.models import CharacterOwnership, User
 from allianceauth.eveonline.models import EveCorporationInfo
 from allianceauth.groupmanagement.models import Group
-from allianceauth.services.hooks import get_extension_logger
 from esi.errors import TokenError
 from esi.models import Token
 
@@ -17,7 +16,6 @@ from esi.models import Token
 from eve_sde.models import ItemType, SolarSystem
 
 # AA Blueprint Forge
-from bpforge import __title__
 from bpforge.constants import (
     SOLAR_SYSTEM_ID_END,
     SOLAR_SYSTEM_ID_START,
@@ -36,9 +34,6 @@ from bpforge.models.helpers.update_manager import (
     UpdateSection,
     UpdateStatusBaseModel,
 )
-from bpforge.providers import AppLogger
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
 
 
 class OwnerUpdateStatus(UpdateStatusBaseModel):

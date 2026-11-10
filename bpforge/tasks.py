@@ -4,18 +4,15 @@
 from celery import shared_task
 
 # Alliance Auth
-from allianceauth.services.hooks import get_extension_logger
 from allianceauth.services.tasks import QueueOnce
 from esi.decorators import rate_limit_retry_task
 from esi.models import Token
 
 # AA Blueprint Forge
-from bpforge import __title__, app_settings
+from bpforge import app_settings
 from bpforge.models.blueprint import Location, Owner
 from bpforge.models.helpers.update_manager import UpdateSection
-from bpforge.providers import AppLogger
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
+from bpforge.providers import logger
 
 MAX_RETRIES_DEFAULT = 3
 

@@ -11,15 +11,12 @@ from django.utils import timezone
 # Alliance Auth
 from allianceauth.authentication.models import User
 from allianceauth.notifications import notify
-from allianceauth.services.hooks import get_extension_logger
 
 # AA Blueprint Forge
 from bpforge import __title__
 from bpforge.constants import DISCORD_EMBED_COLOR_MAP
 from bpforge.models.general import UserSettings
-from bpforge.providers import AppLogger
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
+from bpforge.providers import logger
 
 
 def allianceauth_discordbot_installed() -> bool:
