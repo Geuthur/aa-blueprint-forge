@@ -40,13 +40,22 @@ Section Order:
 
 ### Fixed
 
+- [FIX] ESI outages and limits did not retry the update tasks: `esi.decorators.rate_limit_retry_task` never applied because the tasks were not bound (`bind=True`), and the `UpdateManager` turned every ESI error except `TokenError` into an update status. `update_owner`, `update_blueprints`, `update_locations` and `update_structure_esi` are now bound and run their ESI calls inside the new `retry_task_on_esi_error()` in `providers.py` (with `DownTimeError` in the new `errors.py`), like the app template. It retries on `ESIErrorLimitException`, `ESIBucketLimitException`, `HTTPServerError` 502/503/504, `RequestError` and ESI's daily downtime (11:00 to 11:15 UTC, can be turned off with `DISABLE_DAILY_DOWNTIME_CHECK = True`). `_handle_update_exception` raises these errors (checked by `is_retryable_esi_error()`), and `execute_section` records them as a failed run of the section before raising, so the section shows the error and stays stale until the retry succeeds. Other errors (e.g. HTTP 500 or 404) still end in the update status only. `update_owner` runs its sections directly instead of calling the section tasks.
+
 - [FIX] Order items no longer disappear when ESI stops returning their blueprint, for example after it was sold. The item keeps a copy of the blueprint values and is marked as "Blueprint no longer available". Includes a migration that fills the copy for existing items.
+
 - [FIX] Tests use the shared factories and helpers of `aa-evesde-factory` (`UserFactory`, `EveCharacterFactory`, `EveCorporationInfoFactory`, `EveAllianceInfoFactory`, `add_character_to_user`, `add_new_token`) instead of local copies, so generated usernames are unique and can no longer match the superuser of a test class.
+
 - [FIX] The "Select Public BPOs" modal showed "-" as location for BPOs in containers. It now shows the name of the station or structure.
+
 - [FIX] Headers of the administration inspection view, the owner list and the section header wrap on small screens instead of overflowing the container, and the filter button groups scroll horizontally.
+
 - [FIX] The pulsing menu and tab badges scaled up and down with their number. Only the glow around the badge pulses now.
+
 - [FIX] BPOs directly in the hangar of a station or structure, without a container or office of the owner, stayed under "Unknown location". The location update now also resolves the name of these locations. Structures the owner has no access to stay under "Unknown location".
+
 - Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
+
 - [FIX] Real translations from the stale `weblate-translation` branch are applied to `frontend/i18n/<lng>/translation.json` and to the German `django.po`. Only strings that were empty or equal to English are filled, translations already on master are kept. `frontend/i18n/cs` and `frontend/i18n/sk` are added with all keys empty. The `.po` files are updated with `make translations`.
 
 ### Changed
