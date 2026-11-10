@@ -142,7 +142,7 @@ def update_locations(self: Task, owner_pk: int, force_refresh: bool = False):
 
 @shared_task(
     bind=True,
-    max_retries=None,
+    max_retries=MAX_RETRIES_DEFAULT,
     base=QueueOnce,
     once={"keys": ["structure_id"], "graceful": True},
     time_limit=app_settings.BPFORGE_TASKS_TIME_LIMIT,
