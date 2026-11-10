@@ -14,15 +14,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 # Alliance Auth
-from allianceauth.services.hooks import get_extension_logger
 from esi.errors import TokenError
 from esi.exceptions import HTTPClientError, HTTPNotModified, HTTPServerError
 
 # AA Blueprint Forge
-from bpforge import __title__, app_settings
-from bpforge.providers import AppLogger
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
+from bpforge import app_settings
+from bpforge.providers import logger
 
 if TYPE_CHECKING:
     # AA Blueprint Forge

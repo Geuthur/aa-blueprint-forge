@@ -9,7 +9,6 @@ from django.utils import timezone
 
 # Alliance Auth
 from allianceauth.eveonline.models import EveCharacter
-from allianceauth.services.hooks import get_extension_logger
 from esi.exceptions import HTTPClientError
 from esi.models import Token
 
@@ -17,14 +16,11 @@ from esi.models import Token
 from eve_sde.models import ItemType, SolarSystem
 
 # AA Blueprint Forge
-from bpforge import __title__
 from bpforge.app_settings import BPFORGE_BULK_BATCH_SIZE
 from bpforge.models.general import General
 from bpforge.models.helpers.core import LocationFlag
 from bpforge.models.helpers.update_manager import UpdateSection
-from bpforge.providers import AppLogger, esi
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
+from bpforge.providers import esi, logger
 
 T = TypeVar("T", bound=models.Model)
 

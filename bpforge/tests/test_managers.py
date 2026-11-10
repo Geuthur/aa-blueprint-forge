@@ -25,7 +25,7 @@ from bpforge.tests.testdata.bpforge import (
 )
 
 ESI_URL = "https://esi.evetech.net"
-MANAGERS_LOGGER = "extensions.bpforge.managers"
+MANAGERS_LOGGER = "extensions.bpforge.providers"
 UPDATE_STRUCTURE_TASK = "bpforge.tasks.update_structure_esi.apply_async"
 STRUCTURE_ID = 1049854533347
 CONTAINER_ID = 1050000000001
