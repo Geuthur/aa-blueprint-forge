@@ -11,7 +11,7 @@ from django.contrib.auth.models import Group
 # AA Blueprint Forge
 from bpforge.models.blueprint import Owner, OwnerPublicType
 from bpforge.models.general import GeneralNotificationSettings
-from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
 from bpforge.tests.testdata.bpforge import (
@@ -143,14 +143,14 @@ class TestApiAdministration(AuthTestCase):
         self.client.force_login(self.admin)
         OwnerUpdateStatusFactory(
             owner=self.owner,
-            section=UpdateSection.LOCATIONS,
+            section=OwnerUpdateSection.LOCATIONS,
             is_success=False,
             error_message="Location lookup error",
         )
         healthy_owner = OwnerFactory(user=UserMainFactory())
         OwnerUpdateStatusFactory(
             owner=healthy_owner,
-            section=UpdateSection.BLUEPRINTS,
+            section=OwnerUpdateSection.BLUEPRINTS,
             is_success=True,
         )
 

@@ -26,7 +26,7 @@ from esi.exceptions import (
 from bpforge import tasks
 from bpforge.errors import DownTimeError
 from bpforge.models.blueprint import Owner, OwnerUpdateStatus
-from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.providers import DOWNTIME_TIMER
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.bpforge import OwnerFactory
@@ -65,7 +65,7 @@ class EsiTaskTestCase(AuthTestCase):
 
     def _assert_blueprints_failed(self, error_prefix: str):
         status = OwnerUpdateStatus.objects.get(
-            owner=self.owner, section=UpdateSection.BLUEPRINTS
+            owner=self.owner, section=OwnerUpdateSection.BLUEPRINTS
         )
         self.assertFalse(status.is_success)
         self.assertTrue(status.error_message.startswith(error_prefix))
@@ -208,7 +208,7 @@ class TestUpdateOwnerEsiErrors(EsiTaskTestCase):
                 # Expected Result
                 self.assertTrue(result)
                 mock_retry.assert_not_called()
-                for section in UpdateSection:
+                for section in OwnerUpdateSection:
                     status = OwnerUpdateStatus.objects.get(
                         owner=self.owner, section=section
                     )

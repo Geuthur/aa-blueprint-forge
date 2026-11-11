@@ -10,7 +10,7 @@ from esi.models import Token
 # AA Blueprint Forge
 from bpforge import app_settings
 from bpforge.models.blueprint import Location, Owner
-from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.providers import logger, retry_task_on_esi_error
 
 MAX_RETRIES_DEFAULT = 3
@@ -105,7 +105,7 @@ def update_owner(self: Task, owner_pk: int, force_refresh: bool = False) -> bool
 
 def _update_owner_section(owner_pk: int, section: str, force_refresh: bool):
     """Update a specific section of the owner."""
-    section = UpdateSection(section)
+    section = OwnerUpdateSection(section)
     try:
         owner = Owner.objects.get(pk=owner_pk)
     except Owner.DoesNotExist:
@@ -124,7 +124,7 @@ def update_blueprints(self: Task, owner_pk: int, force_refresh: bool = False):
     with retry_task_on_esi_error(self):
         return _update_owner_section(
             owner_pk=owner_pk,
-            section=UpdateSection.BLUEPRINTS,
+            section=OwnerUpdateSection.BLUEPRINTS,
             force_refresh=force_refresh,
         )
 
@@ -135,7 +135,7 @@ def update_locations(self: Task, owner_pk: int, force_refresh: bool = False):
     with retry_task_on_esi_error(self):
         return _update_owner_section(
             owner_pk=owner_pk,
-            section=UpdateSection.LOCATIONS,
+            section=OwnerUpdateSection.LOCATIONS,
             force_refresh=force_refresh,
         )
 
