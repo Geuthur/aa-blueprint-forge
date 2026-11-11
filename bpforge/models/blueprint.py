@@ -30,8 +30,8 @@ from bpforge.managers import (
 )
 from bpforge.models.helpers.core import LocationFlag
 from bpforge.models.helpers.update_manager import (
+    OwnerUpdateSection,
     UpdateManagerMixin,
-    UpdateSection,
     UpdateStatusBaseModel,
 )
 
@@ -48,7 +48,7 @@ class OwnerUpdateStatus(UpdateStatusBaseModel):
         related_name="bpforge_update_status",
     )
     section = models.CharField(
-        max_length=32, choices=UpdateSection.choices, db_index=True
+        max_length=32, choices=OwnerUpdateSection.choices, db_index=True
     )
 
     def __str__(self) -> str:
@@ -63,7 +63,7 @@ class OwnerPublicType(models.TextChoices):
 
 class Owner(UpdateManagerMixin, models.Model):
 
-    update_section_class = UpdateSection
+    update_section_class = OwnerUpdateSection
     update_status_model = OwnerUpdateStatus
 
     class Meta:

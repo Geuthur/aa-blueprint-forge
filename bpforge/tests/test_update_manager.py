@@ -21,7 +21,7 @@ from esi.rate_limiting import ESIRateLimitBucket
 # AA Blueprint Forge
 from bpforge.errors import DownTimeError
 from bpforge.models.blueprint import OwnerUpdateStatus
-from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.bpforge import OwnerFactory
 
@@ -56,7 +56,7 @@ class TestUpdateManagerEsiErrors(AuthTestCase):
                 # Test Action & Expected Result
                 with self.assertRaises(type(exc)) as ctx:
                     self.manager.perform_update_status(
-                        section=UpdateSection.BLUEPRINTS,
+                        section=OwnerUpdateSection.BLUEPRINTS,
                         method=mock_method,
                     )
                 self.assertIs(ctx.exception, exc)
@@ -70,7 +70,7 @@ class TestUpdateManagerEsiErrors(AuthTestCase):
                 # Test Action & Expected Result
                 with self.assertRaises(type(exc)):
                     self.manager.update_section_if_changed(
-                        section=UpdateSection.BLUEPRINTS,
+                        section=OwnerUpdateSection.BLUEPRINTS,
                         fetch_func=fetch_func,
                     )
 
@@ -86,7 +86,7 @@ class TestUpdateManagerEsiErrors(AuthTestCase):
 
                 # Test Action
                 result = self.manager.perform_update_status(
-                    section=UpdateSection.BLUEPRINTS,
+                    section=OwnerUpdateSection.BLUEPRINTS,
                     method=mock_method,
                 )
 
@@ -102,10 +102,10 @@ class TestUpdateManagerEsiErrors(AuthTestCase):
 
         # Test Action
         result_not_modified = self.manager.perform_update_status(
-            section=UpdateSection.BLUEPRINTS, method=not_modified
+            section=OwnerUpdateSection.BLUEPRINTS, method=not_modified
         )
         result_token_error = self.manager.perform_update_status(
-            section=UpdateSection.BLUEPRINTS, method=token_error
+            section=OwnerUpdateSection.BLUEPRINTS, method=token_error
         )
 
         # Expected Result
@@ -120,11 +120,11 @@ class TestUpdateManagerEsiErrors(AuthTestCase):
 
                 # Test Action
                 with self.assertRaises(type(exc)):
-                    self.manager.execute_section(UpdateSection.BLUEPRINTS)
+                    self.manager.execute_section(OwnerUpdateSection.BLUEPRINTS)
 
                 # Expected Result: a failed run, not success and not in progress
                 status = OwnerUpdateStatus.objects.get(
-                    owner=self.owner, section=UpdateSection.BLUEPRINTS
+                    owner=self.owner, section=OwnerUpdateSection.BLUEPRINTS
                 )
                 self.assertFalse(status.is_success)
                 self.assertFalse(status.has_token_error)

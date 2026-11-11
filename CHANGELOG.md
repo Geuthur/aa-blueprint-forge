@@ -62,6 +62,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] `bpforge/models/helpers/update_manager.py` follows the module of the app template: the shared base class `UpdateSection` holds only `get_sections()` and `method_name`, and the sections of an owner live in the new subclass `OwnerUpdateSection` (`blueprints`, `locations`, same values and labels, no migration). All imports use `OwnerUpdateSection`. The token error log of `need_update()` names the owner instead of the status row. The aggregated `get_status` of the template is not added, because the app has no `annotate_total_update_status()` and builds the owner status in the API itself. Behaviour is unchanged.
+
 - [CHANGE] The `AppLogger` is created only once in `bpforge/providers.py`. `managers.py`, `models/helpers/update_manager.py`, `tasks.py` and `thirdparty/discord.py` import it with `from bpforge.providers import logger` instead of building their own; `models/blueprint.py` and `views.py` created a logger they never used, so it is removed there. Log records now carry the logger name `bpforge.providers` instead of the module name; the `[Blueprint Forge]` prefix is unchanged.
 
 - [CHANGE] Language files other than `en` hold only real translations as Weblate writes them; untranslated strings are no longer stored as empty values, and missing keys fall back to English. `i18next-scanner` now maintains only `frontend/i18n/en/translation.json`. Removed empty entries per language: cs 373, de 30, es 351, fr-FR 353, it-IT 353, ja 346, ko-KR 346, nl-NL 353, pl-PL 353, ru 352, sk 373, uk 352, zh-Hans 346.

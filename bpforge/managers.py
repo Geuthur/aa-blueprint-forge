@@ -19,7 +19,7 @@ from eve_sde.models import ItemType, SolarSystem
 from bpforge.app_settings import BPFORGE_BULK_BATCH_SIZE
 from bpforge.models.general import General
 from bpforge.models.helpers.core import LocationFlag
-from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.providers import esi, logger
 
 T = TypeVar("T", bound=models.Model)
@@ -180,7 +180,7 @@ class BlueprintManager(AccessManager["BlueprintContext"]):
     ):
         """Update or Create Blueprints for this owner"""
         return owner.update_manager.update_section_if_changed(
-            section=UpdateSection.BLUEPRINTS,
+            section=OwnerUpdateSection.BLUEPRINTS,
             fetch_func=self._fetch_blueprint_esi_data,
             force_refresh=force_refresh,
         )
@@ -307,7 +307,7 @@ class LocationManager(models.Manager["LocationContext"]):
     ):
         """Update or Create Locations for this owner"""
         return owner.update_manager.update_section_if_changed(
-            section=UpdateSection.LOCATIONS,
+            section=OwnerUpdateSection.LOCATIONS,
             fetch_func=self._fetch_location_esi_data,
             force_refresh=force_refresh,
         )
