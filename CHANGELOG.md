@@ -42,16 +42,33 @@ Section Order:
 
 ### Fixed
 
+- [FIX] ESI outages and limits did not retry the update tasks: `esi.decorators.rate_limit_retry_task` never applied because the tasks were not bound (`bind=True`), and the `UpdateManager` turned every ESI error except `TokenError` into an update status. `update_owner`, `update_blueprints`, `update_locations` and `update_structure_esi` are now bound and run their ESI calls inside the new `retry_task_on_esi_error()` in `providers.py` (with `DownTimeError` in the new `errors.py`), like the app template. It retries on `ESIErrorLimitException`, `ESIBucketLimitException`, `HTTPServerError` 502/503/504, `RequestError` and ESI's daily downtime (11:00 to 11:15 UTC, can be turned off with `DISABLE_DAILY_DOWNTIME_CHECK = True`). `_handle_update_exception` raises these errors (checked by `is_retryable_esi_error()`), and `execute_section` records them as a failed run of the section before raising, so the section shows the error and stays stale until the retry succeeds. Other errors (e.g. HTTP 500 or 404) still end in the update status only. `update_owner` runs its sections directly instead of calling the section tasks. `update_structure_esi` retries at most 3 times instead of without limit, since the retry backoff grows with each attempt.
+
+- [FIX] The test settings set `DISABLE_DAILY_DOWNTIME_CHECK = True`, so the task tests no longer fail between 11:00 and 11:15 UTC. Only the downtime tests turn the check on with `override_settings`.
+
+- [FIX] Tests no longer share the Redis cache with other processes. `testauth/settings/local.py` and `testauth/settings/development/local.py` give each test run its own random cache `KEY_PREFIX`. Before, ESI responses cached by a running testauth instance on the same Redis were returned instead of the pook responses. Redis stays the cache backend because Alliance Auth needs `django_redis`.
+
 - [FIX] Order items no longer disappear when ESI stops returning their blueprint, for example after it was sold. The item keeps a copy of the blueprint values and is marked as "Blueprint no longer available". Includes a migration that fills the copy for existing items.
+
 - [FIX] Tests use the shared factories and helpers of `aa-evesde-factory` (`UserFactory`, `EveCharacterFactory`, `EveCorporationInfoFactory`, `EveAllianceInfoFactory`, `add_character_to_user`, `add_new_token`) instead of local copies, so generated usernames are unique and can no longer match the superuser of a test class.
+
 - [FIX] The "Select Public BPOs" modal showed "-" as location for BPOs in containers. It now shows the name of the station or structure.
+
 - [FIX] Headers of the administration inspection view, the owner list and the section header wrap on small screens instead of overflowing the container, and the filter button groups scroll horizontally.
+
 - [FIX] The pulsing menu and tab badges scaled up and down with their number. Only the glow around the badge pulses now.
+
 - [FIX] BPOs directly in the hangar of a station or structure, without a container or office of the owner, stayed under "Unknown location". The location update now also resolves the name of these locations. Structures the owner has no access to stay under "Unknown location".
+
 - Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
+
 - [FIX] Real translations from the stale `weblate-translation` branch are applied to `frontend/i18n/<lng>/translation.json` and to the German `django.po`. Only strings that were empty or equal to English are filled, translations already on master are kept. `frontend/i18n/cs` and `frontend/i18n/sk` are added with all keys empty. The `.po` files are updated with `make translations`.
 
 ### Changed
+
+- [CHANGE] `bpforge/models/helpers/update_manager.py` follows the module of the app template: the shared base class `UpdateSection` holds only `get_sections()` and `method_name`, and the sections of an owner live in the new subclass `OwnerUpdateSection` (`blueprints`, `locations`, same values and labels, no migration). All imports use `OwnerUpdateSection`. The token error log of `need_update()` names the owner instead of the status row. The aggregated `get_status` of the template is not added, because the app has no `annotate_total_update_status()` and builds the owner status in the API itself. Behaviour is unchanged.
+
+- [CHANGE] The `AppLogger` is created only once in `bpforge/providers.py`. `managers.py`, `models/helpers/update_manager.py`, `tasks.py` and `thirdparty/discord.py` import it with `from bpforge.providers import logger` instead of building their own; `models/blueprint.py` and `views.py` created a logger they never used, so it is removed there. Log records now carry the logger name `bpforge.providers` instead of the module name; the `[Blueprint Forge]` prefix is unchanged.
 
 - [CHANGE] Language files other than `en` hold only real translations as Weblate writes them; untranslated strings are no longer stored as empty values, and missing keys fall back to English. `i18next-scanner` now maintains only `frontend/i18n/en/translation.json`. Removed empty entries per language: cs 373, de 30, es 351, fr-FR 353, it-IT 353, ja 346, ko-KR 346, nl-NL 353, pl-PL 353, ru 352, sk 373, uk 352, zh-Hans 346.
 

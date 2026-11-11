@@ -6,6 +6,9 @@ Test settings
 # local.py settings
 # Every setting in base.py can be overloaded by redefining it here.
 
+# Standard Library
+from uuid import uuid4
+
 from .base import *
 
 PACKAGE = "bpforge"
@@ -88,5 +91,15 @@ DEFAULT_FROM_EMAIL = ""
 # Add any custom settings below here. #
 #######################################
 
+# Keep tests deterministic: never trigger ESI downtime handling by wall-clock time.
+DISABLE_DAILY_DOWNTIME_CHECK = True
+
 # Discord
 DISCORD_GUILD_ID = "1234567890123456789"
+
+# Give each test run its own key prefix in Redis. Without it the tests share
+# cache entries with every other process using the same Redis (e.g. a running
+# testauth instance), and ESI responses cached there are returned instead of
+# the pook responses. Redis stays the backend because Alliance Auth needs
+# django_redis (get_redis_connection).
+CACHES["default"]["KEY_PREFIX"] = f"test-{uuid4().hex}"

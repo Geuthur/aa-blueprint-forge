@@ -13,17 +13,13 @@ from django.utils.translation import gettext_lazy as _
 # Alliance Auth
 from allianceauth.authentication.models import CharacterOwnership
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
-from allianceauth.services.hooks import get_extension_logger
 from esi.decorators import token_required
 from esi.models import Token
 
 # AA Blueprint Forge
-from bpforge import __app_name__, __title__, __version__
+from bpforge import __app_name__, __version__
 from bpforge.models.blueprint import Owner
-from bpforge.providers import AppLogger
 from bpforge.tasks import update_owner
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
 
 
 @login_required
