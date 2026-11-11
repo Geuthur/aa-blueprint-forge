@@ -9,7 +9,6 @@ from django.utils.translation import gettext_lazy as _
 from allianceauth.authentication.models import CharacterOwnership, User
 from allianceauth.eveonline.models import EveCorporationInfo
 from allianceauth.groupmanagement.models import Group
-from allianceauth.services.hooks import get_extension_logger
 from esi.errors import TokenError
 from esi.models import Token
 
@@ -17,7 +16,6 @@ from esi.models import Token
 from eve_sde.models import ItemType, SolarSystem
 
 # AA Blueprint Forge
-from bpforge import __title__
 from bpforge.constants import (
     SOLAR_SYSTEM_ID_END,
     SOLAR_SYSTEM_ID_START,
@@ -32,13 +30,10 @@ from bpforge.managers import (
 )
 from bpforge.models.helpers.core import LocationFlag
 from bpforge.models.helpers.update_manager import (
+    OwnerUpdateSection,
     UpdateManagerMixin,
-    UpdateSection,
     UpdateStatusBaseModel,
 )
-from bpforge.providers import AppLogger
-
-logger = AppLogger(get_extension_logger(__name__), __title__)
 
 
 class OwnerUpdateStatus(UpdateStatusBaseModel):
@@ -53,7 +48,7 @@ class OwnerUpdateStatus(UpdateStatusBaseModel):
         related_name="bpforge_update_status",
     )
     section = models.CharField(
-        max_length=32, choices=UpdateSection.choices, db_index=True
+        max_length=32, choices=OwnerUpdateSection.choices, db_index=True
     )
 
     def __str__(self) -> str:
@@ -68,7 +63,7 @@ class OwnerPublicType(models.TextChoices):
 
 class Owner(UpdateManagerMixin, models.Model):
 
-    update_section_class = UpdateSection
+    update_section_class = OwnerUpdateSection
     update_status_model = OwnerUpdateStatus
 
     class Meta:

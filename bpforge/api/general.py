@@ -19,7 +19,7 @@ from bpforge.helpers.eveonline import (
 )
 from bpforge.models.blueprint import Owner
 from bpforge.models.general import General, UserSettings
-from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.models.request import OPEN_ORDER_STATUSES, Order
 from bpforge.tasks import update_owner
 
@@ -77,7 +77,7 @@ def _build_owner_setting_schema(owner: Owner) -> schema.OwnerSettingSchema:
     last_finished_dt = None
     latest_error_message = None
 
-    for sec in UpdateSection:
+    for sec in OwnerUpdateSection:
         status_obj = sections_dict.get(sec.value)
         if status_obj:
             if status_obj.last_run_finished_at and (

@@ -12,7 +12,7 @@ from django.urls import reverse
 
 # AA Blueprint Forge
 from bpforge.models.blueprint import Owner
-from bpforge.models.helpers.update_manager import UpdateSection
+from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.tests import AuthTestCase
 from bpforge.tests.testdata.app import UserMainFactory
 from bpforge.tests.testdata.bpforge import (
@@ -92,14 +92,14 @@ class TestApiGeneral(AuthTestCase):
         # Test Data
         failing = OwnerFactory(user=self.user)
         OwnerUpdateStatusFactory(
-            owner=failing, section=UpdateSection.BLUEPRINTS, is_success=False
+            owner=failing, section=OwnerUpdateSection.BLUEPRINTS, is_success=False
         )
         OwnerUpdateStatusFactory(
-            owner=failing, section=UpdateSection.LOCATIONS, is_success=False
+            owner=failing, section=OwnerUpdateSection.LOCATIONS, is_success=False
         )
         healthy = OwnerFactory(user=self.user)
         OwnerUpdateStatusFactory(
-            owner=healthy, section=UpdateSection.BLUEPRINTS, is_success=True
+            owner=healthy, section=OwnerUpdateSection.BLUEPRINTS, is_success=True
         )
         self.client.force_login(self.user)
 
@@ -293,12 +293,12 @@ class TestApiGeneral(AuthTestCase):
 
         OwnerUpdateStatusFactory(
             owner=owner,
-            section=UpdateSection.BLUEPRINTS,
+            section=OwnerUpdateSection.BLUEPRINTS,
             is_success=True,
         )
         OwnerUpdateStatusFactory(
             owner=owner,
-            section=UpdateSection.LOCATIONS,
+            section=OwnerUpdateSection.LOCATIONS,
             is_success=False,
             error_message="Location lookup error",
         )

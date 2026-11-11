@@ -1,12 +1,25 @@
+"""
+Update manager: tracks per-section ESI updates of an owner model.
+
+A section is one ESI data set (e.g. the wallet). Every owner has one
+`UpdateStatusBaseModel` row per section that records when the section was
+last fetched, whether it succeeded and whether the token failed.
+`UpdateManager` runs the `update_<section>` methods of the owner, handles the
+ESI errors and writes the status rows. Owners get it through
+`UpdateManagerMixin`.
+
+ESI errors that `retry_task_on_esi_error` retries (error and bucket limits,
+HTTP 502/503/504, request errors, downtime) are not swallowed: they are
+recorded in the status row of the section and raised again, so the task
+around the update can retry. All other errors end in the status row.
+"""
+
 # Standard Library
 import inspect
 from collections.abc import Callable
 from dataclasses import dataclass
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Any, NamedTuple
-
-# Third Party
-from aiopenapi3 import RequestError
+from typing import Any, NamedTuple
 
 # Django
 from django.db import models
@@ -14,25 +27,84 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 # Alliance Auth
-from allianceauth.services.hooks import get_extension_logger
 from esi.errors import TokenError
 from esi.exceptions import HTTPClientError, HTTPNotModified, HTTPServerError
 
 # AA Blueprint Forge
-from bpforge import __title__, app_settings
-from bpforge.providers import AppLogger
+from bpforge import app_settings
+from bpforge.providers import is_retryable_esi_error, logger
 
-logger = AppLogger(get_extension_logger(__name__), __title__)
 
-if TYPE_CHECKING:
-    # AA Blueprint Forge
+class UpdateSectionResult(NamedTuple):
+    """A result of an attempted section update."""
 
-    # AA Blueprint Forge
-    from bpforge.models import Owner, OwnerStatus
+    is_changed: bool | None
+    is_updated: bool
+    has_token_error: bool = False
+    error_message: str | None = None
+    data: Any = None
+
+
+@dataclass(frozen=True)
+class _NeedsUpdate:
+    """An Object to track if an update is needed."""
+
+    section_map: dict[str, bool]
+
+    def __bool__(self) -> bool:
+        """Check if any section needs an update."""
+        return any(self.section_map.values())
+
+    def for_section(self, section: str) -> bool:
+        """Check if an update is needed for a specific section."""
+        return self.section_map.get(section, False)
+
+
+class UpdateStatus(models.TextChoices):
+    """Status for ESI data updates.
+    Used to indicate the overall status of an Owner.
+    """
+
+    DISABLED = "disabled", _("Disabled")
+    TOKEN_ERROR = "token_error", _("Token Error")
+    ERROR = "error", _("Error")
+    OK = "ok", _("OK")
+    INCOMPLETE = "incomplete", _("Incomplete")
+    IN_PROGRESS = "in_progress", _("In Progress")
+
+
+class UpdateSection(models.TextChoices):
+    """
+    Base Class for Update Sections.
+
+    Every value needs an `update_<value>` method on the owner model.
+    """
+
+    @classmethod
+    def get_sections(cls) -> list[str]:
+        """Return list of section values."""
+        return [choice.value for choice in cls]
+
+    @property
+    def method_name(self) -> str:
+        """Return method name for this section."""
+        return f"update_{self.value}"
+
+
+class OwnerUpdateSection(UpdateSection):
+    """Sections for owner updates."""
+
+    BLUEPRINTS = "blueprints", _("Blueprints")
+    LOCATIONS = "locations", _("Locations")
 
 
 class UpdateStatusBaseModel(models.Model):
-    """A Model to track the status of the last update."""
+    """
+    A Model to track the status of the last update of one section.
+
+    The concrete model adds the `owner` foreign key and the `section` field
+    with the choices of its `UpdateSection` class.
+    """
 
     class Meta:
         abstract = True
@@ -67,12 +139,15 @@ class UpdateStatusBaseModel(models.Model):
         help_text="Last update has been successful finished at this time",
     )
 
+    def __str__(self) -> str:
+        return f"{self.owner} - {self.section}"
+
     def need_update(self) -> bool:
         """Check if the update is needed."""
         if self.has_token_error:
             logger.info(
                 "%s: Ignoring update because of token error, section: %s",
-                self,
+                self.owner,
                 self.section,
             )
             return False
@@ -98,70 +173,21 @@ class UpdateStatusBaseModel(models.Model):
         self.save()
 
 
-class UpdateSectionResult(NamedTuple):
-    """A result of an attempted section update."""
-
-    is_changed: bool | None
-    is_updated: bool
-    has_token_error: bool = False
-    error_message: str | None = None
-    data: Any = None
-
-
-@dataclass(frozen=True)
-class _NeedsUpdate:
-    """An Object to track if an update is needed."""
-
-    section_map: dict[str, bool]
-
-    def __bool__(self) -> bool:
-        """Check if any section needs an update."""
-        return any(self.section_map.values())
-
-    def for_section(self, section: str) -> bool:
-        """Check if an update is needed for a specific section."""
-        return self.section_map.get(section, False)
-
-
-class UpdateStatus(models.TextChoices):
-    DISABLED = "disabled", _("Disabled")
-    TOKEN_ERROR = "token_error", _("Token Error")
-    ERROR = "error", _("Error")
-    OK = "ok", _("OK")
-    INCOMPLETE = "incomplete", _("Incomplete")
-    IN_PROGRESS = "in_progress", _("In Progress")
-
-
-class UpdateSection(models.TextChoices):
-    BLUEPRINTS = "blueprints", _("Blueprints")
-    LOCATIONS = "locations", _("Locations")
-
-    @classmethod
-    def get_sections(cls) -> list[str]:
-        """Return list of section values."""
-        return [choice.value for choice in cls]
-
-    @property
-    def method_name(self) -> str:
-        """Return method name for this section."""
-        return f"update_{self.value}"
-
-
 class UpdateManager:
-    """Manager class to handle update operations for Owners.
-    This class provides methods to manage and track update statuses for Owners.
+    """Manager class to handle update operations for owners.
+    This class provides methods to manage and track update statuses for owners.
 
     Args:
-        owner: The owner model (corporation or character)
-        update_section: The update section class
-        update_status: The update status class
+        owner (Any): The owner model
+        update_section (Any): The update section class
+        update_status (Any): The update status class
     """
 
     def __init__(
         self,
-        owner: "Owner",
-        update_section: UpdateSection,
-        update_status: "OwnerStatus",
+        owner: Any,
+        update_section: Any,
+        update_status: Any,
     ):
         self.owner = owner
         self.update_section = update_section
@@ -260,7 +286,21 @@ class UpdateManager:
 
         Returns:
             UpdateSectionResult: The structured result of the failed update operation.
+
+        Raises:
+            Exception: `exc` again if `retry_task_on_esi_error` retries on it,
+                and `TokenError` if `catch_token_error` is False.
         """
+        if is_retryable_esi_error(exc):
+            logger.debug(
+                "%s: %s: Retryable ESI error, raising it for a task retry: %s: %s",
+                self.owner,
+                section.label,
+                type(exc).__name__,
+                exc,
+            )
+            raise exc
+
         if isinstance(exc, HTTPNotModified):
             logger.debug(
                 "%s: Update has not changed (HTTP 304), section: %s",
@@ -274,10 +314,10 @@ class UpdateManager:
                 error_message="",
             )
 
-        if isinstance(exc, (HTTPServerError, RequestError)):
+        if isinstance(exc, HTTPServerError):
             error_message = f"{type(exc).__name__}: {str(exc)}"
             logger.debug(
-                "%s: %s: ESI server error / timeout: %s",
+                "%s: %s: ESI server error: %s",
                 self.owner,
                 section.label,
                 error_message,
@@ -317,28 +357,26 @@ class UpdateManager:
         ]
         if is_token_problem:
             logger.warning(
-                (
-                    "%s: %s: Update has Token Error: %s %s"
-                    if isinstance(exc, HTTPClientError)
-                    else "%s: %s: Update has Token Error: %s"
-                ),
+                "%s: %s: Update has Token Error: %s %s",
                 self.owner,
                 section.label,
                 error_message,
-                *([exc.status_code] if isinstance(exc, HTTPClientError) else []),
+                exc.status_code,
+            )
+        elif isinstance(exc, HTTPClientError):
+            logger.debug(
+                "%s: %s: Update has Client Error: %s %s",
+                self.owner,
+                section.label,
+                error_message,
+                exc.status_code,
             )
         else:
-            log_fn = logger.debug if isinstance(exc, HTTPClientError) else logger.error
-            log_fn(
-                (
-                    "%s: %s: Update has Client Error: %s %s"
-                    if isinstance(exc, HTTPClientError)
-                    else "%s: %s: Error during update status: %s"
-                ),
+            logger.error(
+                "%s: %s: Error during update status: %s",
                 self.owner,
                 section.label,
                 error_message,
-                *([exc.status_code] if isinstance(exc, HTTPClientError) else []),
             )
 
         return UpdateSectionResult(
@@ -390,7 +428,7 @@ class UpdateManager:
             *args: Positional arguments for the method.
             **kwargs: Keyword arguments for the method.
         Returns:
-            UpdateSectionResult: The result of the method call.
+            UpdateSectionResult: The result of the update operation.
         """
         try:
             return method(*args, **kwargs)
@@ -423,11 +461,7 @@ class UpdateManager:
 
     # pylint: disable=keyword-arg-before-vararg
     def execute_section(
-        self,
-        section: Any,
-        force_refresh: bool = False,
-        *args,
-        **kwargs,
+        self, section: Any, force_refresh: bool = False, *args, **kwargs
     ) -> UpdateSectionResult:
         """
         Execute an update for a specific section end-to-end.
@@ -439,6 +473,9 @@ class UpdateManager:
         4. Calls perform_update_status with full ESI exception handling.
         5. Updates and logs the section status log.
 
+        A retryable ESI error is recorded as failed run of the section and
+        raised again, so `retry_task_on_esi_error` can retry the task.
+
         Args:
             section (Any): The section to update (enum or string value).
             force_refresh (bool): Whether to force a refresh.
@@ -447,6 +484,9 @@ class UpdateManager:
 
         Returns:
             UpdateSectionResult: The result of the update operation.
+
+        Raises:
+            Exception: A retryable ESI error (see `is_retryable_esi_error`).
         """
         section_enum = (
             self.update_section(section)
@@ -465,7 +505,20 @@ class UpdateManager:
         ):
             kwargs["force_refresh"] = force_refresh
 
-        result = self.perform_update_status(section_enum, method, *args, **kwargs)
+        try:
+            result = self.perform_update_status(section_enum, method, *args, **kwargs)
+        except Exception as exc:
+            # Only retryable ESI errors get here. Record the failed run,
+            # so the section is not left "in progress" and counts as stale.
+            self.update_section_log(
+                section_enum,
+                UpdateSectionResult(
+                    is_changed=False,
+                    is_updated=False,
+                    error_message=f"{type(exc).__name__}: {str(exc)}",
+                ),
+            )
+            raise
         self.update_section_log(section_enum, result)
         return result
 
@@ -500,11 +553,7 @@ class UpdateManagerMixin:
 
     # pylint: disable=keyword-arg-before-vararg
     def execute_section(
-        self,
-        section: Any,
-        force_refresh: bool = False,
-        *args,
-        **kwargs,
+        self, section: Any, force_refresh: bool = False, *args, **kwargs
     ) -> UpdateSectionResult:
         """Shortcut to execute a section update via the update_manager."""
         return self.update_manager.execute_section(
