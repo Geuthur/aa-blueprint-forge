@@ -17,7 +17,7 @@ from eve_sde.models import ItemType, SolarSystem
 
 # AA Blueprint Forge
 from bpforge.app_settings import BPFORGE_BULK_BATCH_SIZE
-from bpforge.models.general import General
+from bpforge.managers.general import GeneralManager
 from bpforge.models.helpers.core import LocationFlag
 from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.providers import esi, logger
@@ -50,7 +50,7 @@ class AccessQuerySet(models.QuerySet[T], Generic[T]):
 
     def visible_to(self, user):
         """Get all objects visible to the user."""
-        if General.has_administration_access(user):
+        if GeneralManager.has_admin_access(user):
             logger.debug("Returning all objects for admin user %s.", user)
             return self
 
@@ -72,7 +72,7 @@ class AccessQuerySet(models.QuerySet[T], Generic[T]):
 
     def manage_to(self, user):
         """Get QuerySet of objects that the user can manage."""
-        if General.has_administration_access(user):
+        if GeneralManager.has_admin_access(user):
             logger.debug("Returning all manageable queries for admin user %s.", user)
             return self
 
@@ -113,7 +113,7 @@ class AccessManager(models.Manager[T], Generic[T]):
     @staticmethod
     def visible_eve_characters(user):
         qs = EveCharacter.objects.get_queryset()
-        if General.has_administration_access(user):
+        if GeneralManager.has_admin_access(user):
             logger.debug("Returning all characters for %s.", user)
             return qs.all()
 
