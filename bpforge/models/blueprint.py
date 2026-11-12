@@ -22,7 +22,7 @@ from bpforge.constants import (
     STATION_ID_END,
     STATION_ID_START,
 )
-from bpforge.managers import (
+from bpforge.managers.blueprint import (
     BlueprintManager,
     EveEntityManager,
     LocationManager,

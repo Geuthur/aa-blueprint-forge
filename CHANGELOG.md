@@ -68,6 +68,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] Permissions follow the app template: `General.Meta.permissions` is a plain tuple (same codenames and texts, migration `0008` only changes the stored options), the `General.Permission` choices and the helpers `get_perm`, `has_perm`, `has_any_perm` and `has_administration_access` are replaced by `General.objects` (`GeneralManager` in `bpforge/managers/general.py`: `has_basic_access`, `has_management_access`, `has_admin_access`). `bpforge/managers.py` moves to `bpforge/managers/blueprint.py`. Behaviour is unchanged; a new test checks all permission strings against `General.Meta.permissions`.
+
 - [CHANGE] `bpforge/models/helpers/update_manager.py` follows the module of the app template: the shared base class `UpdateSection` holds only `get_sections()` and `method_name`, and the sections of an owner live in the new subclass `OwnerUpdateSection` (`blueprints`, `locations`, same values and labels, no migration). All imports use `OwnerUpdateSection`. The token error log of `need_update()` names the owner instead of the status row. The aggregated `get_status` of the template is not added, because the app has no `annotate_total_update_status()` and builds the owner status in the API itself. Behaviour is unchanged.
 
 - [CHANGE] The `AppLogger` is created only once in `bpforge/providers.py`. `managers.py`, `models/helpers/update_manager.py`, `tasks.py` and `thirdparty/discord.py` import it with `from bpforge.providers import logger` instead of building their own; `models/blueprint.py` and `views.py` created a logger they never used, so it is removed there. Log records now carry the logger name `bpforge.providers` instead of the module name; the `[Blueprint Forge]` prefix is unchanged.
