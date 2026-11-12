@@ -47,7 +47,7 @@ class ApiEndpoints:
         )
         # pylint: disable=too-many-return-statements
         def create_order(request, payload: schema.OrderCreateRequest):
-            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+            if not General.objects.has_basic_access(request.user):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             if not payload.items:
@@ -61,7 +61,7 @@ class ApiEndpoints:
             if (
                 not owner.is_public
                 and owner.user != request.user
-                and not General.has_administration_access(request.user)
+                and not General.objects.has_admin_access(request.user)
             ):
                 return HTTPStatus.FORBIDDEN, {
                     "error": _("Cannot order from a private shop.")
@@ -82,7 +82,7 @@ class ApiEndpoints:
 
             if not (
                 owner.user == request.user
-                or General.has_administration_access(request.user)
+                or General.objects.has_admin_access(request.user)
             ):
                 if owner.public_type == "bpo" and any(
                     bp.runs and bp.runs > 0 for bp in blueprints
@@ -147,7 +147,7 @@ class ApiEndpoints:
 
             The first four list open orders, 'history' lists the closed ones.
             """
-            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+            if not General.objects.has_basic_access(request.user):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             queryset = Order.objects.select_related(
@@ -214,7 +214,7 @@ class ApiEndpoints:
             summary="Get specific order details",
         )
         def get_order(request, order_id: int):
-            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+            if not General.objects.has_basic_access(request.user):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             order = get_object_or_404(
@@ -252,7 +252,7 @@ class ApiEndpoints:
         def update_order_status(
             request, order_id: int, payload: schema.OrderStatusUpdateRequest
         ):
-            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+            if not General.objects.has_basic_access(request.user):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             order = get_object_or_404(

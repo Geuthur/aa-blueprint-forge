@@ -1,8 +1,5 @@
 """Models for General."""
 
-# Standard Library
-from typing import Any
-
 # Django
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -11,50 +8,29 @@ from django.utils.translation import gettext_lazy as _
 from allianceauth.authentication.models import CharacterOwnership, User
 from allianceauth.groupmanagement.models import Group
 
+# AA Blueprint Forge
+from bpforge.managers.general import GeneralManager
+
 
 class General(models.Model):
-    """General model for app permissions and permission helpers."""
+    """General model for the app permissions and order management rules.
 
-    class Permission(models.TextChoices):
-        """All permissions of this app (codename, description)."""
+    Permissions are checked with Django and the full string, e.g.
+    `@permission_required("bpforge.basic_access")`, or through `General.objects`.
+    """
 
-        BASIC_ACCESS = "basic_access", _("Can access this app")
-        MANAGE_ACCESS = "manage_access", _("Can manage")
-        FULL_ACCESS = "full_access", _("Full access")
+    objects = GeneralManager()
 
     class Meta:
         managed = False
         verbose_name = "AA-Blueprint-Forge"
         verbose_name_plural = "AA-Blueprint-Forge"
         default_permissions = ()  # Remove standard permissions
-
-    # Inject dynamic permissions
-    Meta.permissions = Permission.choices
-
-    @classmethod
-    def get_perm(cls, perm: "str | Permission") -> str:
-        """Return full permission string 'bpforge.<codename>'."""
-        codename = perm.value if isinstance(perm, cls.Permission) else perm
-        return f"bpforge.{codename}"
-
-    @classmethod
-    def has_perm(cls, user: Any, perm: "str | General.Permission") -> bool:
-        """Check if user has permission."""
-        if not user or not hasattr(user, "has_perm"):
-            return False
-        return user.has_perm(cls.get_perm(perm))
-
-    @classmethod
-    def has_any_perm(cls, user: Any, *perms: "str | General.Permission") -> bool:
-        """Return True if user has any of the specified permissions."""
-        if not user or not hasattr(user, "has_perm"):
-            return False
-        return any(user.has_perm(cls.get_perm(p)) for p in perms)
-
-    @classmethod
-    def has_administration_access(cls, user: Any) -> bool:
-        """Check if user has full (administration) access."""
-        return cls.has_perm(user, cls.Permission.FULL_ACCESS)
+        permissions = (
+            ("basic_access", _("Can access this app")),
+            ("manage_access", _("Can manage")),
+            ("full_access", _("Full access")),
+        )
 
     @staticmethod
     def get_user_corporation_ids(user: User) -> set[int]:
@@ -80,7 +56,7 @@ class General(models.Model):
         """Check if user has global management rights over all orders."""
         if not user or not user.is_authenticated:
             return False
-        if cls.has_administration_access(user):
+        if cls.objects.has_admin_access(user):
             return True
         settings_obj = GeneralNotificationSettings.get_solo()
         user_group_ids = set(user.groups.values_list("id", flat=True))
@@ -94,7 +70,7 @@ class General(models.Model):
         """Check if user has management rights over their corporation's orders."""
         if not user or not user.is_authenticated:
             return False
-        return cls.has_perm(user, cls.Permission.MANAGE_ACCESS)
+        return cls.objects.has_management_access(user)
 
     @classmethod
     def can_manage_orders(cls, user: User) -> bool:
