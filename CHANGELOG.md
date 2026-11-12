@@ -48,6 +48,8 @@ Section Order:
 
 - [FIX] Tests no longer share the Redis cache with other processes. `testauth/settings/local.py` and `testauth/settings/development/local.py` give each test run its own random cache `KEY_PREFIX`. Before, ESI responses cached by a running testauth instance on the same Redis were returned instead of the pook responses. Redis stays the cache backend because Alliance Auth needs `django_redis`.
 
+- [FIX] The development test settings (`testauth/settings/development/local.py`) now also set `DISABLE_DAILY_DOWNTIME_CHECK = True`, so `make tox-tests-development` and the CI job "AA Development" no longer run the daily downtime check and the retry tests stay green between 11:00 and 11:15 UTC.
+
 - [FIX] Order items no longer disappear when ESI stops returning their blueprint, for example after it was sold. The item keeps a copy of the blueprint values and is marked as "Blueprint no longer available". Includes a migration that fills the copy for existing items.
 
 - [FIX] Tests use the shared factories and helpers of `aa-evesde-factory` (`UserFactory`, `EveCharacterFactory`, `EveCorporationInfoFactory`, `EveAllianceInfoFactory`, `add_character_to_user`, `add_new_token`) instead of local copies, so generated usernames are unique and can no longer match the superuser of a test class.

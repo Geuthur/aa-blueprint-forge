@@ -100,3 +100,6 @@ DISCORD_GUILD_ID = "1234567890123456789"
 # the pook responses. Redis stays the backend because Alliance Auth needs
 # django_redis (get_redis_connection).
 CACHES["default"]["KEY_PREFIX"] = f"test-{uuid4().hex}"
+
+# Keep tests deterministic: never trigger ESI downtime handling by wall-clock time.
+DISABLE_DAILY_DOWNTIME_CHECK = True
