@@ -29,7 +29,7 @@ class ApiEndpoints:
             summary="List all blueprints owned by the current user across characters and corporations",
         )
         def list_my_blueprints(request):
-            if not General.has_perm(request.user, General.Permission.BASIC_ACCESS):
+            if not General.objects.has_basic_access(request.user):
                 return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
 
             user_owners = Owner.objects.filter(user=request.user)
