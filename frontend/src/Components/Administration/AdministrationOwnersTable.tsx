@@ -277,6 +277,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                     split
                     variant="primary"
                     aria-label={t("More update options")}
+                    className="rounded-0"
                     disabled={updatingOwnerId === owner.id}
                   />
                 )}
