@@ -234,88 +234,78 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
         cell: ({ row }) => {
           const owner = row.original;
           return (
-            <div className="d-flex align-items-center justify-content-end gap-2">
-              {renderTooltip(
-                t("Inspect All Blueprints"),
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => onInspect(owner)}
-                  className="d-inline-flex align-items-center gap-1"
-                >
-                  <Eye size={13} />
-                  <span>{t("Blueprints")}</span>
-                </Button>
-              )}
-              {renderTooltip(
-                t("Edit Owner Settings"),
-                <Button
-                  variant="warning"
-                  size="sm"
-                  onClick={() => onEdit(owner)}
-                  className="d-inline-flex align-items-center gap-1"
-                >
-                  <Edit2 size={13} />
-                  <span>{t("Edit")}</span>
-                </Button>
-              )}
-              <Dropdown as={ButtonGroup} size="sm">
+            <div className="d-flex justify-content-end">
+              <ButtonGroup size="sm">
                 {renderTooltip(
-                  t("Trigger update_owner task (normal)"),
+                  t("Inspect All Blueprints"),
                   <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => onTriggerUpdate(owner.id, false)}
-                    disabled={updatingOwnerId === owner.id}
-                    className="d-inline-flex align-items-center gap-1"
+                    variant="info"
+                    aria-label={t("Inspect All Blueprints")}
+                    onClick={() => onInspect(owner)}
                   >
-                    {updatingOwnerId === owner.id ? (
-                      <Spinner size="sm" animation="border" />
-                    ) : (
-                      <RefreshCw size={13} />
-                    )}
-                    <span>{t("Update")}</span>
+                    <Eye size={14} />
                   </Button>
                 )}
                 {renderTooltip(
-                  t("More update options"),
-                  <Dropdown.Toggle
-                    split
-                    size="sm"
-                    variant="danger"
-                    aria-label={t("More update options")}
-                    disabled={updatingOwnerId === owner.id}
-                    
-                  />
+                  t("Edit Owner Settings"),
+                  <Button
+                    variant="warning"
+                    aria-label={t("Edit Owner Settings")}
+                    onClick={() => onEdit(owner)}
+                  >
+                    <Edit2 size={14} />
+                  </Button>
                 )}
-                <Dropdown.Menu
-                  className={styles.dropdownMenu}
-                  align="end"
-                >
-                  <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, false)}>
-                    <RefreshCw size={14} className="me-2 text-primary" />
-                    {t("Normal Update")}
-                  </Dropdown.Item>
-                  {isSuperuser && (
-                    <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, true)}>
-                      <RefreshCw size={14} className="me-2 text-warning" />
-                      {t("Force Refresh (Bypass Cache)")}
-                    </Dropdown.Item>
+                <Dropdown as={ButtonGroup} size="sm">
+                  {renderTooltip(
+                    t("Trigger update_owner task (normal)"),
+                    <Button
+                      variant="primary"
+                      aria-label={t("Update")}
+                      onClick={() => onTriggerUpdate(owner.id, false)}
+                      disabled={updatingOwnerId === owner.id}
+                    >
+                      {updatingOwnerId === owner.id ? (
+                        <Spinner size="sm" animation="border" />
+                      ) : (
+                        <RefreshCw size={14} />
+                      )}
+                    </Button>
                   )}
-                </Dropdown.Menu>
-              </Dropdown>
-              {renderTooltip(
-                t("Delete Owner"),
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => onDelete(owner)}
-                  className="d-inline-flex align-items-center gap-1"
-                >
-                  <Trash2 size={13} />
-                  <span>{t("Delete")}</span>
-                </Button>
-              )}
+                  {renderTooltip(
+                    t("More update options"),
+                    <Dropdown.Toggle
+                      split
+                      size="sm"
+                      variant="primary"
+                      aria-label={t("More update options")}
+                      disabled={updatingOwnerId === owner.id}
+                    />
+                  )}
+                  <Dropdown.Menu className={styles.dropdownMenu} align="end">
+                    <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, false)}>
+                      <RefreshCw size={14} className="me-2 text-primary" />
+                      {t("Normal Update")}
+                    </Dropdown.Item>
+                    {isSuperuser && (
+                      <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, true)}>
+                        <RefreshCw size={14} className="me-2 text-warning" />
+                        {t("Force Refresh (Bypass Cache)")}
+                      </Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+                {renderTooltip(
+                  t("Delete Owner"),
+                  <Button
+                    variant="danger"
+                    aria-label={t("Delete Owner")}
+                    onClick={() => onDelete(owner)}
+                  >
+                    <Trash2 size={14} />
+                  </Button>
+                )}
+              </ButtonGroup>
             </div>
           );
         },

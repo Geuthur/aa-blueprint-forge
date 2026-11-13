@@ -173,7 +173,7 @@ describe("AdministrationPage", () => {
     expect(screen.getByText("bpo")).toBeInTheDocument();
     expect(screen.getByText("Selective")).toBeInTheDocument();
 
-    const editBtn = screen.getByRole("button", { name: "Edit" });
+    const editBtn = screen.getByRole("button", { name: "Edit Owner Settings" });
     await user.click(editBtn);
 
     expect(await screen.findByText("Edit Owner Settings:")).toBeInTheDocument();
@@ -276,7 +276,7 @@ describe("AdministrationPage", () => {
 
     expect(await screen.findByText("Enterprise Industrialists")).toBeInTheDocument();
 
-    const blueprintsBtn = screen.getByRole("button", { name: "Blueprints" });
+    const blueprintsBtn = screen.getByRole("button", { name: "Inspect All Blueprints" });
     await user.click(blueprintsBtn);
 
     // Expected Result
@@ -436,7 +436,7 @@ describe("AdministrationPage", () => {
 
     expect(await screen.findByText("Enterprise Industrialists")).toBeInTheDocument();
 
-    const deleteBtn = screen.getByRole("button", { name: "Delete" });
+    const deleteBtn = screen.getByRole("button", { name: "Delete Owner" });
     await user.click(deleteBtn);
 
     // Expected Result: confirmation modal opens
