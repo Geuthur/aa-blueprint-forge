@@ -235,7 +235,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
           const owner = row.original;
           return (
             <div className="d-flex justify-content-end">
-              <ButtonGroup size="sm">
+              <Dropdown as={ButtonGroup} size="sm">
                 {renderTooltip(
                   t("Inspect All Blueprints"),
                   <Button
@@ -256,45 +256,42 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                     <Edit2 size={14} />
                   </Button>
                 )}
-                <Dropdown as={ButtonGroup} size="sm">
-                  {renderTooltip(
-                    t("Trigger update_owner task (normal)"),
-                    <Button
-                      variant="primary"
-                      aria-label={t("Update")}
-                      onClick={() => onTriggerUpdate(owner.id, false)}
-                      disabled={updatingOwnerId === owner.id}
-                    >
-                      {updatingOwnerId === owner.id ? (
-                        <Spinner size="sm" animation="border" />
-                      ) : (
-                        <RefreshCw size={14} />
-                      )}
-                    </Button>
-                  )}
-                  {renderTooltip(
-                    t("More update options"),
-                    <Dropdown.Toggle
-                      split
-                      size="sm"
-                      variant="primary"
-                      aria-label={t("More update options")}
-                      disabled={updatingOwnerId === owner.id}
-                    />
-                  )}
-                  <Dropdown.Menu className={styles.dropdownMenu} align="end">
-                    <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, false)}>
-                      <RefreshCw size={14} className="me-2 text-primary" />
-                      {t("Normal Update")}
-                    </Dropdown.Item>
-                    {isSuperuser && (
-                      <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, true)}>
-                        <RefreshCw size={14} className="me-2 text-warning" />
-                        {t("Force Refresh (Bypass Cache)")}
-                      </Dropdown.Item>
+                {renderTooltip(
+                  t("Trigger update_owner task (normal)"),
+                  <Button
+                    variant="primary"
+                    aria-label={t("Update")}
+                    onClick={() => onTriggerUpdate(owner.id, false)}
+                    disabled={updatingOwnerId === owner.id}
+                  >
+                    {updatingOwnerId === owner.id ? (
+                      <Spinner size="sm" animation="border" />
+                    ) : (
+                      <RefreshCw size={14} />
                     )}
-                  </Dropdown.Menu>
-                </Dropdown>
+                  </Button>
+                )}
+                {renderTooltip(
+                  t("More update options"),
+                  <Dropdown.Toggle
+                    split
+                    variant="primary"
+                    aria-label={t("More update options")}
+                    disabled={updatingOwnerId === owner.id}
+                  />
+                )}
+                <Dropdown.Menu className={styles.dropdownMenu} align="end">
+                  <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, false)}>
+                    <RefreshCw size={14} className="me-2 text-primary" />
+                    {t("Normal Update")}
+                  </Dropdown.Item>
+                  {isSuperuser && (
+                    <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, true)}>
+                      <RefreshCw size={14} className="me-2 text-warning" />
+                      {t("Force Refresh (Bypass Cache)")}
+                    </Dropdown.Item>
+                  )}
+                </Dropdown.Menu>
                 {renderTooltip(
                   t("Delete Owner"),
                   <Button
@@ -305,7 +302,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                     <Trash2 size={14} />
                   </Button>
                 )}
-              </ButtonGroup>
+              </Dropdown>
             </div>
           );
         },
