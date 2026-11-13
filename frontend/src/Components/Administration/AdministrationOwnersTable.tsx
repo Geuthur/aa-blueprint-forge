@@ -234,64 +234,54 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
         cell: ({ row }) => {
           const owner = row.original;
           return (
-            <div className="d-flex align-items-center justify-content-end gap-2">
-              {renderTooltip(
-                t("Inspect All Blueprints"),
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => onInspect(owner)}
-                  className="d-inline-flex align-items-center gap-1"
-                >
-                  <Eye size={13} />
-                  <span>{t("Blueprints")}</span>
-                </Button>
-              )}
-              {renderTooltip(
-                t("Edit Owner Settings"),
-                <Button
-                  variant="warning"
-                  size="sm"
-                  onClick={() => onEdit(owner)}
-                  className="d-inline-flex align-items-center gap-1"
-                >
-                  <Edit2 size={13} />
-                  <span>{t("Edit")}</span>
-                </Button>
-              )}
+            <div className="d-flex justify-content-end">
               <Dropdown as={ButtonGroup} size="sm">
+                {renderTooltip(
+                  t("Inspect All Blueprints"),
+                  <Button
+                    variant="info"
+                    aria-label={t("Inspect All Blueprints")}
+                    onClick={() => onInspect(owner)}
+                  >
+                    <Eye size={14} />
+                  </Button>
+                )}
+                {renderTooltip(
+                  t("Edit Owner Settings"),
+                  <Button
+                    variant="warning"
+                    aria-label={t("Edit Owner Settings")}
+                    onClick={() => onEdit(owner)}
+                  >
+                    <Edit2 size={14} />
+                  </Button>
+                )}
                 {renderTooltip(
                   t("Trigger update_owner task (normal)"),
                   <Button
-                    variant="danger"
-                    size="sm"
+                    variant="primary"
+                    aria-label={t("Update")}
                     onClick={() => onTriggerUpdate(owner.id, false)}
                     disabled={updatingOwnerId === owner.id}
-                    className="d-inline-flex align-items-center gap-1"
                   >
                     {updatingOwnerId === owner.id ? (
                       <Spinner size="sm" animation="border" />
                     ) : (
-                      <RefreshCw size={13} />
+                      <RefreshCw size={14} />
                     )}
-                    <span>{t("Update")}</span>
                   </Button>
                 )}
                 {renderTooltip(
                   t("More update options"),
                   <Dropdown.Toggle
                     split
-                    size="sm"
-                    variant="danger"
+                    variant="primary"
                     aria-label={t("More update options")}
+                    className="rounded-0"
                     disabled={updatingOwnerId === owner.id}
-                    
                   />
                 )}
-                <Dropdown.Menu
-                  className={styles.dropdownMenu}
-                  align="end"
-                >
+                <Dropdown.Menu className={styles.dropdownMenu} align="end">
                   <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, false)}>
                     <RefreshCw size={14} className="me-2 text-primary" />
                     {t("Normal Update")}
@@ -303,19 +293,17 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                     </Dropdown.Item>
                   )}
                 </Dropdown.Menu>
+                {renderTooltip(
+                  t("Delete Owner"),
+                  <Button
+                    variant="danger"
+                    aria-label={t("Delete Owner")}
+                    onClick={() => onDelete(owner)}
+                  >
+                    <Trash2 size={14} />
+                  </Button>
+                )}
               </Dropdown>
-              {renderTooltip(
-                t("Delete Owner"),
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => onDelete(owner)}
-                  className="d-inline-flex align-items-center gap-1"
-                >
-                  <Trash2 size={13} />
-                  <span>{t("Delete")}</span>
-                </Button>
-              )}
             </div>
           );
         },

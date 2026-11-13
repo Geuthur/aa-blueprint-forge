@@ -2,13 +2,12 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
-import { BaseTable } from "aa-geuthur-react";
+import { BaseTable, FilterButtonGroup } from "aa-geuthur-react";
 import { Layers, Search, ShoppingCart } from "lucide-react";
 import { Badge, Button, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { FilterButtonGroup } from "@/Components/Base/FilterButtonGroup";
 import { getBlueprintColumns } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
@@ -125,7 +124,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
               options={[
                 { value: "all", label: t("All") },
                 { value: "bpo", label: t("BPO (Original)") },
-                { value: "bpc", label: t("BPC (Copy)"), activeVariant: "info" },
+                { value: "bpc", label: t("BPC (Copy)") },
               ]}
               value={activeTypeFilter}
               onChange={setTypeFilter}
