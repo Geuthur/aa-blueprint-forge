@@ -124,7 +124,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
                 />
               )}
               <Dropdown.Menu
-                className={`dropdown-menu-dark ${styles.dropdownMenu}`}
+                className={`dropdown-menu-dark ${styles["dropdown-menu"]}`}
                 align="end"
               >
                 <Dropdown.Item onClick={() => onTriggerUpdate(inspectingOwner.id, false)}>
@@ -175,7 +175,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
             {renderTooltip(
               t("Show all blueprints"),
               <div
-                className={`px-3 py-2 rounded text-center bg-secondary text-light border ${styles.kpiCard} ${inspectionTypeFilter === "all" ? "border-2 border-light shadow" : "border-dark opacity-75"
+                className={`px-3 py-2 rounded text-center bg-secondary text-light border ${styles["kpi-card"]} ${inspectionTypeFilter === "all" ? "border-2 border-light shadow" : "border-dark opacity-75"
                   }`}
                 role="button"
                 tabIndex={0}
@@ -191,7 +191,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
             {renderTooltip(
               t("Filter to show only Originals (BPO)"),
               <div
-                className={`px-3 py-2 rounded text-center bg-primary text-light border ${styles.kpiCard} ${inspectionTypeFilter === "bpo" ? "border-2 border-light shadow" : "border-primary opacity-75"
+                className={`px-3 py-2 rounded text-center bg-primary text-light border ${styles["kpi-card"]} ${inspectionTypeFilter === "bpo" ? "border-2 border-light shadow" : "border-primary opacity-75"
                   }`}
                 role="button"
                 tabIndex={0}
@@ -210,7 +210,7 @@ export const AdministrationInspectionView: React.FC<AdministrationInspectionView
             {renderTooltip(
               t("Filter to show only Copies (BPC)"),
               <div
-                className={`px-3 py-2 rounded text-center bg-info border ${styles.kpiCard} ${inspectionTypeFilter === "bpc" ? "border-2 border-light shadow" : "border-info opacity-75"
+                className={`px-3 py-2 rounded text-center bg-info border ${styles["kpi-card"]} ${inspectionTypeFilter === "bpc" ? "border-2 border-light shadow" : "border-info opacity-75"
                   }`}
                 role="button"
                 tabIndex={0}

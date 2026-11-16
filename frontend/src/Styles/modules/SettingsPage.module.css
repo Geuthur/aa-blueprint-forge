@@ -24,38 +24,37 @@
     cursor: wait;
 }
 
-.bpoSearchInput {
+.bpo-search-input {
     max-width: 320px;
 }
 
-.bpoStationList {
+.bpo-station-list {
     max-height: 11rem;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden auto;
 }
 
-.colLocation {
+.col-location {
     max-width: 200px;
 }
 
-.clickableRow {
+.clickable-row {
     cursor: pointer;
 }
 
-.textXs {
+.text-xs {
     font-size: var(--aa-font-size-xs);
 }
 
-.settingsTypeBtn:hover:not(:disabled) {
+.settings-type-btn:hover:not(:disabled) {
     transform: translateY(-1px);
     filter: brightness(1.15);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 10px rgb(0 0 0 / 40%);
 }
 
-.settingsTypeBtn:active:not(:disabled) {
+.settings-type-btn:active:not(:disabled) {
     transform: translateY(0);
 }
 
-.settingsTypeBtn {
+.settings-type-btn {
     transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, filter 0.15s ease-in-out;
 }

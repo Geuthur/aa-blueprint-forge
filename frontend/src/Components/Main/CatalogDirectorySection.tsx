@@ -61,7 +61,7 @@ export const CatalogDirectorySection: React.FC<CatalogDirectorySectionProps> = (
               )}
             </p>
           </div>
-          <div className={`${styles.catalogSearchInput} position-relative`}>
+          <div className={`${styles["catalog-search-input"]} position-relative`}>
             <Form.Control
               type="text"
               placeholder={t("Search catalogs or blueprints…")}

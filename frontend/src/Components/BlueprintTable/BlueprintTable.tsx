@@ -94,7 +94,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
       {/* Table Filter Controls */}
       <div className="bg-dark p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
         {/* Search Input */}
-        <div className={`flex-grow-1 ${styles.searchWrapper}`}>
+        <div className={`flex-grow-1 ${styles["search-wrapper"]}`}>
           <div className="input-group">
             <span className="input-group-text">
               <Search size={16} />

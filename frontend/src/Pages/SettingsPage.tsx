@@ -77,7 +77,7 @@ export const SettingsPage: React.FC = () => {
 
     return (
       <div className="d-flex flex-column gap-2">
-        <div className={`d-flex align-items-center flex-wrap gap-2 mt-1 text-light ${styles.textXs}`}>
+        <div className={`d-flex align-items-center flex-wrap gap-2 mt-1 text-light ${styles["text-xs"]}`}>
           <span>{t("{{count}} Blueprints", { count: owner.blueprint_count })}</span>
           <span>•</span>
           <span>{owner.bpo_count} BPO</span>
@@ -145,7 +145,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 variant="secondary"
                 size="sm"
-                className={`flex-fill fw-semibold ${styles.settingsTypeBtn} bg-secondary text-light border border-secondary ${
+                className={`flex-fill fw-semibold ${styles["settings-type-btn"]} bg-secondary text-light border border-secondary ${
                   !owner.public_type || owner.public_type === "all"
                     ? "border-light shadow fw-bold"
                     : "opacity-75"
@@ -165,7 +165,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 variant="primary"
                 size="sm"
-                className={`flex-fill fw-semibold ${styles.settingsTypeBtn} bg-primary text-light border border-primary ${
+                className={`flex-fill fw-semibold ${styles["settings-type-btn"]} bg-primary text-light border border-primary ${
                   owner.public_type === "bpo"
                     ? "border-light shadow fw-bold"
                     : "opacity-75"
@@ -185,7 +185,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 variant="info"
                 size="sm"
-                className={`flex-fill fw-semibold ${styles.settingsTypeBtn} bg-info border border-info ${
+                className={`flex-fill fw-semibold ${styles["settings-type-btn"]} bg-info border border-info ${
                   owner.public_type === "bpc"
                     ? "border-dark shadow fw-bold"
                     : "opacity-75"
@@ -210,7 +210,7 @@ export const SettingsPage: React.FC = () => {
                   <span className="small fw-medium">
                     {t("Selective BPOs")}
                   </span>
-                  <span className={`text-muted ${styles.textXs}`}>
+                  <span className={`text-muted ${styles["text-xs"]}`}>
                     {owner.selective_bpo_enabled
                       ? t("Only chosen BPOs are offered")
                       : t("All BPOs are offered")}

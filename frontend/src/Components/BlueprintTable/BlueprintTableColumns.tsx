@@ -130,7 +130,7 @@ export function getBlueprintColumns({
           const text = String(getValue() || t("Unknown"));
           return renderTooltip(
             text,
-            <span className={`text-light small text-truncate d-inline-block ${styles.locationCell}`}>
+            <span className={`text-light small text-truncate d-inline-block ${styles["location-cell"]}`}>
               {text}
             </span>
           );
