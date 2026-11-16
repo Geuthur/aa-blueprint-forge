@@ -281,7 +281,7 @@ export const AdministrationOwnersTable: React.FC<AdministrationOwnersTableProps>
                     disabled={updatingOwnerId === owner.id}
                   />
                 )}
-                <Dropdown.Menu className={styles.dropdownMenu} align="end">
+                <Dropdown.Menu className={styles["dropdown-menu"]} align="end">
                   <Dropdown.Item onClick={() => onTriggerUpdate(owner.id, false)}>
                     <RefreshCw size={14} className="me-2 text-primary" />
                     {t("Normal Update")}

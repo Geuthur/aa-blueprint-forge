@@ -66,6 +66,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] The stylelint pre-commit hook now checks the source CSS in `frontend/src/` (built bundles stay excluded); its findings are fixed without visual change (hex colors as equivalent `rgb()`, CSS module classes in kebab-case)
+
 - [CHANGE] Administration owner actions are one seamless icon `ButtonGroup` (update split dropdown inside) with tooltips, and `FilterButtonGroup` now comes from `aa-geuthur-react` 1.4.0 instead of a local copy (the BPC filter is `primary` like the others when active).
 
 - [CHANGE] Permissions follow the app template: `General.Meta.permissions` is a plain tuple (same codenames and texts, migration `0008` only changes the stored options), the `General.Permission` choices and the helpers `get_perm`, `has_perm`, `has_any_perm` and `has_administration_access` are replaced by `General.objects` (`GeneralManager` in `bpforge/managers/general.py`: `has_basic_access`, `has_management_access`, `has_admin_access`). `bpforge/managers.py` moves to `bpforge/managers/blueprint.py`. Behaviour is unchanged; a new test checks all permission strings against `General.Meta.permissions`.

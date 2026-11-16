@@ -107,7 +107,7 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
                                     {t("Notify these groups whenever any new order is placed.")}
                                 </p>
                                 <div
-                                    className={`p-2 border border-secondary-subtle rounded overflow-y-auto ${styles.groupScrollBox}`}
+                                    className={`p-2 border border-secondary-subtle rounded overflow-y-auto ${styles["group-scroll-box"]}`}
                                 >
                                     {groups?.map((g) => (
                                         <Form.Check
@@ -130,7 +130,7 @@ export const GlobalNotificationSettingsCard: React.FC<GlobalNotificationSettings
                                     {t("Notify these groups whenever an order status changes.")}
                                 </p>
                                 <div
-                                    className={`p-2 border border-secondary-subtle rounded overflow-y-auto ${styles.groupScrollBox}`}
+                                    className={`p-2 border border-secondary-subtle rounded overflow-y-auto ${styles["group-scroll-box"]}`}
                                 >
                                     {groups?.map((g) => (
                                         <Form.Check

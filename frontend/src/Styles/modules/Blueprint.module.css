@@ -1,22 +1,22 @@
-.searchWrapper {
+.search-wrapper {
   min-width: 240px;
   max-width: 400px;
 }
 
-.catalogSearchInput {
+.catalog-search-input {
   min-width: 260px;
 }
 
-.catalogSelectDropdown {
+.catalog-select-dropdown {
   min-width: 200px;
   max-width: 320px;
 }
 
-.locationCell {
+.location-cell {
   max-width: 220px;
 }
 
-.cartFloatingBar {
+.cart-floating-bar {
   min-width: 320px;
   max-width: 500px;
   width: 90%;
@@ -29,47 +29,48 @@
 .clickable:hover {
   transform: translateY(-2px);
   filter: brightness(1.12);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 35%);
 }
 
 .clickable:active {
   transform: translateY(0);
 }
 
-.kpiFilterCard {
+.kpi-filter-card {
   transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, filter 0.15s ease-in-out, opacity 0.15s ease-in-out;
 }
 
-.kpiFilterCard:hover {
+.kpi-filter-card:hover {
   transform: translateY(-2px);
   filter: brightness(1.15);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
 }
 
-.kpiFilterCard:active {
+.kpi-filter-card:active {
   transform: translateY(0);
 }
 
-.orderModalQtyCol {
+.order-modal-qty-col {
   width: 120px;
 }
 
-.orderModalActionCol {
+.order-modal-action-col {
   width: 60px;
 }
 
-.matchingBlueprintItem {
+.matching-blueprint-item {
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.matchingBlueprintItem:hover {
-  background-color: var(--aa-table-row-hover, rgba(128, 128, 128, 0.15)) !important;
-  border-color: var(--bg-dark-border, rgba(128, 128, 128, 0.3)) !important;
+.matching-blueprint-item:hover {
+  background-color: var(--aa-table-row-hover, rgb(128 128 128 / 15%)) !important;
+  border-color: var(--bg-dark-border, rgb(128 128 128 / 30%)) !important;
 }
-.matchingBlueprintList {
+
+.matching-blueprint-list {
   max-height: 160px;
 }
 
-.cartBar {
+.cart-bar {
   background-color: var(--aa-bg-blue-light);
 }

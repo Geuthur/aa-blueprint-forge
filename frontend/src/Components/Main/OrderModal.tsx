@@ -125,9 +125,9 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               <tr>
                 <th>{t("Blueprint")}</th>
                 <th>{t("Type")}</th>
-                <th className={styles.orderModalQtyCol}>{t("Quantity")}</th>
-                <th className={styles.orderModalQtyCol}>{t("Runs")}</th>
-                <th className={styles.orderModalActionCol}></th>
+                <th className={styles["order-modal-qty-col"]}>{t("Quantity")}</th>
+                <th className={styles["order-modal-qty-col"]}>{t("Runs")}</th>
+                <th className={styles["order-modal-action-col"]}></th>
               </tr>
             </thead>
             <tbody>
