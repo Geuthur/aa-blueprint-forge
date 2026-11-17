@@ -40,6 +40,8 @@ Section Order:
 
 ### Fixed
 
+- [FIX] The app page (`react_base`) now requires `bpforge.basic_access`, like the API and the menu entry. The view no longer reads the main character; the unused `character_id` parameter and context value are removed.
+
 - [FIX] Dev dependencies: `minimatch` 11 (DoS, eslint ^10.15.0, typescript-eslint 8.72.2 with an override for `@typescript-eslint/typescript-estree`) and `zod` 4.6.7 (GHSA-mrhx-c7xc-m3w5).
 
 - [FIX] ESI outages and limits did not retry the update tasks: `esi.decorators.rate_limit_retry_task` never applied because the tasks were not bound (`bind=True`), and the `UpdateManager` turned every ESI error except `TokenError` into an update status. `update_owner`, `update_blueprints`, `update_locations` and `update_structure_esi` are now bound and run their ESI calls inside the new `retry_task_on_esi_error()` in `providers.py` (with `DownTimeError` in the new `errors.py`), like the app template. It retries on `ESIErrorLimitException`, `ESIBucketLimitException`, `HTTPServerError` 502/503/504, `RequestError` and ESI's daily downtime (11:00 to 11:15 UTC, can be turned off with `DISABLE_DAILY_DOWNTIME_CHECK = True`). `_handle_update_exception` raises these errors (checked by `is_retryable_esi_error()`), and `execute_section` records them as a failed run of the section before raising, so the section shows the error and stays stale until the retry succeeds. Other errors (e.g. HTTP 500 or 404) still end in the update status only. `update_owner` runs its sections directly instead of calling the section tasks. `update_structure_esi` retries at most 3 times instead of without limit, since the retry backoff grows with each attempt.
