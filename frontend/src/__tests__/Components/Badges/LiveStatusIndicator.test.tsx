@@ -52,11 +52,25 @@ describe('LiveStatusIndicator', () => {
         render(<LiveStatusIndicator isError={true} showTimestamp={true} />);
 
         // Test Action
-        const errorText = screen.getByText(/Fehler/i);
+        const errorText = screen.getByText('Error');
 
         // Expected Result
         expect(errorText).toBeTruthy();
         expect(errorText.className).toContain('aa-status-text-error');
+    });
+
+    it('should display English source texts while loading and before the first fetch', () => {
+        // Test Data & Test Action
+        const { rerender } = render(<LiveStatusIndicator isLoading={true} showTimestamp={true} />);
+
+        // Expected Result
+        expect(screen.getByText('Loading…')).toBeTruthy();
+
+        // Test Action
+        rerender(<LiveStatusIndicator showTimestamp={true} />);
+
+        // Expected Result
+        expect(screen.getByText('No fetch yet')).toBeTruthy();
     });
 
     it('should render children when passed', () => {

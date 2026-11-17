@@ -371,5 +371,8 @@
   "You have no open blueprint orders.": "You have no open blueprint orders.",
   "Your shop has no open orders.": "Your shop has no open orders.",
   "No closed orders found.": "No closed orders found.",
-  "History": "History"
+  "History": "History",
+  "Failed to load": "Failed to load",
+  "No fetch yet": "No fetch yet",
+  "Order Management (Manager)": "Order Management (Manager)"
 }

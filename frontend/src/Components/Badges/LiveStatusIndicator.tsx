@@ -41,7 +41,7 @@ export interface LiveStatusProps {
  * - Red dot when an error occurred (isError)
  * - Orange pulsing dot while loading or fetching (isLoading / isFetching)
  * - Green dot when idle/ready with temporary ping pulse animation upon new data
- * - Optional timestamp display ("↻ 19:10:24 EVE", "Lädt…", or "Fehler")
+ * - Optional timestamp display ("↻ 19:10:24 EVE", "Loading…", or "Error")
  */
 export function LiveStatusIndicator({
     isError = false,
@@ -65,15 +65,15 @@ export function LiveStatusIndicator({
         ? error.message
         : typeof error === 'string'
             ? error
-            : t('Fehler beim Laden');
+            : t('Failed to load');
 
     const tooltipText = isError
         ? errorMessage
         : isBusy
-            ? t('Lädt…')
+            ? t('Loading…')
             : dataUpdatedAt
                 ? `${t('Last Fetch')}: ${formatLastFetch(dataUpdatedAt)}`
-                : t('Kein Fetch');
+                : t('No fetch yet');
 
     return (
         <>
@@ -103,12 +103,12 @@ export function LiveStatusIndicator({
                     {showTimestamp && (
                         <span className={isError ? 'aa-status-text aa-status-text-error' : textClassName}>
                             {isError
-                                ? t('Fehler')
+                                ? t('Error')
                                 : isBusy
-                                    ? t('Lädt…')
+                                    ? t('Loading…')
                                     : dataUpdatedAt
                                         ? `${timestampPrefix} ${formatLastFetch(dataUpdatedAt)}`
-                                        : t('Kein Fetch')}
+                                        : t('No fetch yet')}
                         </span>
                     )}
                 </span>

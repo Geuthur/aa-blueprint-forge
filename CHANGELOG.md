@@ -40,6 +40,8 @@ Section Order:
 
 ### Fixed
 
+- [FIX] The live status indicator and the order management tab used German source texts, so English and untranslated languages showed German. `useLivePing` now clears its timers on unmount.
+
 - [FIX] The app page (`react_base`) now requires `bpforge.basic_access`, like the API and the menu entry. The view no longer reads the main character; the unused `character_id` parameter and context value are removed.
 
 - [FIX] Dev dependencies: `minimatch` 11 (DoS, eslint ^10.15.0, typescript-eslint 8.72.2 with an override for `@typescript-eslint/typescript-estree`) and `zod` 4.6.7 (GHSA-mrhx-c7xc-m3w5).
