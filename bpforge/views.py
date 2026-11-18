@@ -31,6 +31,7 @@ def react_base(request: WSGIRequest):
 
 
 @login_required
+@permission_required("bpforge.basic_access")
 @token_required(scopes=Owner.get_corporation_scopes())
 def add_corporation(request: WSGIRequest, token: Token):
     """Add Corporation"""
@@ -79,6 +80,7 @@ def add_corporation(request: WSGIRequest, token: Token):
 
 
 @login_required
+@permission_required("bpforge.basic_access")
 @token_required(scopes=Owner.get_character_scopes())
 def add_character(request: WSGIRequest, token: Token):
     """Add Character"""

@@ -10,6 +10,8 @@ from evesde_factory.allianceauth import (
 )
 
 # Django
+from django.conf import settings
+from django.shortcuts import resolve_url
 from django.urls import reverse
 
 # Alliance Auth
@@ -124,8 +126,8 @@ class TestViews(AuthTestCase):
         token = Mock()
         token.character_id = main_char.character_id
 
-        # Unwrap @login_required and @token_required decorators
-        view_func = add_character.__wrapped__.__wrapped__
+        # Unwrap @login_required, @permission_required and @token_required
+        view_func = add_character.__wrapped__.__wrapped__.__wrapped__
 
         # Test Action
         response = view_func(request, token)
@@ -152,7 +154,7 @@ class TestViews(AuthTestCase):
         token = Mock()
         token.character_id = other_char.character_id
 
-        view_func = add_character.__wrapped__.__wrapped__
+        view_func = add_character.__wrapped__.__wrapped__.__wrapped__
 
         # Test Action
         response = view_func(request, token)
@@ -173,7 +175,7 @@ class TestViews(AuthTestCase):
         token = Mock()
         token.character_id = main_char.character_id
 
-        view_func = add_corporation.__wrapped__.__wrapped__
+        view_func = add_corporation.__wrapped__.__wrapped__.__wrapped__
 
         # Test Action
         response = view_func(request, token)
@@ -199,7 +201,7 @@ class TestViews(AuthTestCase):
         token = Mock()
         token.character_id = other_char.character_id
 
-        view_func = add_corporation.__wrapped__.__wrapped__
+        view_func = add_corporation.__wrapped__.__wrapped__.__wrapped__
 
         # Test Action
         response = view_func(request, token)
@@ -207,3 +209,48 @@ class TestViews(AuthTestCase):
         # Expected Result
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertEqual(response.url, "/bpforge/settings/")
+
+    def test_add_views_should_deny_user_without_basic_access_before_sso(self):
+        # Test Data
+        login_url = resolve_url(settings.LOGIN_URL)
+        users = {
+            "no permission": UserMainFactory(permissions=[]),
+            "manage_access": UserMainFactory(permissions=["bpforge.manage_access"]),
+            "full_access": UserMainFactory(permissions=["bpforge.full_access"]),
+            "manage_access and full_access": UserMainFactory(
+                permissions=["bpforge.manage_access", "bpforge.full_access"]
+            ),
+        }
+
+        for name, user in users.items():
+            self.assertFalse(user.has_perm("bpforge.basic_access"))
+            self.client.force_login(user)
+            for view_name in ("add_character", "add_corporation"):
+                with self.subTest(user=name, view=view_name):
+                    url = reverse(f"bpforge:{view_name}")
+
+                    # Test Action
+                    response = self.client.get(url)
+
+                    # Expected Result: back to the login, not to the EVE SSO
+                    self.assertRedirects(
+                        response,
+                        f"{login_url}?next={url}",
+                        fetch_redirect_response=False,
+                    )
+        self.assertFalse(Owner.objects.filter(user__in=users.values()).exists())
+
+    def test_add_views_should_send_user_with_basic_access_to_sso(self):
+        # Test Data
+        login_url = resolve_url(settings.LOGIN_URL)
+        self.client.force_login(self.user)
+
+        for view_name in ("add_character", "add_corporation"):
+            with self.subTest(view=view_name):
+                # Test Action
+                response = self.client.get(reverse(f"bpforge:{view_name}"))
+
+                # Expected Result
+                self.assertEqual(response.status_code, HTTPStatus.FOUND)
+                self.assertFalse(response.url.startswith(login_url))
+                self.assertIn("oauth", response.url)

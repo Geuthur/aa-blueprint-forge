@@ -40,6 +40,8 @@ Section Order:
 
 ### Fixed
 
+- [FIX] The views `add_character` and `add_corporation` now require `bpforge.basic_access` before the EVE SSO redirect; `manage_access` or `full_access` alone no longer reach them.
+
 - [FIX] The live status indicator and the order management tab used German source texts, so English and untranslated languages showed German. `useLivePing` now clears its timers on unmount.
 
 - [FIX] The app page (`react_base`) now requires `bpforge.basic_access`, like the API and the menu entry. The view no longer reads the main character; the unused `character_id` parameter and context value are removed.
