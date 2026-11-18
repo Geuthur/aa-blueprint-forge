@@ -74,6 +74,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] The whole API requires `bpforge.basic_access` centrally (`basic_access_required` around the API URLs), including `menu/` and the administration endpoints. Users with `manage_access` or `full_access` but without `basic_access` lose access to the API and the pages; grant them `basic_access` as well.
+
 - [CHANGE] `bpforge/thirdparty/discord.py` is now the Discord building block of the `aa-example` template (embed colors in the module, webhook sender included but unused); the order notifications moved to `bpforge/helpers/notifications.py`. Behavior and the Celery task name of `send_user_notification` are unchanged
 
 - [CHANGE] The stylelint pre-commit hook now checks the source CSS in `frontend/src/` (built bundles stay excluded); its findings are fixed without visual change (hex colors as equivalent `rgb()`, CSS module classes in kebab-case)
