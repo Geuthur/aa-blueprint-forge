@@ -894,7 +894,7 @@ class TestApiOrders(AuthTestCase):
         )
 
         # Test Action
-        with patch("bpforge.thirdparty.discord.send_user_notification") as mock_send:
+        with patch("bpforge.helpers.notifications.send_user_notification") as mock_send:
             response = self._post_cancel(order, self.user)
 
         # Expected Result
@@ -986,7 +986,7 @@ class TestApiOrders(AuthTestCase):
     def test_notification_message_should_link_to_manage_for_order_manager(self):
         # Test Data
         # AA Blueprint Forge
-        from bpforge.thirdparty.discord import _build_order_notification_message
+        from bpforge.helpers.notifications import _build_order_notification_message
 
         global_group = GroupFactory(name="Notification Managers")
         global_settings = GeneralNotificationSettings.get_solo()
@@ -1015,7 +1015,7 @@ class TestApiOrders(AuthTestCase):
     def test_notification_message_should_link_to_buyer_for_requesting_user(self):
         # Test Data
         # AA Blueprint Forge
-        from bpforge.thirdparty.discord import _build_order_notification_message
+        from bpforge.helpers.notifications import _build_order_notification_message
 
         buyer_user = UserMainFactory()
         order = OrderFactory(
@@ -1038,7 +1038,7 @@ class TestApiOrders(AuthTestCase):
     def test_notification_message_should_link_to_seller_for_shop_owner(self):
         # Test Data
         # AA Blueprint Forge
-        from bpforge.thirdparty.discord import _build_order_notification_message
+        from bpforge.helpers.notifications import _build_order_notification_message
 
         seller_user = self.seller_user
         order = OrderFactory(
@@ -1176,7 +1176,7 @@ class TestOrderHistory(AuthTestCase):
         order = self._order(RequestStatus.PENDING)
 
         # Test Action
-        with patch("bpforge.thirdparty.discord.send_user_notification") as mock_send:
+        with patch("bpforge.helpers.notifications.send_user_notification") as mock_send:
             self.seller_owner.delete()
 
         # Expected Result
