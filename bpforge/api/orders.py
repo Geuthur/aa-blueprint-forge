@@ -14,14 +14,14 @@ from django.utils.translation import gettext as _
 
 # AA Blueprint Forge
 from bpforge.api import schema
+from bpforge.helpers.notifications import (
+    notify_order_created,
+    notify_order_status_updated,
+)
 from bpforge.models.blueprint import Blueprint, Owner
 from bpforge.models.general import General
 from bpforge.models.helpers.core import RequestStatus
 from bpforge.models.request import OPEN_ORDER_STATUSES, Order, Request
-from bpforge.thirdparty.discord import (
-    notify_order_created,
-    notify_order_status_updated,
-)
 
 # Blueprints in a container resolve their name through the office to the station
 ORDER_ITEM_PREFETCH = (

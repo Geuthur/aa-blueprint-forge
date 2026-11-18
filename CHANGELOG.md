@@ -70,6 +70,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] `bpforge/thirdparty/discord.py` is now the Discord building block of the `aa-example` template (embed colors in the module, webhook sender included but unused); the order notifications moved to `bpforge/helpers/notifications.py`. Behavior and the Celery task name of `send_user_notification` are unchanged
+
 - [CHANGE] The stylelint pre-commit hook now checks the source CSS in `frontend/src/` (built bundles stay excluded); its findings are fixed without visual change (hex colors as equivalent `rgb()`, CSS module classes in kebab-case)
 
 - [CHANGE] Administration owner actions are one seamless icon `ButtonGroup` (update split dropdown inside) with tooltips, and `FilterButtonGroup` now comes from `aa-geuthur-react` 1.4.0 instead of a local copy (the BPC filter is `primary` like the others when active).
