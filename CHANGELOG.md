@@ -40,6 +40,10 @@ Section Order:
 
 ### Fixed
 
+- [FIX] `thirdparty/discord.py` no longer logs the Discord webhook URL (with its token): not in the warning of a failed webhook, and not through the exception texts of `requests` and Celery's `MaxRetriesExceededError`.
+
+- [FIX] The views `add_character` and `add_corporation` now require `bpforge.basic_access` before the EVE SSO redirect; `manage_access` or `full_access` alone no longer reach them. The charlink import for corporations requires `basic_access` in addition to `manage_access`.
+
 - [FIX] The live status indicator and the order management tab used German source texts, so English and untranslated languages showed German. `useLivePing` now clears its timers on unmount.
 
 - [FIX] The app page (`react_base`) now requires `bpforge.basic_access`, like the API and the menu entry. The view no longer reads the main character; the unused `character_id` parameter and context value are removed.
@@ -69,6 +73,8 @@ Section Order:
 - [FIX] Real translations from the stale `weblate-translation` branch are applied to `frontend/i18n/<lng>/translation.json` and to the German `django.po`. Only strings that were empty or equal to English are filled, translations already on master are kept. `frontend/i18n/cs` and `frontend/i18n/sk` are added with all keys empty. The `.po` files are updated with `make translations`.
 
 ### Changed
+
+- [CHANGE] The whole API requires `bpforge.basic_access` centrally (`basic_access_required` around the API URLs), including `menu/` and the administration endpoints. Users with `manage_access` or `full_access` but without `basic_access` lose access to the API and the pages; grant them `basic_access` as well.
 
 - [CHANGE] `bpforge/thirdparty/discord.py` is now the Discord building block of the `aa-example` template (embed colors in the module, webhook sender included but unused); the order notifications moved to `bpforge/helpers/notifications.py`. Behavior and the Celery task name of `send_user_notification` are unchanged
 
