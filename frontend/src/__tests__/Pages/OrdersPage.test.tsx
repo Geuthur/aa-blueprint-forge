@@ -155,7 +155,7 @@ describe("OrdersPage Component", () => {
     );
 
     // Expected Result
-    const manageTab = await screen.findByText("Order Management (Verwalter)");
+    const manageTab = await screen.findByText("Order Management (Manager)");
     expect(manageTab).toBeInTheDocument();
     const manageBadge = await screen.findByTestId("manage-orders-badge");
     expect(manageBadge).toBeInTheDocument();

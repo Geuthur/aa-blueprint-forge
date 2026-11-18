@@ -1,5 +1,5 @@
 // React
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Third Party
 // Voices of War
@@ -27,17 +27,17 @@ export function useLivePing(
     duration: number = 2000
 ): boolean {
     const [pinging, setPinging] = useState(false);
-    const pingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         if (isBusy) return;
 
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setPinging(true);
-        if (pingTimer.current) clearTimeout(pingTimer.current);
-        pingTimer.current = setTimeout(() => {
-            setPinging(false);
-        }, duration);
+        const startTimer = setTimeout(() => setPinging(true), 0);
+        const stopTimer = setTimeout(() => setPinging(false), duration);
+
+        return () => {
+            clearTimeout(startTimer);
+            clearTimeout(stopTimer);
+        };
     }, [dataUpdatedAt, isBusy, duration]);
 
     return pinging;

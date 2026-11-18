@@ -47,6 +47,11 @@ describe('liveStatusHelper', () => {
             // Test Data & Test Action
             const { result } = renderHook(() => useLivePing(1000, false, 1500));
 
+            // Test Action: let the start timer run
+            act(() => {
+                vi.advanceTimersByTime(0);
+            });
+
             // Expected Result: initial ping is true
             expect(result.current).toBe(true);
 
@@ -57,6 +62,18 @@ describe('liveStatusHelper', () => {
 
             // Expected Result: ping reset to false
             expect(result.current).toBe(false);
+        });
+
+        it('should clear its timers on unmount', () => {
+            // Test Data
+            const { unmount } = renderHook(() => useLivePing(1000, false, 1500));
+            expect(vi.getTimerCount()).toBe(2);
+
+            // Test Action
+            unmount();
+
+            // Expected Result
+            expect(vi.getTimerCount()).toBe(0);
         });
     });
 });

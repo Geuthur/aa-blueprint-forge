@@ -79,7 +79,7 @@ export const OrdersTabBar: React.FC<OrdersTabBarProps> = ({
             className={linkClass}
           >
             <Shield size={15} />
-            <span>{t("Order Management (Verwalter)")}</span>
+            <span>{t("Order Management (Manager)")}</span>
             {openManageCount > 0 && (
               <Badge bg="danger" className="ms-1 aa-menu-badge-pulse" data-testid="manage-orders-badge">
                 {openManageCount}
