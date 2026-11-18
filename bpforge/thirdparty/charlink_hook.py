@@ -61,7 +61,10 @@ def _add_character_corp(request, token):
 
 
 def _check_perms_corp(user: User):
-    return General.objects.has_management_access(user)
+    # Basic access is only granted by `basic_access`, `manage_access` does not include it
+    return General.objects.has_basic_access(
+        user
+    ) and General.objects.has_management_access(user)
 
 
 def _is_character_added(character: EveCharacter):
@@ -134,7 +137,8 @@ def _users_with_perms_corp():
             | user_model.objects.filter(is_superuser=True)
         )
         users |= users_qs.distinct()
-    return users
+    # Basic access is only granted by `basic_access`, `manage_access` does not include it
+    return users.filter(pk__in=_users_with_perms_char().values("pk"))
 
 
 app_import = AppImport(
