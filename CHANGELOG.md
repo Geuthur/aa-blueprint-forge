@@ -40,6 +40,8 @@ Section Order:
 
 ### Fixed
 
+- [FIX] `thirdparty/discord.py` no longer logs the Discord webhook URL (with its token): not in the warning of a failed webhook, and not through the exception texts of `requests` and Celery's `MaxRetriesExceededError`.
+
 - [FIX] The views `add_character` and `add_corporation` now require `bpforge.basic_access` before the EVE SSO redirect; `manage_access` or `full_access` alone no longer reach them.
 
 - [FIX] The live status indicator and the order management tab used German source texts, so English and untranslated languages showed German. `useLivePing` now clears its timers on unmount.
