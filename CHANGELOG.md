@@ -23,6 +23,10 @@ Section Order:
 ### Added
 ### Fixed
 ### Changed
+
+- [CHANGE] Uniform error format of the API: every error response of an endpoint is an `ErrorSchema` (`{"error": "<text>"}`) in the OpenAPI schema, and every endpoint lists its 403. Unknown owners and orders answer 404 with `{"error": "Owner not found."}` or `{"error": "Order not found."}` instead of `{"detail": "Not Found"}`. The unreachable `basic_access` checks in the endpoints are removed, `basic_access_required` covers them. Status codes are unchanged.
+
+- [CHANGE] The frontend shows the reason the API gives for a failed action (e.g. "Permission Denied") instead of a fixed text (`apiErrorMessage` of `aa-geuthur-react`).
 ### Removed
 -->
 
@@ -39,6 +43,8 @@ Section Order:
 - [ADD] The item table of an order shows the location of each blueprint to the seller and to order managers. Buyers do not see it, like in the catalog.
 
 ### Fixed
+
+- [FIX] The texts "Invalid status. Must be one of: …", "Update task queued for …" and "Owner … deleted successfully." of the API and the messages of the views `add_character` and `add_corporation` could never be translated because they were f-strings inside `_()`. They use `.format()` now.
 
 - [FIX] `thirdparty/discord.py` no longer logs the Discord webhook URL (with its token): not in the warning of a failed webhook, and not through the exception texts of `requests` and Celery's `MaxRetriesExceededError`.
 

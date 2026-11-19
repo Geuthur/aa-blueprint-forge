@@ -8,7 +8,6 @@ from ninja import NinjaAPI
 
 # Django
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 
 # AA Blueprint Forge
@@ -26,15 +25,12 @@ class ApiEndpoints:
             "blueprints/",
             response={
                 HTTPStatus.OK: list[schema.OwnerPublicSchema],
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="List all public blueprint owners",
         )
-        def list_public_blueprints(request):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-
+        def list_public_blueprints(request):  # pylint: disable=unused-argument
             bpo_filter = Q(bpforge_blueprints__runs__isnull=True) | Q(
                 bpforge_blueprints__runs=0
             )
@@ -137,15 +133,14 @@ class ApiEndpoints:
             "blueprints/search/",
             response={
                 HTTPStatus.OK: list[schema.BlueprintItemSchema],
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Search all public blueprints",
         )
-        def search_public_blueprints(request, q: str = ""):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-
+        def search_public_blueprints(
+            request, q: str = ""
+        ):  # pylint: disable=unused-argument
             query = q.strip()
             if not query:
                 return HTTPStatus.OK, []
@@ -190,20 +185,20 @@ class ApiEndpoints:
             "blueprints/{int:owner_id}/",
             response={
                 HTTPStatus.OK: list[schema.BlueprintItemSchema],
-                HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.NOT_FOUND: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+                HTTPStatus.NOT_FOUND: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="List blueprints for a specific owner",
         )
         def list_owner_blueprints(request, owner_id: int):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-
-            owner = get_object_or_404(
-                Owner.objects.select_related("character__character", "corporation"),
-                id=owner_id,
+            owner = (
+                (Owner.objects.select_related("character__character", "corporation"))
+                .filter(id=owner_id)
+                .first()
             )
+            if owner is None:
+                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
 
             # Check visibility: public or owned by user or full_access admin
             is_owner = owner.user == request.user

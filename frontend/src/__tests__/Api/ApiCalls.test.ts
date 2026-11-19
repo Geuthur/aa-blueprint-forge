@@ -4,7 +4,31 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // AA bpforge
 import { apiClient } from '@/Api/Api';
 import {
+    createOrder,
+    deleteAdministrationOwner,
+    deleteOrder,
+    deleteOwner,
+    fetchUserCharacterStatuses,
+    loadAdministrationGroups,
+    loadAdministrationOwnerBlueprints,
+    loadAdministrationOwners,
+    loadAdministrationSettings,
+    loadCatalogBlueprints,
+    loadMyBlueprints,
+    loadOrder,
+    loadOrders,
+    loadOwnerBpos,
+    loadPublicCatalogs,
     loadUserOwners,
+    searchPublicBlueprints,
+    triggerAdministrationGlobalUpdate,
+    triggerAdministrationOwnerUpdate,
+    triggerOwnerUpdate,
+    triggerUpdateAllUserOwners,
+    updateAdministrationOwner,
+    updateAdministrationSettings,
+    updateOrderStatus,
+    updateOwnerBpos,
     updateOwnerSetting,
 } from '@/Api/ApiCalls';
 import { ProjectName } from '@/constants';
@@ -396,5 +420,65 @@ describe('General API client functions', () => {
     });
 });
 
+type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
+// [name, HTTP method, call, fixed text of the thrown error]
+const calls: [string, Method, () => Promise<unknown>, string][] = [
+    ['loadUserOwners', 'GET', () => loadUserOwners(), "Failed to load owner settings"],
+    ['fetchUserCharacterStatuses', 'GET', () => fetchUserCharacterStatuses(), "Failed to load character update statuses"],
+    ['updateOwnerSetting', 'PATCH', () => updateOwnerSetting({ ownerId: 1, payload: { is_public: true } }), "Failed to update owner setting"],
+    ['triggerOwnerUpdate', 'POST', () => triggerOwnerUpdate(1), "Failed to trigger owner update task"],
+    ['deleteOwner', 'DELETE', () => deleteOwner(1), "Failed to delete owner"],
+    ['triggerUpdateAllUserOwners', 'POST', () => triggerUpdateAllUserOwners(), "Failed to trigger update all owners"],
+    ['loadPublicCatalogs', 'GET', () => loadPublicCatalogs(), "Failed to load public catalogs"],
+    ['loadCatalogBlueprints', 'GET', () => loadCatalogBlueprints(1), "Failed to load catalog blueprints"],
+    ['searchPublicBlueprints', 'GET', () => searchPublicBlueprints('rifter'), "Failed to search public blueprints"],
+    ['loadMyBlueprints', 'GET', () => loadMyBlueprints(), "Failed to load user blueprints"],
+    ['createOrder', 'POST', () => createOrder({ owner_id: 1, note: '', items: [] }), "Failed to create order"],
+    ['loadOrders', 'GET', () => loadOrders(), "Failed to load orders"],
+    ['loadOrder', 'GET', () => loadOrder(1), "Failed to load order details"],
+    ['updateOrderStatus', 'POST', () => updateOrderStatus(1, 'Accepted'), "Failed to update order status"],
+    ['deleteOrder', 'DELETE', () => deleteOrder(1), "Failed to delete order"],
+    ['loadOwnerBpos', 'GET', () => loadOwnerBpos(1), "Failed to load owner BPOs"],
+    ['updateOwnerBpos', 'POST', () => updateOwnerBpos(1, [1]), "Failed to update offered BPOs"],
+    ['loadAdministrationGroups', 'GET', () => loadAdministrationGroups(), "Failed to load Alliance Auth groups"],
+    ['loadAdministrationSettings', 'GET', () => loadAdministrationSettings(), "Failed to load administration notification settings"],
+    ['updateAdministrationSettings', 'PUT', () => updateAdministrationSettings({ order_created_group_ids: [], order_status_group_ids: [] }), "Failed to update administration notification settings"],
+    ['loadAdministrationOwners', 'GET', () => loadAdministrationOwners(), "Failed to load all owners for administration"],
+    ['updateAdministrationOwner', 'PATCH', () => updateAdministrationOwner(1, { is_public: true }), "Failed to update owner by administration"],
+    ['loadAdministrationOwnerBlueprints', 'GET', () => loadAdministrationOwnerBlueprints(1), "Failed to load owner blueprints for administration"],
+    ['triggerAdministrationOwnerUpdate', 'POST', () => triggerAdministrationOwnerUpdate(1), "Failed to trigger owner update task"],
+    ['deleteAdministrationOwner', 'DELETE', () => deleteAdministrationOwner(1), "Failed to delete owner"],
+    ['triggerAdministrationGlobalUpdate', 'POST', () => triggerAdministrationGlobalUpdate({ target: 'all' }), "Failed to trigger global update task"],
+];
 
+describe('API calls throw the message of the API', () => {
+    beforeEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    describe.each(calls)('%s', (_name, method, call, fixedText) => {
+        const failWith = (error: unknown) =>
+            vi.spyOn(apiClient, method).mockResolvedValueOnce({
+                data: undefined,
+                error,
+                response: new Response(),
+            } as never);
+
+        it('should throw the message of the API when the request fails', async () => {
+            // Test Data
+            failWith({ error: 'Permission Denied' });
+
+            // Test Action & Expected Result
+            await expect(call()).rejects.toThrow('Permission Denied');
+        });
+
+        it('should throw the fixed text when the API sent no message', async () => {
+            // Test Data
+            failWith({});
+
+            // Test Action & Expected Result
+            await expect(call()).rejects.toThrow(fixedText);
+        });
+    });
+});
