@@ -6,11 +6,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AA Blueprint Forge\n"
-"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-blueprint-forge/\n"
-"POT-Creation-Date: 2026-11-08 16:05+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 16:22+0000\n"
 "PO-Revision-Date: 2026-10-25 13:06+0000\n"
 "Last-Translator: Geuthur <devgeuthur@gmail.com>\n"
-"Language-Team: German <https://weblate.geuthur.de/projects/allianceauth/aa-blueprint-forge/de/>\n"
+"Language-Team: German <https://weblate.geuthur.de/projects/allianceauth/aa-"
+"blueprint-forge/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,973 +19,751 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.15.1\n"
 
-#: bpforge/admin.py:55
 msgid "Success"
 msgstr ""
 
-#: bpforge/admin.py:59
 msgid "Token OK"
 msgstr ""
 
-#: bpforge/admin.py:124
 msgid "Owner Name"
 msgstr ""
 
-#: bpforge/admin.py:128
 msgid "Type"
 msgstr ""
 
-#: bpforge/admin.py:130 bpforge/thirdparty/charlink_hook.py:161
 msgid "Corporation"
 msgstr ""
 
-#: bpforge/admin.py:130 bpforge/thirdparty/charlink_hook.py:146
 msgid "Character"
 msgstr "Charakter"
 
-#: bpforge/admin.py:132 bpforge/models/helpers/update_manager.py:136
 msgid "Blueprints"
 msgstr "Blaupausen"
 
-#: bpforge/admin.py:136
 msgid "Last Update"
 msgstr ""
 
-#: bpforge/admin.py:144
 msgid "Force update selected owners (bypass cache)"
 msgstr ""
 
-#: bpforge/admin.py:152
 #, python-format
 msgid "Force update queued for %(count)d owner(s)."
 msgstr ""
 
-#: bpforge/admin.py:156
 msgid "Update selected owners (cached)"
 msgstr ""
 
-#: bpforge/admin.py:164
 #, python-format
 msgid "Update queued for %(count)d owner(s)."
 msgstr ""
 
-#: bpforge/admin.py:185
 #, python-format
 msgid "Force update queued for %(name)s."
 msgstr ""
 
-#: bpforge/api/administration.py:40 bpforge/api/administration.py:60 bpforge/api/administration.py:87 bpforge/api/administration.py:115 bpforge/api/administration.py:165 bpforge/api/administration.py:233 bpforge/api/administration.py:269 bpforge/api/administration.py:305
 msgid "Administration permission required."
 msgstr ""
 
-#: bpforge/api/administration.py:279 bpforge/api/administration.py:336
 msgid "Superuser permission required."
 msgstr "Superuser-Berechtigung erforderlich."
 
-#: bpforge/api/administration.py:288 bpforge/api/general.py:659
-#, python-brace-format
-msgid "Update task queued for {owner_name} (force_refresh={force_refresh})."
-msgstr "Update-Task für {owner_name} eingereiht (force_refresh={force_refresh})."
-
-#: bpforge/api/administration.py:318
-#, python-brace-format
-msgid "Owner {owner_name} and all associated data deleted successfully."
-msgstr ""
-
-#: bpforge/api/administration.py:348
 msgid "Queued Update All Characters"
 msgstr ""
 
-#: bpforge/api/administration.py:350
 msgid "Queued Update All Corporations"
 msgstr ""
 
-#: bpforge/api/administration.py:352
 msgid "Queued Update All Owners"
 msgstr ""
 
-#: bpforge/api/blueprints.py:36 bpforge/api/blueprints.py:147 bpforge/api/blueprints.py:201 bpforge/api/general.py:282 bpforge/api/general.py:339 bpforge/api/general.py:357 bpforge/api/general.py:377 bpforge/api/general.py:418 bpforge/api/general.py:462 bpforge/api/general.py:492 bpforge/api/general.py:522 bpforge/api/general.py:528 bpforge/api/general.py:567 bpforge/api/general.py:573 bpforge/api/general.py:610 bpforge/api/general.py:640 bpforge/api/general.py:649 bpforge/api/general.py:675 bpforge/api/general.py:684 bpforge/api/my_blueprints.py:33 bpforge/api/orders.py:51 bpforge/api/orders.py:151 bpforge/api/orders.py:179 bpforge/api/orders.py:218 bpforge/api/orders.py:235 bpforge/api/orders.py:256
+msgid "Permission Denied"
+msgstr ""
+
 msgid "Permission Denied."
 msgstr "Zugriff verweigert."
 
-#: bpforge/api/blueprints.py:213
 msgid "This blueprint catalog is private."
 msgstr "Dieser Blaupausen-Katalog ist privat."
 
-#: bpforge/api/general.py:221
 msgid "Overview"
 msgstr "Übersicht"
 
-#: bpforge/api/general.py:223
 msgid "My Blueprints"
 msgstr "Meine Blaupausen"
 
-#: bpforge/api/general.py:227
 msgid "Orders"
 msgstr "Bestellungen"
 
-#: bpforge/api/general.py:235
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: bpforge/api/general.py:246
 msgid "Add Character"
 msgstr "Charakter hinzufügen"
 
-#: bpforge/api/general.py:253
 msgid "Add Corporation"
 msgstr "Corporation hinzufügen"
 
-#: bpforge/api/general.py:262
 msgid "Administration"
 msgstr ""
 
-#: bpforge/api/general.py:621
 #, python-format
 msgid "Queued updates for %(count)d owner(s)."
 msgstr ""
 
-#: bpforge/api/general.py:691
 #, python-format
 msgid "Owner %(name)s and associated data deleted."
 msgstr ""
 
-#: bpforge/api/orders.py:55
 msgid "Order must contain at least one blueprint item."
 msgstr "Die Bestellung muss mindestens eine Blaupause enthalten."
 
-#: bpforge/api/orders.py:67
 msgid "Cannot order from a private shop."
 msgstr "In einem privaten Shop kann nicht bestellt werden."
 
-#: bpforge/api/orders.py:79
 msgid "One or more blueprints are invalid or do not belong to this shop."
-msgstr "Eine oder mehrere Blaupausen sind ungültig oder gehören nicht zu diesem Shop."
+msgstr ""
+"Eine oder mehrere Blaupausen sind ungültig oder gehören nicht zu diesem Shop."
 
-#: bpforge/api/orders.py:91
 msgid "This shop only offers blueprint originals (BPO)."
 msgstr "Dieser Shop bietet nur Blaupausen-Originale (BPO) an."
 
-#: bpforge/api/orders.py:97
 msgid "This shop only offers blueprint copies (BPC)."
 msgstr "Dieser Shop bietet nur Blaupausen-Kopien (BPC) an."
 
-#: bpforge/api/orders.py:105
 msgid "One or more selected BPOs are not offered by this shop."
-msgstr "Ein oder mehrere ausgewählte BPOs werden von diesem Shop nicht angeboten."
+msgstr ""
+"Ein oder mehrere ausgewählte BPOs werden von diesem Shop nicht angeboten."
 
-#: bpforge/api/orders.py:271
-#, python-brace-format
-msgid "Invalid status. Must be one of: {valid_statuses}"
-msgstr "Ungültiger Status. Muss einer der folgenden sein: {valid_statuses}"
-
-#: bpforge/api/orders.py:277
 msgid "This order is closed because its shop or buyer was deleted."
 msgstr ""
 
-#: bpforge/api/orders.py:292
 msgid "You are not authorized to set this order status."
 msgstr "Sie sind nicht berechtigt, diesen Bestellstatus zu setzen."
 
-#: bpforge/api/orders.py:321
 msgid "You are not authorized to delete this order."
 msgstr "Sie sind nicht berechtigt, diese Bestellung zu löschen."
 
-#: bpforge/api/orders.py:328
 msgid "Only closed orders can be deleted."
 msgstr ""
 
-#: bpforge/api/orders.py:334
 msgid "Order has been deleted successfully."
 msgstr "Die Bestellung wurde erfolgreich gelöscht."
 
-#: bpforge/models/blueprint.py:64
 msgid "All (Originals & Copies)"
 msgstr "Alle (Originale & Kopien)"
 
-#: bpforge/models/blueprint.py:65
 msgid "Only Originals (BPO)"
 msgstr "Nur Originale (BPO)"
 
-#: bpforge/models/blueprint.py:66
 msgid "Only Copies (BPC)"
 msgstr "Nur Kopien (BPC)"
 
-#: bpforge/models/blueprint.py:76
 msgid "Owner"
 msgstr ""
 
-#: bpforge/models/blueprint.py:77
 msgid "Owners"
 msgstr ""
 
-#: bpforge/models/blueprint.py:97
 msgid "The character that owns this blueprint."
 msgstr "Der Charakter, dem diese Blaupause gehört."
 
-#: bpforge/models/blueprint.py:110
 msgid "The corporation that owns this blueprint."
 msgstr "Die Corporation, der diese Blaupause gehört."
 
-#: bpforge/models/blueprint.py:115
 msgid "Whether this owner's blueprints are public."
 msgstr "Ob die Blaupausen dieses Eigentümers öffentlich sind."
 
-#: bpforge/models/blueprint.py:122
 msgid "Which types of blueprints are public for this owner."
 msgstr "Welche Blaupausentypen für diesen Eigentümer öffentlich sind."
 
-#: bpforge/models/blueprint.py:127
 msgid "Whether only explicitly selected BPOs are offered."
 msgstr "Ob nur explizit ausgewählte BPOs angeboten werden."
 
-#: bpforge/models/blueprint.py:134
 msgid "Groups to notify when a new order is created for this owner."
-msgstr "Gruppen, die benachrichtigt werden, wenn für diesen Eigentümer eine neue Bestellung erstellt wird."
+msgstr ""
+"Gruppen, die benachrichtigt werden, wenn für diesen Eigentümer eine neue "
+"Bestellung erstellt wird."
 
-#: bpforge/models/blueprint.py:141
 msgid "Groups to notify when an order status changes for this owner."
-msgstr "Gruppen, die benachrichtigt werden, wenn sich der Bestellstatus für diesen Eigentümer ändert."
+msgstr ""
+"Gruppen, die benachrichtigt werden, wenn sich der Bestellstatus für diesen "
+"Eigentümer ändert."
 
-#: bpforge/models/blueprint.py:268
 msgid "The Eve ID of this blueprint."
 msgstr "Die Eve-ID dieser Blaupause."
 
-#: bpforge/models/blueprint.py:276
 msgid "The owner of this blueprint."
 msgstr "Der Eigentümer dieser Blaupause."
 
-#: bpforge/models/blueprint.py:283
 msgid "The Eve type of this blueprint."
 msgstr "Der Eve-Typ dieser Blaupause."
 
-#: bpforge/models/blueprint.py:290
 msgid "The location of this blueprint."
 msgstr "Der Standort dieser Blaupause."
 
-#: bpforge/models/blueprint.py:294
 msgid "The flag of this blueprint."
 msgstr "Das Flag dieser Blaupause."
 
-#: bpforge/models/blueprint.py:300
 msgid "The quantity of this blueprint."
 msgstr "Die Menge dieser Blaupause."
 
-#: bpforge/models/blueprint.py:307
 msgid "The number of runs for this blueprint."
 msgstr "Die Anzahl der Durchläufe dieser Blaupause."
 
-#: bpforge/models/blueprint.py:312
 msgid "The material efficiency of this blueprint."
 msgstr "Die Materialeffizienz dieser Blaupause."
 
-#: bpforge/models/blueprint.py:318
 msgid "The time efficiency of this blueprint."
 msgstr "Die Zeiteffizienz dieser Blaupause."
 
-#: bpforge/models/blueprint.py:324
 msgid "Whether this blueprint is offered when selective BPO mode is enabled."
-msgstr "Ob diese Blaupause angeboten wird, wenn der selektive BPO-Modus aktiviert ist."
+msgstr ""
+"Ob diese Blaupause angeboten wird, wenn der selektive BPO-Modus aktiviert "
+"ist."
 
-#: bpforge/models/blueprint.py:363
 msgid "The Eve ID of this location."
 msgstr "Die Eve-ID dieses Standorts."
 
-#: bpforge/models/blueprint.py:368
 msgid "The name of this location."
 msgstr "Der Name dieses Standorts."
 
-#: bpforge/models/blueprint.py:378
 msgid "The parent location of this location."
 msgstr "Der übergeordnete Standort dieses Standorts."
 
-#: bpforge/models/blueprint.py:388
 msgid "The solar system of this location."
 msgstr "Das Sonnensystem dieses Standorts."
 
-#: bpforge/models/blueprint.py:398
 msgid "The Eve type of this location."
 msgstr "Der Eve-Typ dieses Standorts."
 
-#: bpforge/models/blueprint.py:408
 msgid "The owner of this location."
 msgstr "Der Eigentümer dieses Standorts."
 
-#: bpforge/models/blueprint.py:443
 msgid "The Eve ID of this entity."
 msgstr "Die Eve-ID dieser Entität."
 
-#: bpforge/models/blueprint.py:448
 msgid "The name of this entity."
 msgstr "Der Name dieser Entität."
 
-#: bpforge/models/blueprint.py:453
 msgid "The category of this entity."
 msgstr "Die Kategorie dieser Entität."
 
-#: bpforge/models/general.py:21
 msgid "Can access this app"
 msgstr "Kann auf diese App zugreifen"
 
-#: bpforge/models/general.py:22
 msgid "Can manage"
 msgstr "Kann verwalten"
 
-#: bpforge/models/general.py:23
 msgid "Full access"
 msgstr "Vollzugriff"
 
-#: bpforge/models/general.py:176 bpforge/models/general.py:177
 msgid "Notification Settings"
 msgstr "Benachrichtigungseinstellungen"
 
-#: bpforge/models/general.py:183
 msgid "Groups to notify globally when a new order is created."
 msgstr "Gruppen, die global bei einer neuen Bestellung benachrichtigt werden."
 
-#: bpforge/models/general.py:190
 msgid "Groups to notify globally when an order status changes."
-msgstr "Gruppen, die global bei einer Änderung des Bestellstatus benachrichtigt werden."
+msgstr ""
+"Gruppen, die global bei einer Änderung des Bestellstatus benachrichtigt "
+"werden."
 
-#: bpforge/models/helpers/core.py:9
 msgid "Asset Safety"
 msgstr "Asset-Sicherheit"
 
-#: bpforge/models/helpers/core.py:10
 msgid "Auto Fit"
 msgstr "Auto-Fit"
 
-#: bpforge/models/helpers/core.py:11
 msgid "Bonus"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:12
 msgid "Booster"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:13
 msgid "Booster Hold"
 msgstr "Booster-Frachtraum"
 
-#: bpforge/models/helpers/core.py:14
 msgid "Capsule"
 msgstr "Kapsel"
 
-#: bpforge/models/helpers/core.py:15
 msgid "Cargo"
 msgstr "Frachtraum"
 
-#: bpforge/models/helpers/core.py:16
 msgid "Corp Deliveries"
 msgstr "Corp-Lieferungen"
 
-#: bpforge/models/helpers/core.py:17
 msgid "Corp Security Access Group 1"
 msgstr "Corp-Sicherheitszugriffsgruppe 1"
 
-#: bpforge/models/helpers/core.py:18
 msgid "Corp Security Access Group 2"
 msgstr "Corp-Sicherheitszugriffsgruppe 2"
 
-#: bpforge/models/helpers/core.py:19
 msgid "Corp Security Access Group 3"
 msgstr "Corp-Sicherheitszugriffsgruppe 3"
 
-#: bpforge/models/helpers/core.py:20
 msgid "Corp Security Access Group 4"
 msgstr "Corp-Sicherheitszugriffsgruppe 4"
 
-#: bpforge/models/helpers/core.py:21
 msgid "Corp Security Access Group 5"
 msgstr "Corp-Sicherheitszugriffsgruppe 5"
 
-#: bpforge/models/helpers/core.py:22
 msgid "Corp Security Access Group 6"
 msgstr "Corp-Sicherheitszugriffsgruppe 6"
 
-#: bpforge/models/helpers/core.py:23
 msgid "Corp Security Access Group 7"
 msgstr "Corp-Sicherheitszugriffsgruppe 7"
 
-#: bpforge/models/helpers/core.py:24
 msgid "Crate Loot"
 msgstr "Kisten-Beute"
 
-#: bpforge/models/helpers/core.py:25
 msgid "Deliveries"
 msgstr "Lieferungen"
 
-#: bpforge/models/helpers/core.py:26
 msgid "Drone Bay"
 msgstr "Drohnenhangar"
 
-#: bpforge/models/helpers/core.py:27
 msgid "Dust Battle"
 msgstr "Dust-Gefecht"
 
-#: bpforge/models/helpers/core.py:28
 msgid "Dust Databank"
 msgstr "Dust-Datenbank"
 
-#: bpforge/models/helpers/core.py:29
 msgid "Fighter Bay"
 msgstr "Jägerhangar"
 
-#: bpforge/models/helpers/core.py:30
 msgid "Fighter Tube 0"
 msgstr "Jägerstartrohr 0"
 
-#: bpforge/models/helpers/core.py:31
 msgid "Fighter Tube 1"
 msgstr "Jägerstartrohr 1"
 
-#: bpforge/models/helpers/core.py:32
 msgid "Fighter Tube 2"
 msgstr "Jägerstartrohr 2"
 
-#: bpforge/models/helpers/core.py:33
 msgid "Fighter Tube 3"
 msgstr "Jägerstartrohr 3"
 
-#: bpforge/models/helpers/core.py:34
 msgid "Fighter Tube 4"
 msgstr "Jägerstartrohr 4"
 
-#: bpforge/models/helpers/core.py:35
 msgid "Fleet Hangar"
 msgstr "Flottenhangar"
 
-#: bpforge/models/helpers/core.py:36
 msgid "Frigate escape bay Hangar"
 msgstr "Fregatten-Fluchthangar"
 
-#: bpforge/models/helpers/core.py:37
 msgid "Hangar"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:38
 msgid "Hangar All"
 msgstr "Gesamter Hangar"
 
-#: bpforge/models/helpers/core.py:39
 msgid "High power slot 1"
 msgstr "Hochenergie-Slot 1"
 
-#: bpforge/models/helpers/core.py:40
 msgid "High power slot 2"
 msgstr "Hochenergie-Slot 2"
 
-#: bpforge/models/helpers/core.py:41
 msgid "High power slot 3"
 msgstr "Hochenergie-Slot 3"
 
-#: bpforge/models/helpers/core.py:42
 msgid "High power slot 4"
 msgstr "Hochenergie-Slot 4"
 
-#: bpforge/models/helpers/core.py:43
 msgid "High power slot 5"
 msgstr "Hochenergie-Slot 5"
 
-#: bpforge/models/helpers/core.py:44
 msgid "High power slot 6"
 msgstr "Hochenergie-Slot 6"
 
-#: bpforge/models/helpers/core.py:45
 msgid "High power slot 7"
 msgstr "Hochenergie-Slot 7"
 
-#: bpforge/models/helpers/core.py:46
 msgid "High power slot 8"
 msgstr "Hochenergie-Slot 8"
 
-#: bpforge/models/helpers/core.py:47
 msgid "Hidden Modifiers"
 msgstr "Verborgene Modifikatoren"
 
-#: bpforge/models/helpers/core.py:48
 msgid "Implant"
 msgstr "Implantat"
 
-#: bpforge/models/helpers/core.py:49
 msgid "Impounded"
 msgstr "Beschlagnahmt"
 
-#: bpforge/models/helpers/core.py:51
 msgid "This item was put into a junkyard through reprocessing."
-msgstr "Dieser Gegenstand landete durch Wiederaufbereitung auf dem Schrottplatz."
+msgstr ""
+"Dieser Gegenstand landete durch Wiederaufbereitung auf dem Schrottplatz."
 
-#: bpforge/models/helpers/core.py:54
 msgid "This item was put into a junkyard through being trashed by its owner."
-msgstr "Dieser Gegenstand landete auf dem Schrottplatz, weil sein Besitzer ihn weggeworfen hat."
+msgstr ""
+"Dieser Gegenstand landete auf dem Schrottplatz, weil sein Besitzer ihn "
+"weggeworfen hat."
 
-#: bpforge/models/helpers/core.py:56
 msgid "Low power slot 1"
 msgstr "Niedrigenergie-Slot 1"
 
-#: bpforge/models/helpers/core.py:57
 msgid "Low power slot 2"
 msgstr "Niedrigenergie-Slot 2"
 
-#: bpforge/models/helpers/core.py:58
 msgid "Low power slot 3"
 msgstr "Niedrigenergie-Slot 3"
 
-#: bpforge/models/helpers/core.py:59
 msgid "Low power slot 4"
 msgstr "Niedrigenergie-Slot 4"
 
-#: bpforge/models/helpers/core.py:60
 msgid "Low power slot 5"
 msgstr "Niedrigenergie-Slot 5"
 
-#: bpforge/models/helpers/core.py:61
 msgid "Low power slot 6"
 msgstr "Niedrigenergie-Slot 6"
 
-#: bpforge/models/helpers/core.py:62
 msgid "Low power slot 7"
 msgstr "Niedrigenergie-Slot 7"
 
-#: bpforge/models/helpers/core.py:63
 msgid "Low power slot 8"
 msgstr "Niedrigenergie-Slot 8"
 
-#: bpforge/models/helpers/core.py:64
 msgid "Locked item, can not be moved unless unlocked"
 msgstr "Gesperrter Gegenstand, kann nur nach dem Entsperren verschoben werden"
 
-#: bpforge/models/helpers/core.py:65
 msgid "Medium power slot 1"
 msgstr "Mittelenergie-Slot 1"
 
-#: bpforge/models/helpers/core.py:66
 msgid "Medium power slot 2"
 msgstr "Mittelenergie-Slot 2"
 
-#: bpforge/models/helpers/core.py:67
 msgid "Medium power slot 3"
 msgstr "Mittelenergie-Slot 3"
 
-#: bpforge/models/helpers/core.py:68
 msgid "Medium power slot 4"
 msgstr "Mittelenergie-Slot 4"
 
-#: bpforge/models/helpers/core.py:69
 msgid "Medium power slot 5"
 msgstr "Mittelenergie-Slot 5"
 
-#: bpforge/models/helpers/core.py:70
 msgid "Medium power slot 6"
 msgstr "Mittelenergie-Slot 6"
 
-#: bpforge/models/helpers/core.py:71
 msgid "Medium power slot 7"
 msgstr "Mittelenergie-Slot 7"
 
-#: bpforge/models/helpers/core.py:72
 msgid "Medium power slot 8"
 msgstr "Mittelenergie-Slot 8"
 
-#: bpforge/models/helpers/core.py:73
 msgid "Office Folder"
 msgstr "Büroordner"
 
-#: bpforge/models/helpers/core.py:74
 msgid "Pilot"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:75
 msgid "Planet Surface"
 msgstr "Planetenoberfläche"
 
-#: bpforge/models/helpers/core.py:76
 msgid "Quafe Bay"
 msgstr "Quafe-Fach"
 
-#: bpforge/models/helpers/core.py:77
 msgid "Quantum Core Room"
 msgstr "Quantenkernraum"
 
-#: bpforge/models/helpers/core.py:78
 msgid "Reward"
 msgstr "Belohnung"
 
-#: bpforge/models/helpers/core.py:79
 msgid "Rig power slot 1"
 msgstr "Rig-Slot 1"
 
-#: bpforge/models/helpers/core.py:80
 msgid "Rig power slot 2"
 msgstr "Rig-Slot 2"
 
-#: bpforge/models/helpers/core.py:81
 msgid "Rig power slot 3"
 msgstr "Rig-Slot 3"
 
-#: bpforge/models/helpers/core.py:82
 msgid "Rig power slot 4"
 msgstr "Rig-Slot 4"
 
-#: bpforge/models/helpers/core.py:83
 msgid "Rig power slot 5"
 msgstr "Rig-Slot 5"
 
-#: bpforge/models/helpers/core.py:84
 msgid "Rig power slot 6"
 msgstr "Rig-Slot 6"
 
-#: bpforge/models/helpers/core.py:85
 msgid "Rig power slot 7"
 msgstr "Rig-Slot 7"
 
-#: bpforge/models/helpers/core.py:86
 msgid "Rig power slot 8"
 msgstr "Rig-Slot 8"
 
-#: bpforge/models/helpers/core.py:87
 msgid "Secondary Storage"
 msgstr "Sekundärlager"
 
-#: bpforge/models/helpers/core.py:88
 msgid "Service Slot 0"
 msgstr "Service-Slot 0"
 
-#: bpforge/models/helpers/core.py:89
 msgid "Service Slot 1"
 msgstr "Service-Slot 1"
 
-#: bpforge/models/helpers/core.py:90
 msgid "Service Slot 2"
 msgstr "Service-Slot 2"
 
-#: bpforge/models/helpers/core.py:91
 msgid "Service Slot 3"
 msgstr "Service-Slot 3"
 
-#: bpforge/models/helpers/core.py:92
 msgid "Service Slot 4"
 msgstr "Service-Slot 4"
 
-#: bpforge/models/helpers/core.py:93
 msgid "Service Slot 5"
 msgstr "Service-Slot 5"
 
-#: bpforge/models/helpers/core.py:94
 msgid "Service Slot 6"
 msgstr "Service-Slot 6"
 
-#: bpforge/models/helpers/core.py:95
 msgid "Service Slot 7"
 msgstr "Service-Slot 7"
 
-#: bpforge/models/helpers/core.py:96
 msgid "Ship Hangar"
 msgstr "Schiffshangar"
 
-#: bpforge/models/helpers/core.py:97
 msgid "Ship Offline"
 msgstr "Schiff offline"
 
-#: bpforge/models/helpers/core.py:98
 msgid "Skill"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:99
 msgid "Skill In Training"
 msgstr "Skill im Training"
 
-#: bpforge/models/helpers/core.py:100
 msgid "Specialized Ammo Hold"
 msgstr "Spezialisierter Munitions-Laderaum"
 
-#: bpforge/models/helpers/core.py:102
 msgid "Specialized Command Center Hold"
 msgstr "Spezialisierter Kommandozentralen-Laderaum"
 
-#: bpforge/models/helpers/core.py:104
 msgid "Specialized Fuel Bay"
 msgstr "Spezialisierter Treibstoff-Laderaum"
 
-#: bpforge/models/helpers/core.py:105
 msgid "Specialized Gas Hold"
 msgstr "Spezialisierter Gas-Laderaum"
 
-#: bpforge/models/helpers/core.py:107
 msgid "Specialized Industrial Ship Hold"
 msgstr "Spezialisierter Industrieschiff-Laderaum"
 
-#: bpforge/models/helpers/core.py:110
 msgid "Specialized Large Ship Hold"
 msgstr "Spezialisierter Großschiff-Laderaum"
 
-#: bpforge/models/helpers/core.py:112
 msgid "Specialized Material Bay"
 msgstr "Spezialisierter Material-Laderaum"
 
-#: bpforge/models/helpers/core.py:114
 msgid "Specialized Medium Ship Hold"
 msgstr "Spezialisierter Mittelschiff-Laderaum"
 
-#: bpforge/models/helpers/core.py:116
 msgid "Specialized Mineral Hold"
 msgstr "Spezialisierter Mineral-Laderaum"
 
-#: bpforge/models/helpers/core.py:117
 msgid "Specialized Ore Hold"
 msgstr "Spezialisierter Erz-Laderaum"
 
-#: bpforge/models/helpers/core.py:119
 msgid "Specialized Planetary Commodities Hold"
 msgstr "Spezialisierter Laderaum für planetare Waren"
 
-#: bpforge/models/helpers/core.py:121
 msgid "Specialized Salvage Hold"
 msgstr "Spezialisierter Bergungsgut-Laderaum"
 
-#: bpforge/models/helpers/core.py:122
 msgid "Specialized Ship Hold"
 msgstr "Spezialisierter Schiffs-Laderaum"
 
-#: bpforge/models/helpers/core.py:124
 msgid "Specialized Small Ship Hold"
 msgstr "Spezialisierter Kleinschiff-Laderaum"
 
-#: bpforge/models/helpers/core.py:126
 msgid "Structure Active"
 msgstr "Struktur aktiv"
 
-#: bpforge/models/helpers/core.py:127
 msgid "Structure Fuel"
 msgstr "Struktur-Treibstoff"
 
-#: bpforge/models/helpers/core.py:128
 msgid "Structure Inactive"
 msgstr "Struktur inaktiv"
 
-#: bpforge/models/helpers/core.py:129
 msgid "Structure Offline"
 msgstr "Struktur offline"
 
-#: bpforge/models/helpers/core.py:130
 msgid "Sub System Bay"
 msgstr "Subsystem-Fach"
 
-#: bpforge/models/helpers/core.py:131
 msgid "Sub System Slot 0"
 msgstr "Subsystem-Slot 0"
 
-#: bpforge/models/helpers/core.py:132
 msgid "Sub System Slot 1"
 msgstr "Subsystem-Slot 1"
 
-#: bpforge/models/helpers/core.py:133
 msgid "Sub System Slot 2"
 msgstr "Subsystem-Slot 2"
 
-#: bpforge/models/helpers/core.py:134
 msgid "Sub System Slot 3"
 msgstr "Subsystem-Slot 3"
 
-#: bpforge/models/helpers/core.py:135
 msgid "Sub System Slot 4"
 msgstr "Subsystem-Slot 4"
 
-#: bpforge/models/helpers/core.py:136
 msgid "Sub System Slot 5"
 msgstr "Subsystem-Slot 5"
 
-#: bpforge/models/helpers/core.py:137
 msgid "Sub System Slot 6"
 msgstr "Subsystem-Slot 6"
 
-#: bpforge/models/helpers/core.py:138
 msgid "Sub System Slot 7"
 msgstr "Subsystem-Slot 7"
 
-#: bpforge/models/helpers/core.py:139
 msgid "Unlocked item, can be moved"
 msgstr "Entsperrter Gegenstand, kann verschoben werden"
 
-#: bpforge/models/helpers/core.py:140
 msgid "Wallet"
 msgstr ""
 
-#: bpforge/models/helpers/core.py:141
 msgid "Wardrobe"
 msgstr "Garderobe"
 
-#: bpforge/models/helpers/core.py:142
 msgid "undefined"
 msgstr "undefiniert"
 
-#: bpforge/models/helpers/core.py:154
 msgid "Pending"
 msgstr "Ausstehend"
 
-#: bpforge/models/helpers/core.py:155
 msgid "Accepted"
 msgstr "Akzeptiert"
 
-#: bpforge/models/helpers/core.py:156
 msgid "Cancelled"
 msgstr "Storniert"
 
-#: bpforge/models/helpers/core.py:157
 msgid "Delivered"
 msgstr "Geliefert"
 
-#: bpforge/models/helpers/core.py:158
 msgid "Declined"
 msgstr "Abgelehnt"
 
-#: bpforge/models/helpers/update_manager.py:127
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: bpforge/models/helpers/update_manager.py:128
 msgid "Token Error"
 msgstr "Token Fehler"
 
-#: bpforge/models/helpers/update_manager.py:129
 msgid "Error"
 msgstr "Fehler"
 
-#: bpforge/models/helpers/update_manager.py:130
 msgid "OK"
 msgstr ""
 
-#: bpforge/models/helpers/update_manager.py:131
 msgid "Incomplete"
 msgstr "unvollständig"
 
-#: bpforge/models/helpers/update_manager.py:132
 msgid "In Progress"
 msgstr "In Bearbeitung"
 
-#: bpforge/models/helpers/update_manager.py:137
 msgid "Locations"
 msgstr "Standorte"
 
-#: bpforge/models/request.py:31
 msgid "The shop/owner this order was placed with."
 msgstr "Der Shop/Eigentümer, bei dem diese Bestellung aufgegeben wurde."
 
-#: bpforge/models/request.py:40
 msgid "The user who placed the order."
 msgstr "Der Benutzer, der die Bestellung aufgegeben hat."
 
-#: bpforge/models/request.py:48
 msgid "The name of the shop/owner when the order was placed."
 msgstr ""
 
-#: bpforge/models/request.py:55
 msgid "The name of the buyer when the order was placed."
 msgstr ""
 
-#: bpforge/models/request.py:64
 msgid "The user who owned the shop when the order was placed."
 msgstr ""
 
-#: bpforge/models/request.py:70
 msgid "The corporation ID of the shop when the order was placed."
 msgstr ""
 
-#: bpforge/models/request.py:74
 msgid "The status of this order."
 msgstr "Der Status dieser Bestellung."
 
-#: bpforge/models/request.py:83
 msgid "Customer note or instructions for the order."
 msgstr "Kundennotiz oder Anweisungen zur Bestellung."
 
-#: bpforge/models/request.py:88
 msgid "The time this order was created."
 msgstr "Der Zeitpunkt, zu dem diese Bestellung erstellt wurde."
 
-#: bpforge/models/request.py:93
 msgid "The time this order was last updated."
 msgstr "Der Zeitpunkt der letzten Aktualisierung dieser Bestellung."
 
-#: bpforge/models/request.py:99
 msgid "The time this order was closed."
 msgstr "Der Zeitpunkt, zu dem diese Bestellung abgeschlossen wurde."
 
-#: bpforge/models/request.py:176
 msgid "The parent order for this blueprint item."
 msgstr "Die übergeordnete Bestellung für diese Blaupause."
 
-#: bpforge/models/request.py:185
 msgid "The blueprint being requested."
 msgstr "Die angefragte Blaupause."
 
-#: bpforge/models/request.py:191
 msgid "The Eve ID of the blueprint when it was ordered."
 msgstr ""
 
-#: bpforge/models/request.py:196
 msgid "The Eve type ID of the blueprint when it was ordered."
 msgstr ""
 
-#: bpforge/models/request.py:203
 msgid "The Eve type name of the blueprint when it was ordered."
 msgstr ""
 
-#: bpforge/models/request.py:209
 msgid "The material efficiency of the blueprint when it was ordered."
 msgstr ""
 
-#: bpforge/models/request.py:215
 msgid "The time efficiency of the blueprint when it was ordered."
 msgstr ""
 
-#: bpforge/models/request.py:222
 msgid "The location name of the blueprint when it was ordered."
 msgstr ""
 
-#: bpforge/models/request.py:231
 msgid "The user who made this request."
 msgstr "Der Benutzer, der diese Anfrage gestellt hat."
 
-#: bpforge/models/request.py:238
 msgid "The user assigned to this request."
 msgstr "Der dieser Anfrage zugewiesene Benutzer."
 
-#: bpforge/models/request.py:245
 msgid "The quantity of copies/blueprints being requested."
 msgstr "Die Anzahl der angefragten Kopien/Blaupausen."
 
-#: bpforge/models/request.py:251
 msgid "The number of runs being requested."
 msgstr "Die Anzahl der angefragten Durchläufe."
 
-#: bpforge/models/request.py:255
 msgid "The status of this request."
 msgstr "Der Status dieser Anfrage."
 
-#: bpforge/models/request.py:263
 msgid "The time this request was created."
 msgstr "Der Zeitpunkt, zu dem diese Anfrage erstellt wurde."
 
-#: bpforge/models/request.py:269
 msgid "The time this request was closed."
 msgstr "Der Zeitpunkt, zu dem diese Anfrage abgeschlossen wurde."
 
-#: bpforge/views.py:50
 msgid "Cannot add NPC Corporation to Blueprint Forge"
 msgstr "NPC-Corporations können nicht zu Blueprint Forge hinzugefügt werden"
 
-#: bpforge/views.py:60 bpforge/views.py:101
 #, python-brace-format
-msgid "{character.character_name} is not linked to your account"
-msgstr "{character.character_name} ist nicht mit Ihrem Account verknüpft"
+#~ msgid "Update task queued for {owner_name} (force_refresh={force_refresh})."
+#~ msgstr ""
+#~ "Update-Task für {owner_name} eingereiht (force_refresh={force_refresh})."
 
-#: bpforge/views.py:84
 #, python-brace-format
-msgid "{owner.corporation.corporation_name} has been added with {character.character_name} as sync character."
-msgstr "{owner.corporation.corporation_name} wurde mit {character.character_name} als Sync-Charakter hinzugefügt."
+#~ msgid "Invalid status. Must be one of: {valid_statuses}"
+#~ msgstr "Ungültiger Status. Muss einer der folgenden sein: {valid_statuses}"
 
-#: bpforge/views.py:115
 #, python-brace-format
-msgid "{character.character_name} has been added as personal owner."
-msgstr "{character.character_name} wurde als persönlicher Eigentümer hinzugefügt."
+#~ msgid "{character.character_name} is not linked to your account"
+#~ msgstr "{character.character_name} ist nicht mit Ihrem Account verknüpft"
+
+#, python-brace-format
+#~ msgid ""
+#~ "{owner.corporation.corporation_name} has been added with "
+#~ "{character.character_name} as sync character."
+#~ msgstr ""
+#~ "{owner.corporation.corporation_name} wurde mit {character.character_name} "
+#~ "als Sync-Charakter hinzugefügt."
+
+#, python-brace-format
+#~ msgid "{character.character_name} has been added as personal owner."
+#~ msgstr ""
+#~ "{character.character_name} wurde als persönlicher Eigentümer hinzugefügt."
