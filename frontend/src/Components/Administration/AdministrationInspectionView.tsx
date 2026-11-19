@@ -2,14 +2,13 @@
 import React, { useState } from "react";
 
 // Third Party
-import { renderTooltip } from "aa-geuthur-react";
+import { OwnerPortrait, renderTooltip } from "aa-geuthur-react";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Alert, Badge, Button, ButtonGroup, Card, Dropdown, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { BlueprintItemSchema, OwnerSettingSchema } from "@/Api/schema";
-import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
 import styles from "@/Styles/modules/Administration.module.css";
 import { imageServer } from "@/Utils/eveOnline";

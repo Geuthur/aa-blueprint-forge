@@ -2,14 +2,13 @@
 import React from "react";
 
 // Third Party
-import { renderTooltip } from "aa-geuthur-react";
+import { OwnerPortrait, renderTooltip } from "aa-geuthur-react";
 import { ShoppingBag, Box, Layers, Building2, User } from "lucide-react";
 import { Card, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
-import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
 import { imageServer } from "@/Utils/eveOnline";

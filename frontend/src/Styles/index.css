@@ -3,177 +3,30 @@
 
 /*
  * AllianceAuth CSS not colliding with BS5
+ *
+ * The design tokens, the `aa-status-*` classes and their keyframes come from the package.
+ * Only what the package does not have, or has with another value, stays here.
  */
 
-/* ═══ DESIGN TOKENS for AA ═══════════════════════════════════════════════════════ */
+/* ═══ DESIGN TOKENS: not in the package or different from it ═══════════════════ */
 :root {
-    --font-hud: 'Rajdhani', sans-serif;
-    --font-tech: 'Chakra Petch', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
-
-    /* Default dark theme tokens */
-    --aa-body: rgb(24 24 27);
-    --aa-link-body: rgb(39 39 42 / 100%);
-    --aa-link-body-light: rgb(61 61 66 / 100%);
-    --aa-color-white: rgb(255 255 255);
-    --aa-color-black: rgb(0 0 0);
-    --aa-color-body: rgb(24 24 27);
-    --aa-color-body-dark: rgb(11 14 20);
-    --aa-color-grey: rgb(39 39 42);
-    --aa-color-grey-light: rgb(52 52 57);
-    --aa-color-white-light: rgb(202 195 195);
-    --aa-color-secondary: rgb(128 128 128);
-    --aa-color-tertiary: rgb(161 161 170);
-    --aa-color-muted: rgb(113 113 122);
-    --aa-color-dark: rgb(11 14 20);
-    --aa-color-light: rgb(202 195 195);
-    --aa-color-emerald: rgb(16 185 129);
-    --aa-color-emerald-light: rgb(0 188 125);
-    --aa-color-emerald-dark: color-mix(in srgb, rgb(16 185 129) 60%, var(--aa-color-black));
-    --aa-color-amber: rgb(245 158 11);
-    --aa-color-amber-light: rgb(252 211 77);
-    --aa-color-amber-dark: color-mix(in srgb, rgb(245 158 11) 60%, var(--aa-color-black));
-    --aa-color-rose: rgb(244 63 94);
-    --aa-color-rose-light: rgb(253 164 175);
-    --aa-color-rose-dark: color-mix(in srgb, rgb(244 63 94) 60%, var(--aa-color-black));
-    --aa-color-green: rgb(14 209 79);
-    --aa-color-red: rgb(204 17 48);
-    --aa-color-blue: rgb(37 99 235);
-    --aa-color-blue-light: rgb(59 130 246);
-    --aa-color-blue-dark: color-mix(in srgb, rgb(37 99 235) 60%, var(--aa-color-black));
-    --aa-text-white: var(--aa-color-white);
-    --aa-text-black: var(--aa-color-black);
-    --aa-text-primary: rgb(202 195 195);
-    --aa-text-title: rgb(255 255 255);
-    --aa-text-secondary: rgb(128 128 128);
-    --aa-text-tertiary: rgb(161 161 170);
-    --aa-text-muted: rgb(113 113 122);
-    --aa-text-emerald: var(--aa-color-emerald);
-    --aa-text-emerald-light: var(--aa-color-emerald-light);
-    --aa-text-emerald-dark: var(--aa-color-emerald-dark);
-    --aa-text-amber: var(--aa-color-amber);
-    --aa-text-amber-light: var(--aa-color-amber-light);
-    --aa-text-amber-dark: var(--aa-color-amber-dark);
-    --aa-text-rose: var(--aa-color-rose);
-    --aa-text-rose-light: var(--aa-color-rose-light);
-    --aa-text-rose-dark: var(--aa-color-rose-dark);
-    --aa-font-size: .75rem;
-    --aa-font-size-xs: .625rem;
-    --aa-font-size-sm: .875rem;
-    --aa-font-size-md: 1rem;
-    --aa-font-size-lg: 1.25rem;
-    --aa-font-size-xl: 1.5rem;
-    --aa-font-size-2xl: 2rem;
-    --aa-font-weight: 600;
-    --aa-font-weight-bold: 700;
-    --aa-font-weight-medium: 500;
-    --aa-font-weight-light: 400;
-    --aa-blue-active: rgb(37 99 235);
-    --aa-blue-focus: rgb(59 130 246);
-    --aa-border: rgb(24 24 27);
-    --aa-border-light: rgb(52 52 57);
-    --aa-border-rose: var(--aa-color-rose);
-    --aa-border-amber: var(--aa-color-amber);
-    --aa-border-emerald: var(--aa-color-emerald);
-    --aa-border-green: var(--aa-color-green);
-    --aa-border-red: var(--aa-color-red);
     --aa-border-solid: 1px solid var(--aa-color-grey-light, var(--aa-border-light));
     --aa-border-solid-lg: 2px solid var(--aa-color-grey-light, var(--aa-border-light));
     --aa-border-solid-xl: 3px solid var(--aa-color-grey-light, var(--aa-border-light));
-    --aa-border-radius: 12px;
-    --aa-bg-blue: color-mix(in srgb, var(--aa-color-blue) 45%, var(--aa-color-black));
-    --aa-bg-blue-light: color-mix(in srgb, var(--aa-color-blue-light) 35%, var(--aa-color-black));
-    --aa-bg-blue-dark: color-mix(in srgb, var(--aa-color-blue-dark) 45%, var(--aa-color-black));
-    --aa-bg-emerald: color-mix(in srgb, var(--aa-color-emerald) 45%, var(--aa-color-black));
-    --aa-bg-emerald-light: color-mix(in srgb, var(--aa-color-emerald-light) 35%, var(--aa-color-black));
-    --aa-bg-emerald-dark: color-mix(in srgb, var(--aa-color-emerald-dark) 45%, var(--aa-color-black));
-    --aa-bg-amber: color-mix(in srgb, var(--aa-color-amber) 45%, var(--aa-color-black));
-    --aa-bg-amber-light: color-mix(in srgb, var(--aa-color-amber-light) 35%, var(--aa-color-black));
-    --aa-bg-amber-dark: color-mix(in srgb, var(--aa-color-amber-dark) 45%, var(--aa-color-black));
-    --aa-bg-rose: color-mix(in srgb, var(--aa-color-rose) 45%, var(--aa-color-black));
-    --aa-bg-rose-light: color-mix(in srgb, var(--aa-color-rose-light) 35%, var(--aa-color-black));
-    --aa-bg-rose-dark: color-mix(in srgb, var(--aa-color-rose-dark) 45%, var(--aa-color-black));
-    --aa-bg-grey: color-mix(in srgb, var(--aa-color-grey) 70%, var(--aa-color-black));
-    --aa-bg-grey-light: color-mix(in srgb, var(--aa-color-grey-light) 60%, var(--aa-color-black));
     --aa-bg-grey-dark: color-mix(in srgb, var(--aa-color-grey-dark) 80%, var(--aa-color-black));
-    --aa-bg-dark: color-mix(in srgb, var(--aa-color-body-dark) 80%, var(--aa-color-black));
-    --aa-bg-light: color-mix(in srgb, var(--aa-color-grey-light) 80%, var(--aa-color-black));
-    --aa-table-shell-bg: rgb(24 24 27);
-    --aa-table-head-bg: rgb(11 14 20);
     --aa-table-footer-bg: rgb(11 14 20);
-    --aa-table-row-border: rgb(52 52 57);
-    --aa-table-row-hover: color-mix(in srgb, rgb(52 52 57) 55%, transparent);
-    --aa-input-bg: rgb(24 24 27);
-    --aa-input-color: rgb(255 255 255);
-    --aa-input-border: rgb(52 52 57);
-    --aa-shadow: 0 4px 6px rgb(0 0 0 / var(--aa-shadow-opacity));
-    --aa-shadow-dark: 0 1px 2px rgb(0 0 0 / var(--aa-shadow-opacity));
-    --aa-shadow-opacity: 0.1;
 }
 
-/* ═══ Flatly (Light Theme) Overrides ══════════════════════════════════════════════ */
+/* ═══ Flatly (Light Theme) ═════════════════════════════════════════════════════ */
 html[data-theme="flatly"],
 html[data-bs-theme="light"] {
-    --aa-body: var(--bs-body-bg, rgb(255 255 255));
-    --aa-color-body: var(--bs-body-bg, rgb(255 255 255));
-    --aa-color-body-dark: var(--bs-tertiary-bg, rgb(236 240 241));
-    --aa-color-grey: rgb(236 240 241);
-    --aa-color-grey-light: rgb(222 226 230);
-    --aa-color-white-light: rgb(44 62 80);
-    --aa-color-secondary: rgb(123 138 139);
-    --aa-color-tertiary: rgb(73 80 87);
-    --aa-color-muted: rgb(149 165 166);
-    --aa-color-dark: rgb(44 62 80);
-    --aa-color-light: rgb(248 249 250);
-    --aa-text-primary: var(--bs-body-color, rgb(44 62 80));
-    --aa-text-title: var(--bs-heading-color, rgb(44 62 80));
-    --aa-text-secondary: rgb(123 138 139);
-    --aa-text-tertiary: rgb(73 80 87);
-    --aa-text-muted: rgb(149 165 166);
-    --aa-border: var(--bs-border-color, rgb(222 226 230));
-    --aa-border-light: var(--bs-border-color-subtle, rgb(236 240 241));
-    --aa-table-shell-bg: var(--bs-card-bg, rgb(255 255 255));
-    --aa-table-head-bg: var(--bs-tertiary-bg, rgb(236 240 241));
     --aa-table-footer-bg: var(--bs-tertiary-bg, rgb(236 240 241));
-    --aa-table-row-border: var(--bs-border-color, rgb(222 226 230));
-    --aa-table-row-hover: rgb(0 0 0 / 4%);
-    --aa-input-bg: var(--bs-body-bg, rgb(255 255 255));
-    --aa-input-color: var(--bs-body-color, rgb(44 62 80));
-    --aa-input-border: var(--bs-border-color, rgb(206 212 218));
-    --aa-shadow-opacity: 0.05;
 }
 
-/* ═══ Darkly (Dark Theme) Overrides ══════════════════════════════════════════════ */
+/* ═══ Darkly (Dark Theme) ══════════════════════════════════════════════════════ */
 html[data-theme="darkly"],
 html[data-bs-theme="dark"] {
-    --aa-body: rgb(24 24 27);
-    --aa-color-body: rgb(24 24 27);
-    --aa-color-body-dark: rgb(11 14 20);
-    --aa-color-grey: rgb(39 39 42);
-    --aa-color-grey-light: rgb(52 52 57);
-    --aa-color-white-light: rgb(202 195 195);
-    --aa-color-secondary: rgb(128 128 128);
-    --aa-color-tertiary: rgb(161 161 170);
-    --aa-color-muted: rgb(113 113 122);
-    --aa-color-dark: rgb(11 14 20);
-    --aa-color-light: rgb(202 195 195);
-    --aa-text-primary: rgb(202 195 195);
-    --aa-text-title: rgb(255 255 255);
-    --aa-text-secondary: rgb(128 128 128);
-    --aa-text-tertiary: rgb(161 161 170);
-    --aa-text-muted: rgb(113 113 122);
-    --aa-border: rgb(24 24 27);
-    --aa-border-light: rgb(52 52 57);
-    --aa-table-shell-bg: rgb(24 24 27);
-    --aa-table-head-bg: rgb(11 14 20);
     --aa-table-footer-bg: rgb(11 14 20);
-    --aa-table-row-border: rgb(52 52 57);
-    --aa-table-row-hover: color-mix(in srgb, rgb(52 52 57) 55%, transparent);
-    --aa-input-bg: rgb(24 24 27);
-    --aa-input-color: rgb(255 255 255);
-    --aa-input-border: rgb(52 52 57);
-    --aa-shadow-opacity: 0.1;
 }
 
 /* ═══ Background ═══════════════════════════════════════════════════════════════ */
@@ -366,76 +219,6 @@ html[data-bs-theme="dark"] {
     font-size: var(--aa-font-size-xs);
 }
 
-.aa-status-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.aa-status-dot {
-    position: relative;
-    display: inline-flex;
-    width: 8px;
-    height: 8px;
-    flex-shrink: 0;
-}
-
-.aa-status-dot-fill {
-    position: relative;
-    display: block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
-
-.aa-status-dot-error {
-    background-color: var(--aa-color-rose);
-    box-shadow: 0 0 8px color-mix(in srgb, var(--aa-color-rose) 60%, transparent);
-}
-
-.aa-status-dot-busy {
-    background-color: var(--aa-color-amber);
-    animation: aa-status-pulse 1.5s ease-in-out infinite;
-}
-
-.aa-status-dot-ready {
-    background-color: var(--aa-color-emerald);
-}
-
-.aa-status-ping {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background-color: var(--aa-color-emerald-light);
-    opacity: .75;
-    animation: aa-status-ping 1s cubic-bezier(0, 0, .2, 1) infinite;
-}
-
-.aa-status-text {
-    color: var(--aa-text-secondary);
-    font-family: var(--font-mono);
-    font-size: var(--aa-font-size);
-}
-
-.aa-status-text-error {
-    color: var(--aa-text-rose-light);
-    font-weight: var(--aa-font-weight-bold);
-}
-
-@keyframes aa-status-pulse {
-    50% {
-        opacity: .5;
-    }
-}
-
-@keyframes aa-status-ping {
-    75%,
-    100% {
-        transform: scale(2);
-        opacity: 0;
-    }
-}
-
 /* ═══ ANIMATED PENDING / ERROR PULSE ══════════════════════════════════════════ */
 .aa-pulse {
     animation: aa-pending-glow 2s infinite ease-in-out;
@@ -484,34 +267,4 @@ html[data-bs-theme="dark"] {
     height: 6px;
     border-radius: 50%;
     background-color: var(--aa-color-rose-light);
-}
-
-@keyframes aa-pending-ping {
-    75%,
-    100% {
-        transform: scale(2.6);
-        opacity: 0;
-    }
-}
-
-@keyframes aa-pending-glow {
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgb(245 158 11 / 25%);
-    }
-
-    50% {
-        box-shadow: 0 0 10px 2px rgb(245 158 11 / 50%);
-    }
-}
-
-@keyframes aa-danger-glow {
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgb(244 63 94 / 25%);
-    }
-
-    50% {
-        box-shadow: 0 0 10px 2px rgb(244 63 94 / 50%);
-    }
 }

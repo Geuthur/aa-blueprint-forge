@@ -2,20 +2,23 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
-import { renderTooltip } from "aa-geuthur-react";
+import {
+  BaseOwnerSettingsSection,
+  renderTooltip,
+  useUserSettings,
+  type BaseOwner,
+} from "aa-geuthur-react";
 import { Settings2, Store, Users } from "lucide-react";
 import { Button, ButtonGroup, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { BaseOwnerSettingsSection } from "@/Components/Base/OwnerSettings";
-import type { BaseOwner } from "@/Components/Base/OwnerSettings/types";
+import type { UserSettingsSchema, UserSettingsUpdateRequest } from "@/Api/schema";
 import { BpoSelectionModal } from "@/Components/Settings/BpoSelectionModal";
 import {
   useOwnerActions,
   useUpdateOwnerSetting,
   useUserOwners,
-  useUserSettings,
 } from "@/Components/Settings/Hooks";
 import { UserSettingsCard } from "@/Components/Settings/UserSettingsCard";
 import styles from "@/Styles/modules/SettingsPage.module.css";
@@ -34,7 +37,7 @@ export const SettingsPage: React.FC = () => {
     isLoading: isLoadingSettings,
     isError: isErrorSettings,
     updateMutation,
-  } = useUserSettings();
+  } = useUserSettings<UserSettingsSchema, UserSettingsUpdateRequest>();
   const { data: owners, isLoading: isLoadingOwners, isError: isErrorOwners } = useUserOwners();
   const updateOwnerMutation = useUpdateOwnerSetting();
   const actions = useOwnerActions();
@@ -317,6 +320,8 @@ export const SettingsPage: React.FC = () => {
             "No characters or corporations have been linked yet. Use the menu above to link your characters or corporations.",
           )}
           appName="Blueprint Forge"
+          bodyClassName="bg-secondary text-light"
+          cardClassName="bg-dark"
           onUpdateAll={actions.updateAll}
           isUpdatingAll={actions.isUpdatingAll}
           globalCooldown={actions.globalCooldown}
