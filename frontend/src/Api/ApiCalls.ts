@@ -1,3 +1,6 @@
+// Third Party
+import { apiErrorMessage } from "aa-geuthur-react";
+
 // AA bpforge
 import { apiClient } from "@/Api/Api";
 import type { components } from "@/Api/OpenApi";
@@ -6,7 +9,7 @@ import { ProjectName } from "@/constants";
 export async function loadUserOwners(): Promise<components["schemas"]["OwnerSettingSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/settings/owners/`);
   if (error || !data) {
-    throw new Error("Failed to load owner settings");
+    throw new Error(apiErrorMessage(error, "Failed to load owner settings"));
   }
   return data;
 }
@@ -14,7 +17,7 @@ export async function loadUserOwners(): Promise<components["schemas"]["OwnerSett
 export async function fetchUserCharacterStatuses(): Promise<components["schemas"]["UserCharacterStatusSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/user/characters/status/`);
   if (error || !data) {
-    throw new Error("Failed to load character update statuses");
+    throw new Error(apiErrorMessage(error, "Failed to load character update statuses"));
   }
   return data;
 }
@@ -34,7 +37,7 @@ export async function updateOwnerSetting(params: {
   );
 
   if (error || !data) {
-    throw new Error("Failed to update owner setting");
+    throw new Error(apiErrorMessage(error, "Failed to update owner setting"));
   }
   return data;
 }
@@ -55,7 +58,7 @@ export async function triggerOwnerUpdate(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to trigger owner update task");
+    throw new Error(apiErrorMessage(error, "Failed to trigger owner update task"));
   }
   return data;
 }
@@ -72,7 +75,7 @@ export async function deleteOwner(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to delete owner");
+    throw new Error(apiErrorMessage(error, "Failed to delete owner"));
   }
   return data;
 }
@@ -89,7 +92,7 @@ export async function triggerUpdateAllUserOwners(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to trigger update all owners");
+    throw new Error(apiErrorMessage(error, "Failed to trigger update all owners"));
   }
   return data;
 }
@@ -97,7 +100,7 @@ export async function triggerUpdateAllUserOwners(
 export async function loadPublicCatalogs(): Promise<components["schemas"]["OwnerPublicSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/blueprints/`);
   if (error || !data) {
-    throw new Error("Failed to load public catalogs");
+    throw new Error(apiErrorMessage(error, "Failed to load public catalogs"));
   }
   return data;
 }
@@ -113,7 +116,7 @@ export async function loadCatalogBlueprints(
     },
   });
   if (error || !data) {
-    throw new Error("Failed to load catalog blueprints");
+    throw new Error(apiErrorMessage(error, "Failed to load catalog blueprints"));
   }
   return data;
 }
@@ -129,7 +132,7 @@ export async function searchPublicBlueprints(
     },
   });
   if (error || !data) {
-    throw new Error("Failed to search public blueprints");
+    throw new Error(apiErrorMessage(error, "Failed to search public blueprints"));
   }
   return data;
 }
@@ -137,7 +140,7 @@ export async function searchPublicBlueprints(
 export async function loadMyBlueprints(): Promise<components["schemas"]["BlueprintItemSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/my-blueprints/`);
   if (error || !data) {
-    throw new Error("Failed to load user blueprints");
+    throw new Error(apiErrorMessage(error, "Failed to load user blueprints"));
   }
   return data;
 }
@@ -149,7 +152,7 @@ export async function createOrder(
     body: payload,
   });
   if (error || !data) {
-    throw new Error("Failed to create order");
+    throw new Error(apiErrorMessage(error, "Failed to create order"));
   }
   return data;
 }
@@ -163,7 +166,7 @@ export async function loadOrders(
     },
   });
   if (error || !data) {
-    throw new Error("Failed to load orders");
+    throw new Error(apiErrorMessage(error, "Failed to load orders"));
   }
   return data;
 }
@@ -177,7 +180,7 @@ export async function loadOrder(
     },
   });
   if (error || !data) {
-    throw new Error("Failed to load order details");
+    throw new Error(apiErrorMessage(error, "Failed to load order details"));
   }
   return data;
 }
@@ -193,7 +196,7 @@ export async function updateOrderStatus(
     body: { status },
   });
   if (error || !data) {
-    throw new Error("Failed to update order status");
+    throw new Error(apiErrorMessage(error, "Failed to update order status"));
   }
   return data;
 }
@@ -207,7 +210,7 @@ export async function deleteOrder(
     },
   });
   if (error || !data) {
-    throw new Error("Failed to delete order");
+    throw new Error(apiErrorMessage(error, "Failed to delete order"));
   }
   return data;
 }
@@ -224,7 +227,7 @@ export async function loadOwnerBpos(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to load owner BPOs");
+    throw new Error(apiErrorMessage(error, "Failed to load owner BPOs"));
   }
   return data;
 }
@@ -245,7 +248,7 @@ export async function updateOwnerBpos(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to update offered BPOs");
+    throw new Error(apiErrorMessage(error, "Failed to update offered BPOs"));
   }
   return data as { success: boolean; count?: number };
 }
@@ -253,7 +256,7 @@ export async function updateOwnerBpos(
 export async function loadAdministrationGroups(): Promise<components["schemas"]["GroupSchema"][]> {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/administration/groups/`);
   if (error || !data) {
-    throw new Error("Failed to load Alliance Auth groups");
+    throw new Error(apiErrorMessage(error, "Failed to load Alliance Auth groups"));
   }
   return data;
 }
@@ -263,7 +266,7 @@ export async function loadAdministrationSettings(): Promise<
 > {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/administration/settings/`);
   if (error || !data) {
-    throw new Error("Failed to load administration notification settings");
+    throw new Error(apiErrorMessage(error, "Failed to load administration notification settings"));
   }
   return data;
 }
@@ -275,7 +278,7 @@ export async function updateAdministrationSettings(
     body: payload,
   });
   if (error || !data) {
-    throw new Error("Failed to update administration notification settings");
+    throw new Error(apiErrorMessage(error, "Failed to update administration notification settings"));
   }
   return data;
 }
@@ -285,7 +288,7 @@ export async function loadAdministrationOwners(): Promise<
 > {
   const { data, error } = await apiClient.GET(`/${ProjectName}/api/administration/owners/`);
   if (error || !data) {
-    throw new Error("Failed to load all owners for administration");
+    throw new Error(apiErrorMessage(error, "Failed to load all owners for administration"));
   }
   return data;
 }
@@ -304,7 +307,7 @@ export async function updateAdministrationOwner(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to update owner by administration");
+    throw new Error(apiErrorMessage(error, "Failed to update owner by administration"));
   }
   return data;
 }
@@ -321,7 +324,7 @@ export async function loadAdministrationOwnerBlueprints(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to load owner blueprints for administration");
+    throw new Error(apiErrorMessage(error, "Failed to load owner blueprints for administration"));
   }
   return data;
 }
@@ -342,7 +345,7 @@ export async function triggerAdministrationOwnerUpdate(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to trigger owner update task");
+    throw new Error(apiErrorMessage(error, "Failed to trigger owner update task"));
   }
   return data;
 }
@@ -359,7 +362,7 @@ export async function deleteAdministrationOwner(
     },
   );
   if (error || !data) {
-    throw new Error("Failed to delete owner");
+    throw new Error(apiErrorMessage(error, "Failed to delete owner"));
   }
   return data;
 }
@@ -378,7 +381,7 @@ export async function triggerAdministrationGlobalUpdate(params: {
     },
   );
   if (error || !data) {
-    throw new Error("Failed to trigger global update task");
+    throw new Error(apiErrorMessage(error, "Failed to trigger global update task"));
   }
   return data;
 }
