@@ -12,45 +12,13 @@ import {
   deleteOwner,
   loadOwnerBpos,
   loadUserOwners,
-  loadUserSettings,
   triggerOwnerUpdate,
   triggerUpdateAllUserOwners,
   updateOwnerBpos,
   updateOwnerSetting,
-  updateUserSettings,
 } from "@/Api/ApiCalls";
 import { queryKeys } from "@/Api/query";
-import type { OwnerSettingSchema, UserSettingsSchema } from "@/Api/schema";
-
-/** Loads the user settings and updates them optimistically. */
-export function useUserSettings() {
-  const queryClient = useQueryClient();
-
-  const query = useQuery({
-    queryKey: queryKeys.UserSettings,
-    queryFn: loadUserSettings,
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: updateUserSettings,
-    onMutate: async (newSettings) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.UserSettings });
-      const previous = queryClient.getQueryData<UserSettingsSchema>(queryKeys.UserSettings);
-      queryClient.setQueryData<UserSettingsSchema>(queryKeys.UserSettings, newSettings);
-      return { previous };
-    },
-    onError: (_error, _settings, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(queryKeys.UserSettings, context.previous);
-      }
-    },
-    onSuccess: (savedSettings) => {
-      queryClient.setQueryData(queryKeys.UserSettings, savedSettings);
-    },
-  });
-
-  return { ...query, updateMutation };
-}
+import type { OwnerSettingSchema } from "@/Api/schema";
 
 /** Loads the owners of the current user. */
 export function useUserOwners() {

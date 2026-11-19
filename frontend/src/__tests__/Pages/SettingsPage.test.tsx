@@ -3,23 +3,42 @@ import { MemoryRouter } from "react-router-dom";
 
 // Third Party
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useUserSettings } from "aa-geuthur-react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // AA bpforge
 import * as ApiCalls from "@/Api/ApiCalls";
 import { SettingsPage } from "@/Pages/SettingsPage";
 
+// The hook itself is tested in aa-geuthur-react.
+vi.mock("aa-geuthur-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("aa-geuthur-react")>()),
+  useUserSettings: vi.fn(),
+}));
+
 vi.mock("@/Api/ApiCalls", () => ({
-  loadUserSettings: vi.fn(),
-  updateUserSettings: vi.fn(),
   loadUserOwners: vi.fn(),
   updateOwnerSetting: vi.fn(),
   triggerOwnerUpdate: vi.fn(),
   deleteOwner: vi.fn(),
   triggerUpdateAllUserOwners: vi.fn(),
 }));
+
+const mutate = vi.fn();
+
+const mockSettings = (
+  data: { disable_notifications: boolean } | undefined,
+  state: { isLoading?: boolean; isError?: boolean; isPending?: boolean; isMutationError?: boolean } = {},
+) => {
+  vi.mocked(useUserSettings).mockReturnValue({
+    data,
+    isLoading: state.isLoading ?? false,
+    isError: state.isError ?? false,
+    updateMutation: { mutate, isPending: state.isPending ?? false, isError: state.isMutationError ?? false },
+  } as never);
+};
 
 const renderPage = () => {
   const queryClient = new QueryClient({
@@ -37,14 +56,13 @@ const renderPage = () => {
 describe("SettingsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSettings({ disable_notifications: false });
     vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue([]);
   });
 
   it("should load the saved global notification preference", async () => {
     // Test Data
-    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValueOnce({
-      disable_notifications: true,
-    });
+    mockSettings({ disable_notifications: true });
 
     // Test Action
     renderPage();
@@ -55,15 +73,26 @@ describe("SettingsPage", () => {
     ).toBeChecked();
   });
 
+  it("should show the loading state while the settings load", () => {
+    mockSettings(undefined, { isLoading: true });
+
+    renderPage();
+
+    expect(screen.getByText("Loading settings…")).toBeInTheDocument();
+  });
+
+  it("should show an error when the settings fail to load", () => {
+    mockSettings(undefined, { isError: true });
+
+    renderPage();
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Failed to load settings");
+  });
+
   it("should save the global preference when the switch is enabled", async () => {
     // Test Data
     const user = userEvent.setup();
-    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
-      disable_notifications: false,
-    });
-    vi.mocked(ApiCalls.updateUserSettings).mockResolvedValue({
-      disable_notifications: true,
-    });
+    mockSettings({ disable_notifications: false });
 
     // Test Action
     renderPage();
@@ -73,19 +102,13 @@ describe("SettingsPage", () => {
     await user.click(toggle);
 
     // Expected Result
-    expect(ApiCalls.updateUserSettings).toHaveBeenCalledWith(
-      { disable_notifications: true },
-      expect.any(Object),
-    );
-    await waitFor(() => expect(toggle).toBeChecked());
+    expect(mutate).toHaveBeenCalledWith({ disable_notifications: true });
   });
 
   it("should render linked owners and allow toggling public shop status via switch or row", async () => {
     // Test Data
     const user = userEvent.setup();
-    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
-      disable_notifications: false,
-    });
+    mockSettings({ disable_notifications: false });
     const mockOwners = [
       {
         id: 1,
@@ -211,9 +234,7 @@ describe("SettingsPage", () => {
   it("should allow toggling public shop by clicking the public row", async () => {
     // Test Data
     const user = userEvent.setup();
-    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
-      disable_notifications: false,
-    });
+    mockSettings({ disable_notifications: false });
     const mockOwners = [
       {
         id: 1,
@@ -263,9 +284,7 @@ describe("SettingsPage", () => {
   it("allows switching catalog public type via the ButtonGroup", async () => {
     // Test Data
     const user = userEvent.setup();
-    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
-      disable_notifications: false,
-    });
+    mockSettings({ disable_notifications: false });
     const mockOwners = [
       {
         id: 1,
@@ -315,9 +334,7 @@ describe("SettingsPage", () => {
   it("should trigger update all owners when Update All button is clicked", async () => {
     // Test Data
     const user = userEvent.setup();
-    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
-      disable_notifications: false,
-    });
+    mockSettings({ disable_notifications: false });
     const mockOwners = [
       {
         id: 1,
@@ -364,9 +381,7 @@ describe("SettingsPage", () => {
   it("should trigger single owner update when Update button on card is clicked", async () => {
     // Test Data
     const user = userEvent.setup();
-    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
-      disable_notifications: false,
-    });
+    mockSettings({ disable_notifications: false });
     const mockOwners = [
       {
         id: 42,
@@ -413,9 +428,7 @@ describe("SettingsPage", () => {
   it("should open delete modal and call deleteOwner when confirmed", async () => {
     // Test Data
     const user = userEvent.setup();
-    vi.mocked(ApiCalls.loadUserSettings).mockResolvedValue({
-      disable_notifications: false,
-    });
+    mockSettings({ disable_notifications: false });
     const mockOwners = [
       {
         id: 99,

@@ -116,6 +116,8 @@ Section Order:
 
 - [CHANGE] The table filter fields use Bootstrap utility classes for their layout and share a single clear button component.
 
+- [CHANGE] Frontend moved to `aa-geuthur-react` 1.5.0: owner cards, settings section, portrait, `initI18n`, `useUserSettings` and the design tokens come from the package; the local copies (owner settings, owner portrait, badges, forms, user settings calls) are removed. On the settings page the header of the owner section has rounded corners, owner cards with an error pulse, and a few German texts changed ("Wird gelöscht…", "Letzte Synchronisierung", "Update-Status wird geladen…").
+
 ### Removed
 
 - [REMOVED] Unused copy of the blueprint components in `Components/Blueprint`.
