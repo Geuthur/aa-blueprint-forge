@@ -434,7 +434,7 @@ const calls: [string, Method, () => Promise<unknown>, string][] = [
     ['loadCatalogBlueprints', 'GET', () => loadCatalogBlueprints(1), "Failed to load catalog blueprints"],
     ['searchPublicBlueprints', 'GET', () => searchPublicBlueprints('rifter'), "Failed to search public blueprints"],
     ['loadMyBlueprints', 'GET', () => loadMyBlueprints(), "Failed to load user blueprints"],
-    ['createOrder', 'POST', () => createOrder({ owner_id: 1, items: [] }), "Failed to create order"],
+    ['createOrder', 'POST', () => createOrder({ owner_id: 1, note: '', items: [] }), "Failed to create order"],
     ['loadOrders', 'GET', () => loadOrders(), "Failed to load orders"],
     ['loadOrder', 'GET', () => loadOrder(1), "Failed to load order details"],
     ['updateOrderStatus', 'POST', () => updateOrderStatus(1, 'Accepted'), "Failed to update order status"],
