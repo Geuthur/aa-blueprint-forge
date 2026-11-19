@@ -2,6 +2,12 @@
 from ninja import Schema
 
 
+class ErrorSchema(Schema):
+    """Error response of an endpoint, e.g. for 403 and 404."""
+
+    error: str
+
+
 class UserData(Schema):
     """
     Schema for user data, including character ID and character name.

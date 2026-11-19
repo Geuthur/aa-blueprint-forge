@@ -2,7 +2,7 @@
 
 # Django
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.handlers.wsgi import WSGIRequest
 from django.db import transaction
@@ -23,19 +23,15 @@ from bpforge.tasks import update_owner
 
 
 @login_required
-def react_base(request: WSGIRequest, character_id=None):  #
-    if character_id is None:
-        character_id = request.user.profile.main_character.character_id
-
-    context = {
-        "version": __version__,
-        "app_name": __app_name__,
-        "character_id": character_id,
-    }
+@permission_required("bpforge.basic_access")
+def react_base(request: WSGIRequest):
+    """Serve the React app; routing and permissions of the pages are handled by the API."""
+    context = {"version": __version__, "app_name": __app_name__}
     return render(request, "bpforge/react_base.html", context=context)
 
 
 @login_required
+@permission_required("bpforge.basic_access")
 @token_required(scopes=Owner.get_corporation_scopes())
 def add_corporation(request: WSGIRequest, token: Token):
     """Add Corporation"""
@@ -53,7 +49,10 @@ def add_corporation(request: WSGIRequest, token: Token):
         )
     except ObjectDoesNotExist:
         messages.error(
-            request, _(f"{character.character_name} is not linked to your account")
+            request,
+            _("{character_name} is not linked to your account").format(
+                character_name=character.character_name
+            ),
         )
         return redirect(f"{reverse('bpforge:react_base')}settings/")
 
@@ -77,13 +76,17 @@ def add_corporation(request: WSGIRequest, token: Token):
     messages.info(
         request,
         _(
-            f"{owner.corporation.corporation_name} has been added with {character.character_name} as sync character."
+            "{corporation_name} has been added with {character_name} as sync character."
+        ).format(
+            corporation_name=owner.corporation.corporation_name,
+            character_name=character.character_name,
         ),
     )
     return redirect(f"{reverse('bpforge:react_base')}settings/")
 
 
 @login_required
+@permission_required("bpforge.basic_access")
 @token_required(scopes=Owner.get_character_scopes())
 def add_character(request: WSGIRequest, token: Token):
     """Add Character"""
@@ -94,7 +97,10 @@ def add_character(request: WSGIRequest, token: Token):
         )
     except ObjectDoesNotExist:
         messages.error(
-            request, _(f"{character.character_name} is not linked to your account")
+            request,
+            _("{character_name} is not linked to your account").format(
+                character_name=character.character_name
+            ),
         )
         return redirect(f"{reverse('bpforge:react_base')}settings/")
 
@@ -108,6 +114,8 @@ def add_character(request: WSGIRequest, token: Token):
     update_owner.delay(owner.pk)
     messages.info(
         request,
-        _(f"{character.character_name} has been added as personal owner."),
+        _("{character_name} has been added as personal owner.").format(
+            character_name=character.character_name
+        ),
     )
     return redirect(f"{reverse('bpforge:react_base')}settings/")

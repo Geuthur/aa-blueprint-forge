@@ -2,14 +2,13 @@
 import React from "react";
 
 // Third Party
-import { renderTooltip } from "aa-geuthur-react";
+import { OwnerPortrait, renderTooltip } from "aa-geuthur-react";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Alert, Badge, Button, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
-import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import { OrderFloatingBar } from "@/Components/Main/OrderFloatingBar";

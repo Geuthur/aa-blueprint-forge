@@ -2,14 +2,13 @@
 import React from "react";
 
 // Third Party
-import { renderTooltip } from "aa-geuthur-react";
+import { OwnerPortrait, renderTooltip } from "aa-geuthur-react";
 import { ShoppingBag, Box, Layers, Building2, User } from "lucide-react";
 import { Card, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
-import { OwnerPortrait } from "@/Components/Base/OwnerPortrait";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
 import { imageServer } from "@/Utils/eveOnline";
@@ -139,7 +138,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
               </span>
             </div>
             <div
-              className={`d-flex flex-column gap-1 overflow-auto pe-1 ${styles.matchingBlueprintList}`}
+              className={`d-flex flex-column gap-1 overflow-auto pe-1 ${styles["matching-blueprint-list"]}`}
               data-testid="matching-blueprints-list"
             >
               {matchingBlueprints.slice(0, 10).map((bp) => (
@@ -151,7 +150,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
                   }}
                   role="button"
                   tabIndex={0}
-                  className={`d-flex align-items-center justify-content-between p-1 px-2 rounded border border-secondary-subtle small ${styles.matchingBlueprintItem}`}
+                  className={`d-flex align-items-center justify-content-between p-1 px-2 rounded border border-secondary-subtle small ${styles["matching-blueprint-item"]}`}
                 >
                   <div className="d-flex align-items-center gap-2 text-truncate me-2">
                     <img

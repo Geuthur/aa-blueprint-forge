@@ -9,7 +9,6 @@ from ninja import NinjaAPI
 # Django
 from django.contrib.auth.models import Group
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 
 # AA Blueprint Forge
@@ -29,7 +28,7 @@ class ApiEndpoints:
             "administration/groups/",
             response={
                 HTTPStatus.OK: list[schema.GroupSchema],
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="List all Alliance Auth groups for notification configuration",
@@ -49,7 +48,7 @@ class ApiEndpoints:
             "administration/settings/",
             response={
                 HTTPStatus.OK: schema.AdministrationNotificationSettingsSchema,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Get global notification settings for administrators",
@@ -74,7 +73,7 @@ class ApiEndpoints:
             "administration/settings/",
             response={
                 HTTPStatus.OK: schema.AdministrationNotificationSettingsSchema,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Update global notification settings for administrators",
@@ -104,7 +103,7 @@ class ApiEndpoints:
             "administration/owners/",
             response={
                 HTTPStatus.OK: list[schema.OwnerSettingSchema],
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="List all owners across the entire system for administration management",
@@ -151,8 +150,8 @@ class ApiEndpoints:
             "administration/owners/{int:owner_id}/",
             response={
                 HTTPStatus.OK: schema.OwnerSettingSchema,
-                HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.NOT_FOUND: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+                HTTPStatus.NOT_FOUND: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Administration update of an owner's settings and notification groups",
@@ -165,7 +164,7 @@ class ApiEndpoints:
                     "error": _("Administration permission required.")
                 }
 
-            owner = get_object_or_404(
+            owner = (
                 Owner.objects.select_related(
                     "character__character",
                     "corporation__alliance",
@@ -188,9 +187,12 @@ class ApiEndpoints:
                         filter=Q(bpforge_blueprints__runs__gt=0),
                         distinct=True,
                     ),
-                ),
-                id=owner_id,
+                )
+                .filter(id=owner_id)
+                .first()
             )
+            if owner is None:
+                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
 
             update_fields = []
             if payload.is_public is not None:
@@ -221,8 +223,8 @@ class ApiEndpoints:
             "administration/owners/{int:owner_id}/blueprints/",
             response={
                 HTTPStatus.OK: list[schema.BlueprintItemSchema],
-                HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.NOT_FOUND: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+                HTTPStatus.NOT_FOUND: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="List all blueprints for a specific owner for administration inspection",
@@ -233,10 +235,13 @@ class ApiEndpoints:
                     "error": _("Administration permission required.")
                 }
 
-            owner = get_object_or_404(
-                Owner.objects.select_related("character__character", "corporation"),
-                id=owner_id,
+            owner = (
+                (Owner.objects.select_related("character__character", "corporation"))
+                .filter(id=owner_id)
+                .first()
             )
+            if owner is None:
+                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
 
             blueprints = (
                 Blueprint.objects.with_api_relations()
@@ -253,8 +258,8 @@ class ApiEndpoints:
             "administration/owners/{int:owner_id}/update/",
             response={
                 HTTPStatus.OK: schema.TaskTriggerResponseSchema,
-                HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.NOT_FOUND: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+                HTTPStatus.NOT_FOUND: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Trigger update_owner Celery task for a specific owner",
@@ -269,10 +274,13 @@ class ApiEndpoints:
                     "error": _("Administration permission required.")
                 }
 
-            owner = get_object_or_404(
-                Owner.objects.select_related("character__character", "corporation"),
-                id=owner_id,
+            owner = (
+                (Owner.objects.select_related("character__character", "corporation"))
+                .filter(id=owner_id)
+                .first()
             )
+            if owner is None:
+                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
             force_refresh = payload.force_refresh if payload else False
             if force_refresh and not request.user.is_superuser:
                 return HTTPStatus.FORBIDDEN, {
@@ -285,16 +293,16 @@ class ApiEndpoints:
             return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
                 success=True,
                 message=_(
-                    f"Update task queued for {owner_name} (force_refresh={force_refresh})."
-                ),
+                    "Update task queued for {owner_name} (force_refresh={force_refresh})."
+                ).format(owner_name=owner_name, force_refresh=force_refresh),
             )
 
         @api.delete(
             "administration/owners/{int:owner_id}/",
             response={
                 HTTPStatus.OK: schema.TaskTriggerResponseSchema,
-                HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.NOT_FOUND: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+                HTTPStatus.NOT_FOUND: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Delete an owner and all associated blueprints and configurations",
@@ -305,25 +313,28 @@ class ApiEndpoints:
                     "error": _("Administration permission required.")
                 }
 
-            owner = get_object_or_404(
-                Owner.objects.select_related("character__character", "corporation"),
-                id=owner_id,
+            owner = (
+                (Owner.objects.select_related("character__character", "corporation"))
+                .filter(id=owner_id)
+                .first()
             )
+            if owner is None:
+                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
             owner_name = owner.name
             owner.delete()
 
             return HTTPStatus.OK, schema.TaskTriggerResponseSchema(
                 success=True,
                 message=_(
-                    f"Owner {owner_name} and all associated data deleted successfully."
-                ),
+                    "Owner {owner_name} and all associated data deleted successfully."
+                ).format(owner_name=owner_name),
             )
 
         @api.post(
             "administration/tasks/queue/",
             response={
                 HTTPStatus.OK: schema.TaskTriggerResponseSchema,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Trigger global update tasks for all owners or characters/corporations",

@@ -218,7 +218,7 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
                 id: "location_name",
                 header: t("Location"),
                 cell: ({ getValue }) => (
-                    <span className={`text-muted small text-truncate d-inline-block ${styles.colLocation}`}>
+                    <span className={`text-muted small text-truncate d-inline-block ${styles["col-location"]}`}>
                         {String(getValue() || "-")}
                     </span>
                 ),
@@ -291,7 +291,7 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
                 )}
 
                 <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-                    <div className={`input-group ${styles.bpoSearchInput}`}>
+                    <div className={`input-group ${styles["bpo-search-input"]}`}>
                         <span className="input-group-text">
                             <Search size={16} />
                         </span>
@@ -340,7 +340,7 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
                                 xs={1}
                                 md={2}
                                 lg={3}
-                                className={`gx-3 gy-1 m-0 ${styles.bpoStationList}`}
+                                className={`gx-3 gy-1 m-0 ${styles["bpo-station-list"]}`}
                             >
                                 {stations.map(({ name, itemIds }, index) => {
                                     const selectedCount = itemIds.filter((itemId) =>
@@ -400,7 +400,7 @@ export const BpoSelectionModal: React.FC<BpoSelectionModalProps> = ({
                     pageSizeOptions={[15, 25, 50, 100]}
                     itemLabel={t("BPOs")}
                     onRowClick={(row) => handleToggle(row.original.item_id)}
-                    getRowClassName={() => styles.clickableRow}
+                    getRowClassName={() => styles["clickable-row"]}
                 />
             </div>
         </BaseModal>

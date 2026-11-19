@@ -41,7 +41,7 @@ export const MyBlueprintsKpiSection: React.FC<MyBlueprintsKpiSectionProps> = ({
             t("Show all blueprints"),
             <div
               aria-label={t("Show all blueprints")}
-              className={`px-3 py-2 rounded text-center bg-dark text-light border ${styles.kpiFilterCard} ${typeFilter === "all" ? "border-2 border-light shadow" : "border-secondary opacity-75"
+              className={`px-3 py-2 rounded text-center bg-dark text-light border ${styles["kpi-filter-card"]} ${typeFilter === "all" ? "border-2 border-light shadow" : "border-secondary opacity-75"
                 }`}
               role="button"
               tabIndex={0}
@@ -59,7 +59,7 @@ export const MyBlueprintsKpiSection: React.FC<MyBlueprintsKpiSectionProps> = ({
             t("Filter to show only Originals (BPO)"),
             <div
               aria-label={t("Filter to show only Originals (BPO)")}
-              className={`px-3 py-2 rounded text-center bg-primary text-light border ${styles.kpiFilterCard} ${typeFilter === "bpo" ? "border-2 border-light shadow" : "border-primary opacity-75"
+              className={`px-3 py-2 rounded text-center bg-primary text-light border ${styles["kpi-filter-card"]} ${typeFilter === "bpo" ? "border-2 border-light shadow" : "border-primary opacity-75"
                 }`}
               role="button"
               tabIndex={0}
@@ -78,7 +78,7 @@ export const MyBlueprintsKpiSection: React.FC<MyBlueprintsKpiSectionProps> = ({
             t("Filter to show only Copies (BPC)"),
             <div
               aria-label={t("Filter to show only Copies (BPC)")}
-              className={`px-3 py-2 rounded text-center bg-info border ${styles.kpiFilterCard} ${typeFilter === "bpc" ? "border-2 border-light shadow" : "border-info opacity-75"
+              className={`px-3 py-2 rounded text-center bg-info border ${styles["kpi-filter-card"]} ${typeFilter === "bpc" ? "border-2 border-light shadow" : "border-info opacity-75"
                 }`}
               role="button"
               tabIndex={0}

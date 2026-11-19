@@ -9,19 +9,18 @@ from ninja import NinjaAPI
 # Django
 from django.db import transaction
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 
 # AA Blueprint Forge
 from bpforge.api import schema
+from bpforge.helpers.notifications import (
+    notify_order_created,
+    notify_order_status_updated,
+)
 from bpforge.models.blueprint import Blueprint, Owner
 from bpforge.models.general import General
 from bpforge.models.helpers.core import RequestStatus
 from bpforge.models.request import OPEN_ORDER_STATUSES, Order, Request
-from bpforge.thirdparty.discord import (
-    notify_order_created,
-    notify_order_status_updated,
-)
 
 # Blueprints in a container resolve their name through the office to the station
 ORDER_ITEM_PREFETCH = (
@@ -39,23 +38,23 @@ class ApiEndpoints:
             "orders/",
             response={
                 HTTPStatus.CREATED: schema.OrderSchema,
-                HTTPStatus.BAD_REQUEST: dict,
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.BAD_REQUEST: schema.ErrorSchema,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+                HTTPStatus.NOT_FOUND: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Create a new batch order with multiple blueprints",
         )
         # pylint: disable=too-many-return-statements
         def create_order(request, payload: schema.OrderCreateRequest):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-
             if not payload.items:
                 return HTTPStatus.BAD_REQUEST, {
                     "error": _("Order must contain at least one blueprint item.")
                 }
 
-            owner = get_object_or_404(Owner, id=payload.owner_id)
+            owner = (Owner.objects).filter(id=payload.owner_id).first()
+            if owner is None:
+                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
 
             # Prevent ordering from a private shop unless owned by requester or admin
             if (
@@ -137,7 +136,7 @@ class ApiEndpoints:
             "orders/",
             response={
                 HTTPStatus.OK: list[schema.OrderSchema],
-                HTTPStatus.FORBIDDEN: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="List orders (either placed as buyer or received as seller)",
@@ -147,9 +146,6 @@ class ApiEndpoints:
 
             The first four list open orders, 'history' lists the closed ones.
             """
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-
             queryset = Order.objects.select_related(
                 "owner__character__character",
                 "owner__corporation",
@@ -207,25 +203,26 @@ class ApiEndpoints:
             "orders/{int:order_id}/",
             response={
                 HTTPStatus.OK: schema.OrderSchema,
-                HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.NOT_FOUND: dict,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+                HTTPStatus.NOT_FOUND: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Get specific order details",
         )
         def get_order(request, order_id: int):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-
-            order = get_object_or_404(
+            order = (
                 Order.objects.select_related(
                     "owner__character__character",
                     "owner__corporation",
                     "owner__user",
                     "requesting_user__profile__main_character",
-                ).prefetch_related(*ORDER_ITEM_PREFETCH),
-                id=order_id,
+                )
+                .prefetch_related(*ORDER_ITEM_PREFETCH)
+                .filter(id=order_id)
+                .first()
             )
+            if order is None:
+                return HTTPStatus.NOT_FOUND, {"error": _("Order not found.")}
 
             is_buyer = order.requesting_user == request.user
             is_seller = order.seller_user_id == request.user.id
@@ -242,9 +239,9 @@ class ApiEndpoints:
             "orders/{int:order_id}/status/",
             response={
                 HTTPStatus.OK: schema.OrderSchema,
-                HTTPStatus.BAD_REQUEST: dict,
-                HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.NOT_FOUND: dict,
+                HTTPStatus.BAD_REQUEST: schema.ErrorSchema,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+                HTTPStatus.NOT_FOUND: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Update order status (Accept, Deliver, Decline, Cancel)",
@@ -252,23 +249,26 @@ class ApiEndpoints:
         def update_order_status(
             request, order_id: int, payload: schema.OrderStatusUpdateRequest
         ):
-            if not General.objects.has_basic_access(request.user):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
-
-            order = get_object_or_404(
+            order = (
                 Order.objects.select_related(
                     "owner__character__character",
                     "owner__corporation",
                     "owner__user",
                     "requesting_user__profile__main_character",
-                ).prefetch_related(*ORDER_ITEM_PREFETCH),
-                id=order_id,
+                )
+                .prefetch_related(*ORDER_ITEM_PREFETCH)
+                .filter(id=order_id)
+                .first()
             )
+            if order is None:
+                return HTTPStatus.NOT_FOUND, {"error": _("Order not found.")}
 
             valid_statuses = [choice[0] for choice in RequestStatus.choices]
             if payload.status not in valid_statuses:
                 return HTTPStatus.BAD_REQUEST, {
-                    "error": _(f"Invalid status. Must be one of: {valid_statuses}")
+                    "error": _(
+                        "Invalid status. Must be one of: {valid_statuses}"
+                    ).format(valid_statuses=valid_statuses)
                 }
 
             if order.owner is None or order.requesting_user is None:
@@ -308,9 +308,9 @@ class ApiEndpoints:
             "orders/{int:order_id}/",
             response={
                 HTTPStatus.OK: schema.TaskTriggerResponseSchema,
-                HTTPStatus.BAD_REQUEST: dict,
-                HTTPStatus.FORBIDDEN: dict,
-                HTTPStatus.NOT_FOUND: dict,
+                HTTPStatus.BAD_REQUEST: schema.ErrorSchema,
+                HTTPStatus.FORBIDDEN: schema.ErrorSchema,
+                HTTPStatus.NOT_FOUND: schema.ErrorSchema,
             },
             tags=self.tags,
             summary="Delete a closed order completely (Superusers only)",
@@ -321,7 +321,9 @@ class ApiEndpoints:
                     "error": _("You are not authorized to delete this order.")
                 }
 
-            order = get_object_or_404(Order, id=order_id)
+            order = (Order.objects).filter(id=order_id).first()
+            if order is None:
+                return HTTPStatus.NOT_FOUND, {"error": _("Order not found.")}
 
             if order.status in OPEN_ORDER_STATUSES:
                 return HTTPStatus.BAD_REQUEST, {

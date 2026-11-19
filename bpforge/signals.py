@@ -13,10 +13,10 @@ from django.utils import timezone
 from allianceauth.authentication.models import User
 
 # AA Blueprint Forge
+from bpforge.helpers.notifications import notify_order_cancelled_by_shop_removal
 from bpforge.models.blueprint import Owner
 from bpforge.models.helpers.core import RequestStatus
 from bpforge.models.request import OPEN_ORDER_STATUSES, Order, Request
-from bpforge.thirdparty.discord import notify_order_cancelled_by_shop_removal
 
 
 def _cancel_orders(orders: QuerySet[Order]) -> None:

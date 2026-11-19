@@ -177,7 +177,7 @@ function MainPage() {
               setCatalogTypeFilter("all");
               setCart(new Map());
             }}
-            className={styles.catalogSelectDropdown}
+            className={styles["catalog-select-dropdown"]}
           >
             <option value="">{t("All Blueprints (Overview)")}</option>
             {shops.map((s) => (

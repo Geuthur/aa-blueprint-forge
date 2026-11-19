@@ -341,5 +341,6 @@
   "Range…": "Bereich…",
   "Clear": "Leeren",
   "Filter…": "Filtern…",
-  "No matching options": "Keine passenden Optionen"
+  "No matching options": "Keine passenden Optionen",
+  "No fetch yet": "Noch nicht geladen"
 }

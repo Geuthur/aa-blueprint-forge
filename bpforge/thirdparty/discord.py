@@ -1,11 +1,12 @@
-"""Discord helper functions"""
+"""Discord notifications via Alliance Auth, aadiscordbot, discordproxy or a webhook."""
 
 # Third Party
 from celery import shared_task
+from celery.exceptions import MaxRetriesExceededError
+from requests.exceptions import RequestException
 
 # Django
 from django.apps import apps
-from django.conf import settings
 from django.utils import timezone
 
 # Alliance Auth
@@ -14,9 +15,22 @@ from allianceauth.notifications import notify
 
 # AA Blueprint Forge
 from bpforge import __title__
-from bpforge.constants import DISCORD_EMBED_COLOR_MAP
 from bpforge.models.general import UserSettings
 from bpforge.providers import logger
+
+# Embed colors
+DISCORD_EMBED_COLOR_INFO = 0x5BC0DE
+DISCORD_EMBED_COLOR_SUCCESS = 0x5CB85C
+DISCORD_EMBED_COLOR_WARNING = 0xF0AD4E
+DISCORD_EMBED_COLOR_DANGER = 0xD9534F
+
+# Discord embed color map
+DISCORD_EMBED_COLOR_MAP = {
+    "info": DISCORD_EMBED_COLOR_INFO,
+    "success": DISCORD_EMBED_COLOR_SUCCESS,
+    "warning": DISCORD_EMBED_COLOR_WARNING,
+    "danger": DISCORD_EMBED_COLOR_DANGER,
+}
 
 
 def allianceauth_discordbot_installed() -> bool:
@@ -32,6 +46,16 @@ def discordproxy_installed() -> bool:
     try:
         # Third Party
         from discordproxy.client import DiscordClient
+    except ModuleNotFoundError:
+        return False
+    return True
+
+
+# pylint: disable=import-outside-toplevel, unused-import
+def discordwebhook_installed() -> bool:
+    try:
+        # Third Party
+        import dhooks_lite
     except ModuleNotFoundError:
         return False
     return True
@@ -96,30 +120,80 @@ def _discordproxy_send_direct_message(
         )
 
 
+def _discordwebhook_send_message(
+    webhook_url: str,
+    title: str,
+    message: str,
+    embed_message: bool = True,
+    level: str = "info",
+) -> bool | None:
+    """Send a message to a webhook via discordwebhook"""
+    if not discordwebhook_installed():
+        logger.debug(
+            "Discord webhook is not installed, messages will not be sent via webhook."
+        )
+        return None
+
+    # Third Party
+    import dhooks_lite
+
+    hook = dhooks_lite.Webhook(url=webhook_url)
+    try:
+        if embed_message is True:
+            # Third Party
+            from dhooks_lite import Embed
+
+            embed = Embed(
+                title=str(title),
+                description=message,
+                color=DISCORD_EMBED_COLOR_MAP.get(level),
+                timestamp=timezone.now(),
+            )
+            response = hook.execute(embeds=[embed])
+        else:
+            response = hook.execute(content=f"**{title}**\n\n{message}")
+    except RequestException as exc:
+        # The exception text contains the webhook URL with the token, so only
+        # the type of the exception is logged and the exception is not raised.
+        logger.warning(
+            "Webhook failed to send message to Discord. Error: %s",
+            type(exc).__name__,
+        )
+        return False
+
+    logger.debug("headers: %s", response.headers)
+    logger.debug("status_code: %s", response.status_code)
+    logger.debug("content: %s", response.content)
+
+    if not response.status_ok:
+        msg = (
+            f"Webhook failed to send message to Discord. "
+            f"HTTP status code: {response.status_code}. "
+            f"API response: {response.content}"
+        )
+        logger.warning(msg)
+        return False
+    return True
+
+
 @shared_task
 def send_user_notification(
-    user_id: int | User,
+    user_id: int,
     title: str,
     message: str,
     embed_message: bool = True,
     level: str = "info",
 ) -> None:
     """Send a notification as a Celery Task to a user via Discord or AllianceAuth notify."""
-    if isinstance(user_id, User):
-        user = user_id
-    else:
-        try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            logger.warning(
-                "User with ID %s does not exist. Notification not sent.", user_id
-            )
-            return
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        logger.warning(
+            "User with ID %s does not exist. Notification not sent.", user_id
+        )
+        return
 
-    user_pk = getattr(user, "pk", user_id)
-    if UserSettings.objects.filter(
-        user_id=user_pk, disable_notifications=True
-    ).exists():
+    if UserSettings.objects.filter(user=user, disable_notifications=True).exists():
         logger.info("Notifications are disabled for user %s; skipping delivery.", user)
         return
 
@@ -159,167 +233,42 @@ def send_user_notification(
         )
 
 
-def _build_order_notification_message(order, base_message: str, recipient: User) -> str:
-    """Append a tailored link to the orders page for the recipient."""
-    # pylint: disable=import-outside-toplevel
-    # AA Blueprint Forge
-    from bpforge.models.general import General
-
-    site_url = getattr(settings, "SITE_URL", "").rstrip("/")
-    base_orders_url = f"{site_url}/bpforge/orders/" if site_url else "/bpforge/orders/"
-
-    if General.can_manage_orders(recipient):
-        order_url = f"{base_orders_url}?tab=manage"
-        action_label = "Open Order Management"
-    elif recipient.pk == order.requesting_user_id:
-        order_url = f"{base_orders_url}?tab=buyer"
-        action_label = "View Order"
-    else:
-        order_url = f"{base_orders_url}?tab=seller"
-        action_label = "View Catalog Orders"
-
-    return f"{base_message}\n\n🔗 [{action_label}]({order_url})"
-
-
-def notify_order_created(order) -> None:
-    """Notify the shop owner and configured groups that a new order has been created."""
-    # pylint: disable=import-outside-toplevel
-    # AA Blueprint Forge
-    from bpforge.models.general import GeneralNotificationSettings
-
-    owner = order.owner
-    owner_name = owner.name
-
-    try:
-        buyer_name = order.requesting_user.profile.main_character.character_name
-    except AttributeError:
-        buyer_name = order.requesting_user.username
-
-    title = f"New Blueprint Order #{order.pk} - {owner_name}"
-    item_count = order.items.count()
-    message = (
-        f"A new order **#{order.pk}** has been placed by **{buyer_name}** "
-        f"for shop **{owner_name}** with **{item_count}** item(s)."
-    )
-    if order.note:
-        message += f"\n\n**Note:** {order.note}"
-
-    recipients: set[int] = set()
-    if owner.user_id:
-        recipients.add(owner.user_id)
-
-    # Owner-specific notification groups
-    for group in owner.notify_order_created_groups.all():
-        for user in group.user_set.filter(is_active=True):
-            recipients.add(user.pk)
-
-    # Global notification groups
-    global_settings = GeneralNotificationSettings.get_solo()
-    for group in global_settings.order_created_groups.all():
-        for user in group.user_set.filter(is_active=True):
-            recipients.add(user.pk)
-
-    for uid in recipients:
-        try:
-            recipient_user = User.objects.get(pk=uid)
-        except User.DoesNotExist:
-            continue
-
-        personalized_message = _build_order_notification_message(
-            order=order,
-            base_message=message,
-            recipient=recipient_user,
-        )
-        send_user_notification(
-            user_id=uid,
-            title=title,
-            message=personalized_message,
-            level="info",
-        )
-
-
-# pylint: disable=too-many-locals
-def notify_order_cancelled_by_shop_removal(order) -> None:
-    """Notify the buyer that an open order was cancelled because its shop was deleted."""
-    message = (
-        f"Order **#{order.pk}** for **{order.display_owner_name}** was cancelled "
-        "because the shop was removed."
-    )
-    send_user_notification(
-        user_id=order.requesting_user_id,
-        title=f"Blueprint Order #{order.pk} Status: Cancelled",
-        message=_build_order_notification_message(
-            order=order,
-            base_message=message,
-            recipient=order.requesting_user,
-        ),
-        level="danger",
-    )
-
-
-def notify_order_status_updated(
-    order, old_status: str, new_status: str, actor: User
+@shared_task
+def send_webhook_notification(
+    webhook_url: str,
+    title: str,
+    message: str,
+    embed_message: bool = True,
+    level: str = "info",
 ) -> None:
-    """Notify buyer, owner, and configured groups about an order status change."""
-    # pylint: disable=import-outside-toplevel
-    # AA Blueprint Forge
-    from bpforge.models.general import GeneralNotificationSettings
+    """Send a notification as a Celery Task to a webhook."""
+    if webhook_url is None:
+        logger.debug("No webhook URL given. Webhook notification not sent.")
+        return
 
-    owner = order.owner
-    owner_name = owner.name
-
-    try:
-        actor_name = actor.profile.main_character.character_name
-    except AttributeError:
-        actor_name = actor.username
-
-    title = f"Blueprint Order #{order.pk} Status: {new_status}"
-    message = (
-        f"Order **#{order.pk}** for **{owner_name}** status was changed "
-        f"from **{old_status}** to **{new_status}** by **{actor_name}**."
+    # Send the message to the webhook using the appropriate method
+    notification_sent = _discordwebhook_send_message(
+        webhook_url=webhook_url,
+        title=title,
+        message=message,
+        embed_message=embed_message,
+        level=level,
     )
 
-    if new_status in ["Delivered", "Accepted"]:
-        level = "success"
-    elif new_status in ["Declined", "Cancelled"]:
-        level = "danger"
-    else:
-        level = "info"
-
-    recipients: set[int] = set()
-    # Always notify the buyer
-    if order.requesting_user_id:
-        recipients.add(order.requesting_user_id)
-
-    # Notify the shop owner if the status change wasn't made by the owner
-    if owner.user_id and actor != owner.user:
-        recipients.add(owner.user_id)
-
-    # Owner-specific status notification groups
-    for group in owner.notify_order_status_groups.all():
-        for user in group.user_set.filter(is_active=True):
-            recipients.add(user.pk)
-
-    # Global status notification groups
-    global_settings = GeneralNotificationSettings.get_solo()
-    for group in global_settings.order_status_groups.all():
-        for user in group.user_set.filter(is_active=True):
-            recipients.add(user.pk)
-
-    for uid in recipients:
+    # If the notification was not sent successfully, retry sending the notification with a delay and a maximum of 3 retries
+    if notification_sent is False:
+        logger.warning(
+            "Failed to send webhook notification. Check the webhook URL and try again."
+        )
         try:
-            recipient_user = User.objects.get(pk=uid)
-        except User.DoesNotExist:
-            continue
-
-        personalized_message = _build_order_notification_message(
-            order=order,
-            base_message=message,
-            recipient=recipient_user,
-        )
-        send_user_notification(
-            user_id=uid,
-            title=title,
-            message=personalized_message,
-            level=level,
-        )
+            send_webhook_notification.retry(
+                args=[webhook_url, title, message, embed_message, level],
+                countdown=2,  # Delay in seconds before retrying
+                max_retries=3,
+            )
+        except MaxRetriesExceededError:
+            # The exception text contains the task arguments and with them the
+            # webhook URL with the token, so the exception is not raised.
+            logger.warning(
+                "Failed to send webhook notification after the maximum number of retries."
+            )

@@ -38,12 +38,12 @@ export const UserSettingsCard: React.FC<UserSettingsCardProps> = ({
             )}
           </p>
           {isError && (
-            <p className={`mt-2 mb-0 text-danger ${styles.textXs}`} role="alert">
+            <p className={`mt-2 mb-0 text-danger ${styles["text-xs"]}`} role="alert">
               {t("Could not save this setting. Your previous preference was restored.")}
             </p>
           )}
           {isPending && (
-            <p className={`mt-2 mb-0 text-muted ${styles.textXs}`} role="status">
+            <p className={`mt-2 mb-0 text-muted ${styles["text-xs"]}`} role="status">
               {t("Saving…")}
             </p>
           )}

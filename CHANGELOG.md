@@ -23,6 +23,10 @@ Section Order:
 ### Added
 ### Fixed
 ### Changed
+
+- [CHANGE] Uniform error format of the API: every error response of an endpoint is an `ErrorSchema` (`{"error": "<text>"}`) in the OpenAPI schema, and every endpoint lists its 403. Unknown owners and orders answer 404 with `{"error": "Owner not found."}` or `{"error": "Order not found."}` instead of `{"detail": "Not Found"}`. The unreachable `basic_access` checks in the endpoints are removed, `basic_access_required` covers them. Status codes are unchanged.
+
+- [CHANGE] The frontend shows the reason the API gives for a failed action (e.g. "Permission Denied") instead of a fixed text (`apiErrorMessage` of `aa-geuthur-react`).
 ### Removed
 -->
 
@@ -41,6 +45,18 @@ Section Order:
 - [ADD] Optional extra `tests-allianceauth-development` (test packages plus the Alliance Auth 6 pre-release) with separate test settings in `testauth/settings/development/` for the tox environment `allianceauth-development` and `make tox-tests-development`; a non-blocking CI job "AA Development" runs it on Python 3.13 and 3.14.
 
 ### Fixed
+
+- [FIX] The texts "Invalid status. Must be one of: …", "Update task queued for …" and "Owner … deleted successfully." of the API and the messages of the views `add_character` and `add_corporation` could never be translated because they were f-strings inside `_()`. They use `.format()` now.
+
+- [FIX] `thirdparty/discord.py` no longer logs the Discord webhook URL (with its token): not in the warning of a failed webhook, and not through the exception texts of `requests` and Celery's `MaxRetriesExceededError`.
+
+- [FIX] The views `add_character` and `add_corporation` now require `bpforge.basic_access` before the EVE SSO redirect; `manage_access` or `full_access` alone no longer reach them. The charlink import for corporations requires `basic_access` in addition to `manage_access`.
+
+- [FIX] The live status indicator and the order management tab used German source texts, so English and untranslated languages showed German. `useLivePing` now clears its timers on unmount.
+
+- [FIX] The app page (`react_base`) now requires `bpforge.basic_access`, like the API and the menu entry. The view no longer reads the main character; the unused `character_id` parameter and context value are removed.
+
+- [FIX] Dev dependencies: `minimatch` 11 (DoS, eslint ^10.15.0, typescript-eslint 8.72.2 with an override for `@typescript-eslint/typescript-estree`) and `zod` 4.6.7 (GHSA-mrhx-c7xc-m3w5).
 
 - [FIX] ESI outages and limits did not retry the update tasks: `esi.decorators.rate_limit_retry_task` never applied because the tasks were not bound (`bind=True`), and the `UpdateManager` turned every ESI error except `TokenError` into an update status. `update_owner`, `update_blueprints`, `update_locations` and `update_structure_esi` are now bound and run their ESI calls inside the new `retry_task_on_esi_error()` in `providers.py` (with `DownTimeError` in the new `errors.py`), like the app template. It retries on `ESIErrorLimitException`, `ESIBucketLimitException`, `HTTPServerError` 502/503/504, `RequestError` and ESI's daily downtime (11:00 to 11:15 UTC, can be turned off with `DISABLE_DAILY_DOWNTIME_CHECK = True`). `_handle_update_exception` raises these errors (checked by `is_retryable_esi_error()`), and `execute_section` records them as a failed run of the section before raising, so the section shows the error and stays stale until the retry succeeds. Other errors (e.g. HTTP 500 or 404) still end in the update status only. `update_owner` runs its sections directly instead of calling the section tasks. `update_structure_esi` retries at most 3 times instead of without limit, since the retry backoff grows with each attempt.
 
@@ -67,6 +83,14 @@ Section Order:
 - [FIX] Real translations from the stale `weblate-translation` branch are applied to `frontend/i18n/<lng>/translation.json` and to the German `django.po`. Only strings that were empty or equal to English are filled, translations already on master are kept. `frontend/i18n/cs` and `frontend/i18n/sk` are added with all keys empty. The `.po` files are updated with `make translations`.
 
 ### Changed
+
+- [CHANGE] The whole API requires `bpforge.basic_access` centrally (`basic_access_required` around the API URLs), including `menu/` and the administration endpoints. Users with `manage_access` or `full_access` but without `basic_access` lose access to the API and the pages; grant them `basic_access` as well.
+
+- [CHANGE] `bpforge/thirdparty/discord.py` is now the Discord building block of the `aa-example` template (embed colors in the module, webhook sender included but unused); the order notifications moved to `bpforge/helpers/notifications.py`. Behavior and the Celery task name of `send_user_notification` are unchanged
+
+- [CHANGE] The stylelint pre-commit hook now checks the source CSS in `frontend/src/` (built bundles stay excluded); its findings are fixed without visual change (hex colors as equivalent `rgb()`, CSS module classes in kebab-case)
+
+- [CHANGE] Administration owner actions are one seamless icon `ButtonGroup` (update split dropdown inside) with tooltips, and `FilterButtonGroup` now comes from `aa-geuthur-react` 1.4.0 instead of a local copy (the BPC filter is `primary` like the others when active).
 
 - [CHANGE] Permissions follow the app template: `General.Meta.permissions` is a plain tuple (same codenames and texts, migration `0008` only changes the stored options), the `General.Permission` choices and the helpers `get_perm`, `has_perm`, `has_any_perm` and `has_administration_access` are replaced by `General.objects` (`GeneralManager` in `bpforge/managers/general.py`: `has_basic_access`, `has_management_access`, `has_admin_access`). `bpforge/managers.py` moves to `bpforge/managers/blueprint.py`. Behaviour is unchanged; a new test checks all permission strings against `General.Meta.permissions`.
 
@@ -101,6 +125,8 @@ Section Order:
 - [CHANGE] Layout CSS of the settings page, owner cards and tables was replaced by Bootstrap utility classes, badge backgrounds use the Bootstrap `bg-*` classes with theme overrides under `.aa-react`, and `!important` was dropped where Bootstrap classes make it unnecessary.
 
 - [CHANGE] The table filter fields use Bootstrap utility classes for their layout and share a single clear button component.
+
+- [CHANGE] Frontend moved to `aa-geuthur-react` 1.5.0: owner cards, settings section, portrait, `initI18n`, `useUserSettings` and the design tokens come from the package; the local copies (owner settings, owner portrait, badges, forms, user settings calls) are removed. On the settings page the header of the owner section has rounded corners, owner cards with an error pulse, and a few German texts changed ("Wird gelöscht…", "Letzte Synchronisierung", "Update-Status wird geladen…").
 
 ### Removed
 

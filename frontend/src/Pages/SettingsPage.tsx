@@ -2,20 +2,23 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
-import { renderTooltip } from "aa-geuthur-react";
+import {
+  BaseOwnerSettingsSection,
+  renderTooltip,
+  useUserSettings,
+  type BaseOwner,
+} from "aa-geuthur-react";
 import { Settings2, Store, Users } from "lucide-react";
 import { Button, ButtonGroup, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { BaseOwnerSettingsSection } from "@/Components/Base/OwnerSettings";
-import type { BaseOwner } from "@/Components/Base/OwnerSettings/types";
+import type { UserSettingsSchema, UserSettingsUpdateRequest } from "@/Api/schema";
 import { BpoSelectionModal } from "@/Components/Settings/BpoSelectionModal";
 import {
   useOwnerActions,
   useUpdateOwnerSetting,
   useUserOwners,
-  useUserSettings,
 } from "@/Components/Settings/Hooks";
 import { UserSettingsCard } from "@/Components/Settings/UserSettingsCard";
 import styles from "@/Styles/modules/SettingsPage.module.css";
@@ -34,7 +37,7 @@ export const SettingsPage: React.FC = () => {
     isLoading: isLoadingSettings,
     isError: isErrorSettings,
     updateMutation,
-  } = useUserSettings();
+  } = useUserSettings<UserSettingsSchema, UserSettingsUpdateRequest>();
   const { data: owners, isLoading: isLoadingOwners, isError: isErrorOwners } = useUserOwners();
   const updateOwnerMutation = useUpdateOwnerSetting();
   const actions = useOwnerActions();
@@ -77,7 +80,7 @@ export const SettingsPage: React.FC = () => {
 
     return (
       <div className="d-flex flex-column gap-2">
-        <div className={`d-flex align-items-center flex-wrap gap-2 mt-1 text-light ${styles.textXs}`}>
+        <div className={`d-flex align-items-center flex-wrap gap-2 mt-1 text-light ${styles["text-xs"]}`}>
           <span>{t("{{count}} Blueprints", { count: owner.blueprint_count })}</span>
           <span>•</span>
           <span>{owner.bpo_count} BPO</span>
@@ -145,7 +148,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 variant="secondary"
                 size="sm"
-                className={`flex-fill fw-semibold ${styles.settingsTypeBtn} bg-secondary text-light border border-secondary ${
+                className={`flex-fill fw-semibold ${styles["settings-type-btn"]} bg-secondary text-light border border-secondary ${
                   !owner.public_type || owner.public_type === "all"
                     ? "border-light shadow fw-bold"
                     : "opacity-75"
@@ -165,7 +168,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 variant="primary"
                 size="sm"
-                className={`flex-fill fw-semibold ${styles.settingsTypeBtn} bg-primary text-light border border-primary ${
+                className={`flex-fill fw-semibold ${styles["settings-type-btn"]} bg-primary text-light border border-primary ${
                   owner.public_type === "bpo"
                     ? "border-light shadow fw-bold"
                     : "opacity-75"
@@ -185,7 +188,7 @@ export const SettingsPage: React.FC = () => {
               <Button
                 variant="info"
                 size="sm"
-                className={`flex-fill fw-semibold ${styles.settingsTypeBtn} bg-info border border-info ${
+                className={`flex-fill fw-semibold ${styles["settings-type-btn"]} bg-info border border-info ${
                   owner.public_type === "bpc"
                     ? "border-dark shadow fw-bold"
                     : "opacity-75"
@@ -210,7 +213,7 @@ export const SettingsPage: React.FC = () => {
                   <span className="small fw-medium">
                     {t("Selective BPOs")}
                   </span>
-                  <span className={`text-muted ${styles.textXs}`}>
+                  <span className={`text-muted ${styles["text-xs"]}`}>
                     {owner.selective_bpo_enabled
                       ? t("Only chosen BPOs are offered")
                       : t("All BPOs are offered")}
@@ -317,6 +320,8 @@ export const SettingsPage: React.FC = () => {
             "No characters or corporations have been linked yet. Use the menu above to link your characters or corporations.",
           )}
           appName="Blueprint Forge"
+          bodyClassName="bg-secondary text-light"
+          cardClassName="bg-dark"
           onUpdateAll={actions.updateAll}
           isUpdatingAll={actions.isUpdatingAll}
           globalCooldown={actions.globalCooldown}

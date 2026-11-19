@@ -2,13 +2,12 @@
 import React, { useMemo, useState } from "react";
 
 // Third Party
-import { BaseTable } from "aa-geuthur-react";
+import { BaseTable, FilterButtonGroup } from "aa-geuthur-react";
 import { Layers, Search, ShoppingCart } from "lucide-react";
 import { Badge, Button, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-import { FilterButtonGroup } from "@/Components/Base/FilterButtonGroup";
 import { getBlueprintColumns } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import styles from "@/Styles/modules/Blueprint.module.css";
@@ -95,7 +94,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
       {/* Table Filter Controls */}
       <div className="bg-dark p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
         {/* Search Input */}
-        <div className={`flex-grow-1 ${styles.searchWrapper}`}>
+        <div className={`flex-grow-1 ${styles["search-wrapper"]}`}>
           <div className="input-group">
             <span className="input-group-text">
               <Search size={16} />
@@ -125,7 +124,7 @@ export const BlueprintTable: React.FC<BlueprintTableProps> = ({
               options={[
                 { value: "all", label: t("All") },
                 { value: "bpo", label: t("BPO (Original)") },
-                { value: "bpc", label: t("BPC (Copy)"), activeVariant: "info" },
+                { value: "bpc", label: t("BPC (Copy)") },
               ]}
               value={activeTypeFilter}
               onChange={setTypeFilter}
