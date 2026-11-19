@@ -44,7 +44,7 @@ Section Order:
 
 ### Fixed
 
-- [FIX] The texts "Invalid status. Must be one of: …", "Update task queued for …" and "Owner … deleted successfully." of the API could never be translated because they were f-strings inside `_()`. They use `.format()` now.
+- [FIX] The texts "Invalid status. Must be one of: …", "Update task queued for …" and "Owner … deleted successfully." of the API and the messages of the views `add_character` and `add_corporation` could never be translated because they were f-strings inside `_()`. They use `.format()` now.
 
 - [FIX] `thirdparty/discord.py` no longer logs the Discord webhook URL (with its token): not in the warning of a failed webhook, and not through the exception texts of `requests` and Celery's `MaxRetriesExceededError`.
 

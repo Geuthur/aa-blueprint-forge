@@ -49,7 +49,10 @@ def add_corporation(request: WSGIRequest, token: Token):
         )
     except ObjectDoesNotExist:
         messages.error(
-            request, _(f"{character.character_name} is not linked to your account")
+            request,
+            _("{character_name} is not linked to your account").format(
+                character_name=character.character_name
+            ),
         )
         return redirect(f"{reverse('bpforge:react_base')}settings/")
 
@@ -73,7 +76,10 @@ def add_corporation(request: WSGIRequest, token: Token):
     messages.info(
         request,
         _(
-            f"{owner.corporation.corporation_name} has been added with {character.character_name} as sync character."
+            "{corporation_name} has been added with {character_name} as sync character."
+        ).format(
+            corporation_name=owner.corporation.corporation_name,
+            character_name=character.character_name,
         ),
     )
     return redirect(f"{reverse('bpforge:react_base')}settings/")
@@ -91,7 +97,10 @@ def add_character(request: WSGIRequest, token: Token):
         )
     except ObjectDoesNotExist:
         messages.error(
-            request, _(f"{character.character_name} is not linked to your account")
+            request,
+            _("{character_name} is not linked to your account").format(
+                character_name=character.character_name
+            ),
         )
         return redirect(f"{reverse('bpforge:react_base')}settings/")
 
@@ -105,6 +114,8 @@ def add_character(request: WSGIRequest, token: Token):
     update_owner.delay(owner.pk)
     messages.info(
         request,
-        _(f"{character.character_name} has been added as personal owner."),
+        _("{character_name} has been added as personal owner.").format(
+            character_name=character.character_name
+        ),
     )
     return redirect(f"{reverse('bpforge:react_base')}settings/")
