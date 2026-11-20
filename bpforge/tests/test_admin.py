@@ -7,6 +7,7 @@ from unittest.mock import patch
 # Django
 from django.contrib.admin.sites import AdminSite
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.exceptions import PermissionDenied
 
 # Alliance Auth
 from allianceauth.authentication.models import User
@@ -116,6 +117,22 @@ class TestOwnerAdmin(AuthTestCase):
         # Expected Result
         mock_delay.assert_called_once_with(owner_pk=self.owner.pk, force_refresh=True)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
+    @patch("bpforge.admin.update_owner.delay")
+    def test_force_update_owner_view_should_deny_non_superuser(self, mock_delay):
+        # Test Data
+        self.user.is_staff = True
+        self.user.is_superuser = False
+        self.user.save()
+        request = self.factory.get(
+            f"/admin/bpforge/owner/{self.owner.pk}/force-update/"
+        )
+        request.user = self.user
+
+        # Test Action & Expected Result
+        with self.assertRaises(PermissionDenied):
+            self.admin.force_update_owner_view(request, self.owner.pk)
+        mock_delay.assert_not_called()
 
     def test_display_helpers_should_return_formatted_values(self):
         # Test Data
