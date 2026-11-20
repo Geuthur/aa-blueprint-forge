@@ -44,6 +44,8 @@ Section Order:
 
 ### Fixed
 
+- [FIX] The type icon HTML carries the app name `aa-bpforge` as tooltip marker instead of the template name `aa-example`. The admin owner picture uses the public Alliance Auth functions `corporation_logo_url` and `character_portrait_url` instead of a private one.
+
 - [FIX] The admin view `force-update` of an owner now requires the change permission (superuser); staff users without it get a 403 instead of queuing an update.
 
 - [FIX] The texts "Invalid status. Must be one of: …", "Update task queued for …" and "Owner … deleted successfully." of the API and the messages of the views `add_character` and `add_corporation` could never be translated because they were f-strings inside `_()`. They use `.format()` now.

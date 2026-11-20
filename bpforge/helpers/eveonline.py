@@ -208,14 +208,14 @@ def get_icon_render_url(
 
     if as_html:
         render_html = format_html(
-            '<img class="type-render rounded-circle" data-bs-tooltip="aa-example" src="{}" title="{}">',
+            '<img class="type-render rounded-circle" data-bs-tooltip="aa-bpforge" src="{}" title="{}">',
             render_url,
             type_name,
         )
         if display_name:
             render_html = format_html(
                 '<div class="d-flex align-items-center">'
-                '<img class="type-render rounded-circle me-2" data-bs-tooltip="aa-example" src="{}" title="{}">'
+                '<img class="type-render rounded-circle me-2" data-bs-tooltip="aa-bpforge" src="{}" title="{}">'
                 "<span>{}</span>"
                 "</div>",
                 render_url,
