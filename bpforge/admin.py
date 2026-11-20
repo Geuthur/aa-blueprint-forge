@@ -109,12 +109,10 @@ class OwnerAdmin(admin.ModelAdmin):
     @admin.display(description="")
     def _entity_pic(self, obj: Owner):
         if obj.corporation_id:
-            url = eveimageserver._eve_entity_image_url(
-                "corporation", obj.corporation_id, 32
-            )
+            url = eveimageserver.corporation_logo_url(obj.corporation_id, 32)
         elif obj.character_id and obj.character and obj.character.character:
-            url = eveimageserver._eve_entity_image_url(
-                "character", obj.character.character.character_id, 32
+            url = eveimageserver.character_portrait_url(
+                obj.character.character.character_id, 32
             )
         else:
             return "-"
