@@ -44,6 +44,8 @@ Section Order:
 
 ### Fixed
 
+- [FIX] React Query no longer retries 403, 404 and other 4xx answers three times, so the error shows at once instead of after about seven seconds: `Routing.tsx` uses `createQueryClient` of `aa-geuthur-react` (`^1.7.0`), which retries only network errors and 502/503/504
+
 - [FIX] The type icon HTML carries the app name `aa-bpforge` as tooltip marker instead of the template name `aa-example`. The admin owner picture uses the public Alliance Auth functions `corporation_logo_url` and `character_portrait_url` instead of a private one.
 
 - [FIX] The admin view `force-update` of an owner now requires the change permission (superuser); staff users without it get a 403 instead of queuing an update.
