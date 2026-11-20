@@ -3,6 +3,7 @@
 # Django
 from django.contrib import admin, messages
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.core.exceptions import PermissionDenied
 from django.db.models import Max
 from django.http import HttpResponseRedirect
 from django.urls import path, reverse
@@ -179,6 +180,8 @@ class OwnerAdmin(admin.ModelAdmin):
     def force_update_owner_view(self, request, owner_id: int):
         owner = self.get_object(request, str(owner_id))
         if owner:
+            if not self.has_change_permission(request, owner):
+                raise PermissionDenied
             update_owner.delay(owner_pk=owner.pk, force_refresh=True)
             self.message_user(
                 request,
