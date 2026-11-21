@@ -1,6 +1,6 @@
 # Standard Library
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Generic, TypeVar, Union
+from typing import TYPE_CHECKING, Union
 
 # Django
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,7 +8,6 @@ from django.db import models
 from django.utils import timezone
 
 # Alliance Auth
-from allianceauth.eveonline.models import EveCharacter
 from esi.exceptions import HTTPClientError
 from esi.models import Token
 
@@ -17,12 +16,10 @@ from eve_sde.models import ItemType, SolarSystem
 
 # AA Blueprint Forge
 from bpforge.app_settings import BPFORGE_BULK_BATCH_SIZE
-from bpforge.managers.general import GeneralManager
+from bpforge.managers.general import AccessManager, AccessQuerySet
 from bpforge.models.helpers.core import LocationFlag
 from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.providers import esi, logger
-
-T = TypeVar("T", bound=models.Model)
 
 if TYPE_CHECKING:
     # Alliance Auth
@@ -39,104 +36,8 @@ if TYPE_CHECKING:
     from bpforge.models.blueprint import Owner as OwnerContext
 
 
-class AccessQuerySet(models.QuerySet[T], Generic[T]):
-    """
-    A QuerySet with access control methods for the whole Application.
-
-    Methods:
-        visible_to(user): Returns objects visible to the given user.
-        manage_to(user): Returns objects the given user can manage.
-    """
-
-    def visible_to(self, user):
-        """Get all objects visible to the user."""
-        if GeneralManager.has_admin_access(user):
-            logger.debug("Returning all objects for admin user %s.", user)
-            return self
-
-        try:
-            char = user.profile.main_character
-            assert char
-            queries = [models.Q(owner=user)]
-            queries.append(models.Q(is_public=True))
-
-            logger.debug("%s queries for user %s visible.", len(queries), user)
-
-            query = queries.pop()
-            for q in queries:
-                query |= q
-            return self.filter(query)
-        except AssertionError:
-            logger.debug("User %s has no main character. Nothing visible.", user)
-            return self.none()
-
-    def manage_to(self, user):
-        """Get QuerySet of objects that the user can manage."""
-        if GeneralManager.has_admin_access(user):
-            logger.debug("Returning all manageable queries for admin user %s.", user)
-            return self
-
-        try:
-            char = user.profile.main_character
-            assert char
-            queries = [models.Q(owner=user)]
-
-            logger.debug("%s queries for user %s manageable.", len(queries), user)
-
-            query = queries.pop()
-            for q in queries:
-                query |= q
-            return self.filter(query)
-        except AssertionError:
-            logger.debug("User %s has no main character. Nothing manageable.", user)
-            return self.none()
-
-
-class AccessManager(models.Manager[T], Generic[T]):
-    """
-    A Manager with access control methods for the whole Application
-
-    This manager provides methods to filter querysets based on user permissions,
-    such as `visible_to` and `manage_to`, ensuring that users only see or manage
-    the objects they are allowed to.
-    """
-
-    def get_queryset(self) -> AccessQuerySet[T]:
-        return AccessQuerySet(self.model, using=self._db)
-
-    def visible_to(self, user):
-        return self.get_queryset().visible_to(user)
-
-    def manage_to(self, user):
-        return self.get_queryset().manage_to(user)
-
-    @staticmethod
-    def visible_eve_characters(user):
-        qs = EveCharacter.objects.get_queryset()
-        if GeneralManager.has_admin_access(user):
-            logger.debug("Returning all characters for %s.", user)
-            return qs.all()
-
-        try:
-            char = user.profile.main_character
-            assert char
-            queries = [models.Q(character_ownership__user=user)]
-
-            logger.debug(
-                "%s queries for user %s visible chracters.", len(queries), user
-            )
-
-            query = queries.pop()
-            for q in queries:
-                query |= q
-            return qs.filter(query)
-        except AssertionError:
-            logger.debug("User %s has no main character. Nothing visible.", user)
-            return qs.none()
-
-
 class OwnerQuerySet(AccessQuerySet):
-    pass
+    """Owners use the default rules of `AccessQuerySet`."""
 
 
 class OwnerManager(AccessManager["OwnerContext"]):
@@ -145,6 +46,14 @@ class OwnerManager(AccessManager["OwnerContext"]):
 
 
 class BlueprintQuerySet(AccessQuerySet):
+    """Blueprints follow the rules of their owner."""
+
+    def owned_by_q(self, user) -> models.Q:
+        return models.Q(owner__user=user)
+
+    def visible_q(self, user) -> models.Q:
+        return self.owned_by_q(user) | models.Q(owner__is_public=True)
+
     def with_api_relations(self):
         """Preload related objects commonly needed for API representation."""
         return self.select_related(
@@ -294,8 +203,8 @@ class BlueprintManager(AccessManager["BlueprintContext"]):
             self.filter(owner=owner, item_id__in=to_delete_item_ids).delete()
 
 
-class LocationQuerySet(AccessQuerySet):
-    pass
+class LocationQuerySet(models.QuerySet):
+    """Locations belong to no user, so they carry no access rules."""
 
 
 class LocationManager(models.Manager["LocationContext"]):

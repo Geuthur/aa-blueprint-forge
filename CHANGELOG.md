@@ -84,6 +84,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] `AccessQuerySet` and `AccessManager` live in `bpforge/managers/general.py` in the form of the template; `visible_to` and `manage_to` now filter by the real fields of `Owner` and `Blueprint` (they were unused and failed before).
+
 - [CHANGE] The whole API requires `bpforge.basic_access` centrally (`basic_access_required` around the API URLs), including `menu/` and the administration endpoints. Users with `manage_access` or `full_access` but without `basic_access` lose access to the API and the pages; grant them `basic_access` as well.
 
 - [CHANGE] `bpforge/thirdparty/discord.py` is now the Discord building block of the `aa-example` template (embed colors in the module, webhook sender included but unused); the order notifications moved to `bpforge/helpers/notifications.py`. Behavior and the Celery task name of `send_user_notification` are unchanged
