@@ -23,12 +23,6 @@ Section Order:
 ### Added
 ### Fixed
 ### Changed
-
-- Internal: The frontend API calls are split by area into `Api/calls/{settings,catalog,myBlueprints,orders,administration}.ts`, each with its own query keys, replacing `Api/ApiCalls.ts` and `Api/query.ts`.
-
-- [CHANGE] Uniform error format of the API: every error response of an endpoint is an `ErrorSchema` (`{"error": "<text>"}`) in the OpenAPI schema, and every endpoint lists its 403. Unknown owners and orders answer 404 with `{"error": "Owner not found."}` or `{"error": "Order not found."}` instead of `{"detail": "Not Found"}`. The unreachable `basic_access` checks in the endpoints are removed, `basic_access_required` covers them. Status codes are unchanged.
-
-- [CHANGE] The frontend shows the reason the API gives for a failed action (e.g. "Permission Denied") instead of a fixed text (`apiErrorMessage` of `aa-geuthur-react`).
 ### Removed
 -->
 
@@ -133,6 +127,12 @@ Section Order:
 - [CHANGE] Frontend moved to `aa-geuthur-react` 1.5.0: owner cards, settings section, portrait, `initI18n`, `useUserSettings` and the design tokens come from the package; the local copies (owner settings, owner portrait, badges, forms, user settings calls) are removed. On the settings page the header of the owner section has rounded corners, owner cards with an error pulse, and a few German texts changed ("Wird gelöscht…", "Letzte Synchronisierung", "Update-Status wird geladen…").
 
 - [CHANGE] Internal: eslint sorts CSS imports via `@/` into the `// Styles` group after the app imports, like the template `aa-example`. The group for relative imports is removed.
+
+- [CHANGE] Internal: The frontend API calls are split by area into `Api/calls/{settings,catalog,myBlueprints,orders,administration}.ts`, each with its own query keys, replacing `Api/ApiCalls.ts` and `Api/query.ts`.
+
+- [CHANGE] Uniform error format of the API: every error response of an endpoint is an `ErrorSchema` (`{"error": "<text>"}`) in the OpenAPI schema, and every endpoint lists its 403. Unknown owners and orders answer 404 with `{"error": "Owner not found."}` or `{"error": "Order not found."}` instead of `{"detail": "Not Found"}`. The unreachable `basic_access` checks in the endpoints are removed, `basic_access_required` covers them. Status codes are unchanged.
+
+- [CHANGE] The frontend shows the reason the API gives for a failed action (e.g. "Permission Denied") instead of a fixed text (`apiErrorMessage` of `aa-geuthur-react`).
 
 ### Removed
 
