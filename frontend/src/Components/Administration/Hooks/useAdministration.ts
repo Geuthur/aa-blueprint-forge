@@ -7,8 +7,8 @@ import { useUserData } from "aa-geuthur-react";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-// AA Blueprint Forge
 import {
+  administrationQueryKeys,
   deleteAdministrationOwner,
   loadAdministrationGroups,
   loadAdministrationOwnerBlueprints,
@@ -18,8 +18,9 @@ import {
   triggerAdministrationOwnerUpdate,
   updateAdministrationOwner,
   updateAdministrationSettings,
-} from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
+} from "@/Api/calls/administration";
+import { catalogQueryKeys } from "@/Api/calls/catalog";
+import { settingsQueryKeys } from "@/Api/calls/settings";
 import type { AdministrationOwnerUpdateRequest, OwnerSettingSchema } from "@/Api/schema";
 import type { UserData } from "@/Api/schema";
 
@@ -32,7 +33,7 @@ export function useIsSuperuser() {
 /** Loads the Alliance Auth groups that can receive order notifications. */
 export function useAdministrationGroups() {
   return useQuery({
-    queryKey: queryKeys.AdministrationGroups,
+    queryKey: administrationQueryKeys.groups,
     queryFn: loadAdministrationGroups,
   });
 }
@@ -40,7 +41,7 @@ export function useAdministrationGroups() {
 /** Loads the global notification settings. */
 export function useAdministrationSettings() {
   return useQuery({
-    queryKey: queryKeys.AdministrationSettings,
+    queryKey: administrationQueryKeys.settings,
     queryFn: loadAdministrationSettings,
   });
 }
@@ -48,7 +49,7 @@ export function useAdministrationSettings() {
 /** Loads all owners of the Administration. */
 export function useAdministrationOwners() {
   return useQuery({
-    queryKey: queryKeys.AdministrationOwners,
+    queryKey: administrationQueryKeys.owners,
     queryFn: loadAdministrationOwners,
   });
 }
@@ -56,7 +57,7 @@ export function useAdministrationOwners() {
 /** Loads the blueprints of the inspected owner; stays disabled while no owner is inspected. */
 export function useAdministrationOwnerBlueprints(ownerId: number | null) {
   return useQuery({
-    queryKey: ownerId ? queryKeys.AdministrationOwnerBlueprints(ownerId) : ["none"],
+    queryKey: ownerId ? administrationQueryKeys.ownerBlueprints(ownerId) : ["none"],
     queryFn: () => (ownerId ? loadAdministrationOwnerBlueprints(ownerId) : Promise.resolve([])),
     enabled: Boolean(ownerId),
   });
@@ -75,7 +76,7 @@ export function useUpdateAdministrationSettings(
     mutationFn: (payload: Parameters<typeof updateAdministrationSettings>[0]) =>
       updateAdministrationSettings(payload),
     onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.AdministrationSettings, updated);
+      queryClient.setQueryData(administrationQueryKeys.settings, updated);
       callbacks.onSaved?.();
     },
     onError: (err: unknown) => {
@@ -99,11 +100,11 @@ export function useUpdateAdministrationOwner(
     mutationFn: ({ ownerId, payload }: { ownerId: number; payload: AdministrationOwnerUpdateRequest }) =>
       updateAdministrationOwner(ownerId, payload),
     onSuccess: (updatedOwner) => {
-      queryClient.setQueryData<OwnerSettingSchema[]>(queryKeys.AdministrationOwners, (old) =>
+      queryClient.setQueryData<OwnerSettingSchema[]>(administrationQueryKeys.owners, (old) =>
         old?.map((o) => (o.id === updatedOwner.id ? updatedOwner : o)),
       );
-      queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
-      queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
+      queryClient.invalidateQueries({ queryKey: settingsQueryKeys.owners });
+      queryClient.invalidateQueries({ queryKey: catalogQueryKeys.catalogs });
       callbacks.onUpdated?.();
     },
     onError: (err: unknown) => {
@@ -136,8 +137,8 @@ export function useAdministrationTasks(onSettledDelete?: () => void) {
         variant: "success",
         message: res.message || t("Update task queued successfully."),
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.AdministrationOwners });
-      queryClient.invalidateQueries({ queryKey: queryKeys.UserCharacterStatuses });
+      queryClient.invalidateQueries({ queryKey: administrationQueryKeys.owners });
+      queryClient.invalidateQueries({ queryKey: settingsQueryKeys.characterStatuses });
     },
     onError: (err: unknown) => {
       setTaskFeedback({
@@ -163,7 +164,7 @@ export function useAdministrationTasks(onSettledDelete?: () => void) {
         variant: "success",
         message: data.message || t("Global update tasks queued successfully."),
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.AdministrationOwners });
+      queryClient.invalidateQueries({ queryKey: administrationQueryKeys.owners });
     },
     onError: (err: unknown) => {
       setTaskFeedback({
@@ -180,9 +181,9 @@ export function useAdministrationTasks(onSettledDelete?: () => void) {
         variant: "success",
         message: res.message || t("Owner deleted successfully."),
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.AdministrationOwners });
-      queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
-      queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
+      queryClient.invalidateQueries({ queryKey: administrationQueryKeys.owners });
+      queryClient.invalidateQueries({ queryKey: settingsQueryKeys.owners });
+      queryClient.invalidateQueries({ queryKey: catalogQueryKeys.catalogs });
       onSettledDelete?.();
     },
     onError: (err: unknown) => {

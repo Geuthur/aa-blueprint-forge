@@ -2,14 +2,12 @@
 import { useQuery } from "@tanstack/react-query";
 
 // AA bpforge
-// AA Blueprint Forge
-import { loadMyBlueprints } from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
+import { loadMyBlueprints, myBlueprintsQueryKeys } from "@/Api/calls/myBlueprints";
 
 /** Loads the blueprints of the current user. */
 export function useMyBlueprints() {
   return useQuery({
-    queryKey: queryKeys.MyBlueprints,
+    queryKey: myBlueprintsQueryKeys.blueprints,
     queryFn: loadMyBlueprints,
   });
 }
