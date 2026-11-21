@@ -40,6 +40,8 @@ Section Order:
 
 ### Fixed
 
+- [FIX] Discord webhook: a `ValueError` or `TypeError` of `dhooks_lite` (e.g. content over 2000 characters) no longer fails the Celery task, which would attach the webhook URL to the log record
+
 - [FIX] React Query no longer retries 403, 404 and other 4xx answers three times, so the error shows at once instead of after about seven seconds: `Routing.tsx` uses `createQueryClient` of `aa-geuthur-react` (`^1.7.0`), which retries only network errors and 502/503/504
 
 - [FIX] The type icon HTML carries the app name `aa-bpforge` as tooltip marker instead of the template name `aa-example`. The admin owner picture uses the public Alliance Auth functions `corporation_logo_url` and `character_portrait_url` instead of a private one.
