@@ -37,8 +37,7 @@ export default defineConfig([
             { heading: '// Third Party', pattern: '^@?\\w' },
 
             // 3. AA (Eigene Komponenten, Helpers, API)
-            { heading: "// AA bpforge", pattern: '^@/' },
-            { heading: "// AA bpforge", pattern: '^\\.(?!.*\\.s?css$)' },
+            { heading: "// AA bpforge", pattern: '^@/(?!.*\\.s?css$)' },
 
             // 4. Stylesheets & CSS-Module
             { heading: '// Styles', pattern: '\\.s?css$' },

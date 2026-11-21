@@ -7,7 +7,6 @@ import { Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-// AA Blueprint Forge
 import type { OrderTab } from "@/Components/Orders/OrdersTabBar";
 
 interface OrdersEmptyStateProps {

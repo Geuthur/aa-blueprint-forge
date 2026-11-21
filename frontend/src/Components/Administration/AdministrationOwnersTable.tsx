@@ -11,8 +11,10 @@ import { useTranslation } from "react-i18next";
 import type { OwnerSettingSchema } from "@/Api/schema";
 import { AdministrationErrorModal } from "@/Components/Administration/AdministrationErrorModal";
 import { getEsiStatusBadgeClass } from "@/Components/Administration/esiStatus";
-import styles from "@/Styles/modules/Administration.module.css";
 import { imageServer } from "@/Utils/eveOnline";
+
+// Styles
+import styles from "@/Styles/modules/Administration.module.css";
 
 interface AdministrationOwnersTableProps {
   owners?: OwnerSettingSchema[];

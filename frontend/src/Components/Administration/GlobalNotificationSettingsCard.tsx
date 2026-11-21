@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { GroupSchema } from "@/Api/schema";
+
+// Styles
 import styles from "@/Styles/modules/Administration.module.css";
 
 interface GlobalNotificationSettingsCardProps {
