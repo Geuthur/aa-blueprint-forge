@@ -6,8 +6,10 @@ import { Badge, Button } from "react-bootstrap";
 
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
-import styles from "@/Styles/modules/Blueprint.module.css";
 import { imageServer } from "@/Utils/eveOnline";
+
+// Styles
+import styles from "@/Styles/modules/Blueprint.module.css";
 
 export type BlueprintItem = components["schemas"]["BlueprintItemSchema"];
 

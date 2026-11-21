@@ -19,6 +19,8 @@ import {
   useSearchPublicBlueprints,
 } from "@/Components/Main/Hooks";
 import type { CartItem } from "@/Components/Main/OrderModal";
+
+// Styles
 import styles from "@/Styles/modules/Blueprint.module.css";
 
 function MainPage() {

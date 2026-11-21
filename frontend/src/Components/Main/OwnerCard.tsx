@@ -10,8 +10,10 @@ import { useTranslation } from "react-i18next";
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
-import styles from "@/Styles/modules/Blueprint.module.css";
 import { imageServer } from "@/Utils/eveOnline";
+
+// Styles
+import styles from "@/Styles/modules/Blueprint.module.css";
 
 type PublicOwner = components["schemas"]["OwnerPublicSchema"];
 

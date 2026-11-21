@@ -10,8 +10,10 @@ import { useTranslation } from "react-i18next";
 // AA bpforge
 import type { BlueprintItemSchema, OwnerSettingSchema } from "@/Api/schema";
 import { BlueprintTable } from "@/Components/BlueprintTable/BlueprintTable";
-import styles from "@/Styles/modules/Administration.module.css";
 import { imageServer } from "@/Utils/eveOnline";
+
+// Styles
+import styles from "@/Styles/modules/Administration.module.css";
 
 interface AdministrationInspectionViewProps {
   inspectingOwner: OwnerSettingSchema;

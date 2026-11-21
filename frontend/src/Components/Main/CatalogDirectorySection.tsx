@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import type { components } from "@/Api/OpenApi";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import { OwnerCard } from "@/Components/Main/OwnerCard";
+
+// Styles
 import styles from "@/Styles/modules/Blueprint.module.css";
 
 type PublicOwner = components["schemas"]["OwnerPublicSchema"];

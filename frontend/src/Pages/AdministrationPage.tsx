@@ -37,6 +37,8 @@ import {
     useUpdateAdministrationOwner,
     useUpdateAdministrationSettings,
 } from "@/Components/Administration/Hooks";
+
+// Styles
 import styles from "@/Styles/modules/Administration.module.css";
 
 type TypeFilter = "all" | "character" | "corporation" | "issues";

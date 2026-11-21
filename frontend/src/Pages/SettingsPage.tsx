@@ -21,8 +21,10 @@ import {
   useUserOwners,
 } from "@/Components/Settings/Hooks";
 import { UserSettingsCard } from "@/Components/Settings/UserSettingsCard";
-import styles from "@/Styles/modules/SettingsPage.module.css";
 import { imageServer } from "@/Utils/eveOnline";
+
+// Styles
+import styles from "@/Styles/modules/SettingsPage.module.css";
 
 export const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
