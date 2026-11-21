@@ -9,7 +9,7 @@ import { useUserSettings } from "aa-geuthur-react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // AA bpforge
-import * as ApiCalls from "@/Api/ApiCalls";
+import * as SettingsCalls from "@/Api/calls/settings";
 import { SettingsPage } from "@/Pages/SettingsPage";
 
 // The hook itself is tested in aa-geuthur-react.
@@ -18,7 +18,8 @@ vi.mock("aa-geuthur-react", async (importOriginal) => ({
   useUserSettings: vi.fn(),
 }));
 
-vi.mock("@/Api/ApiCalls", () => ({
+vi.mock("@/Api/calls/settings", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/Api/calls/settings")>()),
   loadUserOwners: vi.fn(),
   updateOwnerSetting: vi.fn(),
   triggerOwnerUpdate: vi.fn(),
@@ -57,7 +58,7 @@ describe("SettingsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSettings({ disable_notifications: false });
-    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue([]);
+    vi.mocked(SettingsCalls.loadUserOwners).mockResolvedValue([]);
   });
 
   it("should load the saved global notification preference", async () => {
@@ -190,8 +191,8 @@ describe("SettingsPage", () => {
         ],
       },
     ];
-    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.updateOwnerSetting).mockResolvedValue({
+    vi.mocked(SettingsCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(SettingsCalls.updateOwnerSetting).mockResolvedValue({
       ...mockOwners[0],
       is_public: true,
     });
@@ -225,7 +226,7 @@ describe("SettingsPage", () => {
     // Click the switch
     await user.click(charSwitch);
 
-    expect(ApiCalls.updateOwnerSetting).toHaveBeenCalledWith(
+    expect(SettingsCalls.updateOwnerSetting).toHaveBeenCalledWith(
       { ownerId: 1, payload: { is_public: true } },
       expect.any(Object),
     );
@@ -262,8 +263,8 @@ describe("SettingsPage", () => {
         sections: [],
       },
     ];
-    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.updateOwnerSetting).mockResolvedValue({
+    vi.mocked(SettingsCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(SettingsCalls.updateOwnerSetting).mockResolvedValue({
       ...mockOwners[0],
       is_public: true,
     });
@@ -275,7 +276,7 @@ describe("SettingsPage", () => {
     await user.click(publicRow);
 
     // Expected Result
-    expect(ApiCalls.updateOwnerSetting).toHaveBeenCalledWith(
+    expect(SettingsCalls.updateOwnerSetting).toHaveBeenCalledWith(
       { ownerId: 1, payload: { is_public: true } },
       expect.any(Object),
     );
@@ -312,8 +313,8 @@ describe("SettingsPage", () => {
         sections: [],
       },
     ];
-    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.updateOwnerSetting).mockResolvedValue({
+    vi.mocked(SettingsCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(SettingsCalls.updateOwnerSetting).mockResolvedValue({
       ...mockOwners[0],
       public_type: "bpo",
     });
@@ -325,7 +326,7 @@ describe("SettingsPage", () => {
     await user.click(bpoBtn);
 
     // Expected Result
-    expect(ApiCalls.updateOwnerSetting).toHaveBeenCalledWith(
+    expect(SettingsCalls.updateOwnerSetting).toHaveBeenCalledWith(
       { ownerId: 1, payload: { public_type: "bpo" } },
       expect.any(Object),
     );
@@ -362,8 +363,8 @@ describe("SettingsPage", () => {
         sections: [],
       },
     ];
-    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.triggerUpdateAllUserOwners).mockResolvedValue({
+    vi.mocked(SettingsCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(SettingsCalls.triggerUpdateAllUserOwners).mockResolvedValue({
       success: true,
       message: "Queued updates for 1 owner(s).",
     });
@@ -375,7 +376,7 @@ describe("SettingsPage", () => {
     await user.click(updateAllBtn);
 
     // Expected Result
-    expect(ApiCalls.triggerUpdateAllUserOwners).toHaveBeenCalledWith(false);
+    expect(SettingsCalls.triggerUpdateAllUserOwners).toHaveBeenCalledWith(false);
   });
 
   it("should trigger single owner update when Update button on card is clicked", async () => {
@@ -409,8 +410,8 @@ describe("SettingsPage", () => {
         sections: [],
       },
     ];
-    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.triggerOwnerUpdate).mockResolvedValue({
+    vi.mocked(SettingsCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(SettingsCalls.triggerOwnerUpdate).mockResolvedValue({
       success: true,
       message: "Update task queued.",
     });
@@ -422,7 +423,7 @@ describe("SettingsPage", () => {
     await user.click(updateBtn);
 
     // Expected Result
-    expect(ApiCalls.triggerOwnerUpdate).toHaveBeenCalledWith(42, false);
+    expect(SettingsCalls.triggerOwnerUpdate).toHaveBeenCalledWith(42, false);
   });
 
   it("should open delete modal and call deleteOwner when confirmed", async () => {
@@ -456,8 +457,8 @@ describe("SettingsPage", () => {
         sections: [],
       },
     ];
-    vi.mocked(ApiCalls.loadUserOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.deleteOwner).mockResolvedValue({
+    vi.mocked(SettingsCalls.loadUserOwners).mockResolvedValue(mockOwners);
+    vi.mocked(SettingsCalls.deleteOwner).mockResolvedValue({
       success: true,
       message: "Owner deleted.",
     });
@@ -472,6 +473,6 @@ describe("SettingsPage", () => {
     await user.click(confirmBtn);
 
     // Expected Result
-    expect(ApiCalls.deleteOwner).toHaveBeenCalledWith(99);
+    expect(SettingsCalls.deleteOwner).toHaveBeenCalledWith(99);
   });
 });

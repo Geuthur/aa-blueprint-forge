@@ -8,7 +8,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // AA bpforge
-import * as ApiCalls from "@/Api/ApiCalls";
+import * as SettingsCalls from "@/Api/calls/settings";
 import { BpoSelectionModal } from "@/Components/Settings/BpoSelectionModal";
 
 vi.mock("react-i18next", () => ({
@@ -18,7 +18,8 @@ vi.mock("react-i18next", () => ({
   withTranslation: () => (Component: unknown) => Component,
 }));
 
-vi.mock("@/Api/ApiCalls", () => ({
+vi.mock("@/Api/calls/settings", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/Api/calls/settings")>()),
   loadOwnerBpos: vi.fn(),
   updateOwnerBpos: vi.fn(),
 }));
@@ -73,8 +74,8 @@ describe("BpoSelectionModal", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadOwnerBpos).mockResolvedValue(mockBpos);
-    vi.mocked(ApiCalls.updateOwnerBpos).mockResolvedValue({ success: true, count: 2 });
+    vi.mocked(SettingsCalls.loadOwnerBpos).mockResolvedValue(mockBpos);
+    vi.mocked(SettingsCalls.updateOwnerBpos).mockResolvedValue({ success: true, count: 2 });
 
     // Test Action
     renderModal({
@@ -104,7 +105,7 @@ describe("BpoSelectionModal", () => {
     await user.click(saveBtn);
 
     await waitFor(() => {
-      expect(ApiCalls.updateOwnerBpos).toHaveBeenCalledWith(
+      expect(SettingsCalls.updateOwnerBpos).toHaveBeenCalledWith(
         5,
         expect.arrayContaining([101, 102])
       );
@@ -125,7 +126,7 @@ describe("BpoSelectionModal", () => {
       location_name,
       is_offered,
     });
-    vi.mocked(ApiCalls.loadOwnerBpos).mockResolvedValue([
+    vi.mocked(SettingsCalls.loadOwnerBpos).mockResolvedValue([
       bpo(101, "Atron Blueprint", "Jita IV - 4"),
       bpo(102, "Catalyst Blueprint", "Jita IV - 4", true),
       bpo(103, "Rifter Blueprint", "Amarr VIII"),
@@ -174,7 +175,7 @@ describe("BpoSelectionModal", () => {
     // Test Data
     const user = userEvent.setup();
     const onHide = vi.fn();
-    vi.mocked(ApiCalls.loadOwnerBpos).mockResolvedValue([]);
+    vi.mocked(SettingsCalls.loadOwnerBpos).mockResolvedValue([]);
 
     // Test Action
     renderModal({

@@ -8,7 +8,7 @@ import { useUserData } from "aa-geuthur-react";
 import { describe, expect, it, vi } from "vitest";
 
 // AA bpforge
-import * as ApiCalls from "@/Api/ApiCalls";
+import * as OrdersCalls from "@/Api/calls/orders";
 import OrdersPage from "@/Pages/OrdersPage";
 
 vi.mock("aa-geuthur-react", async (importOriginal) => ({
@@ -51,7 +51,7 @@ describe("OrdersPage Component", () => {
       },
     ];
     vi.mocked(useUserData).mockReturnValue({ data: { user: mockUser } } as never);
-    vi.spyOn(ApiCalls, "loadOrders").mockImplementation(async (role) => {
+    vi.spyOn(OrdersCalls, "loadOrders").mockImplementation(async (role) => {
       if (role === "seller") {
         return mockOrders as never;
       }
@@ -85,7 +85,7 @@ describe("OrdersPage Component", () => {
       { id: 12, status: "Delivered", requesting_user_id: 99, owner_id: 1, items: [] },
     ];
     vi.mocked(useUserData).mockReturnValue({ data: { user: mockUser } } as never);
-    vi.spyOn(ApiCalls, "loadOrders").mockImplementation(async (role) => {
+    vi.spyOn(OrdersCalls, "loadOrders").mockImplementation(async (role) => {
       if (role === "seller") {
         return mockSellerOrders as never;
       }
@@ -138,7 +138,7 @@ describe("OrdersPage Component", () => {
       },
     ];
     vi.mocked(useUserData).mockReturnValue({ data: { user: mockManagerUser } } as never);
-    vi.spyOn(ApiCalls, "loadOrders").mockImplementation(async (role) => {
+    vi.spyOn(OrdersCalls, "loadOrders").mockImplementation(async (role) => {
       if (role === "manage") {
         return mockManageOrders as never;
       }
@@ -173,7 +173,7 @@ describe("OrdersPage Component", () => {
 
   const mockOrderOf = (status: string, requesterId: number, user: Record<string, unknown>) => {
     vi.mocked(useUserData).mockReturnValue({ data: { user: user } } as never);
-    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([
+    vi.spyOn(OrdersCalls, "loadOrders").mockResolvedValue([
       {
         id: 99,
         status,
@@ -190,7 +190,7 @@ describe("OrdersPage Component", () => {
   it("allows a superuser to delete an order in the history via confirmation modal", async () => {
     // Test Data
     mockOrderOf("Delivered", 88, { user_id: 1, can_manage_orders: true, is_superuser: true });
-    const deleteSpy = vi.spyOn(ApiCalls, "deleteOrder").mockResolvedValue({ success: true, message: "Deleted" });
+    const deleteSpy = vi.spyOn(OrdersCalls, "deleteOrder").mockResolvedValue({ success: true, message: "Deleted" });
 
     // Test Action
     renderOrders("/?tab=history");
@@ -254,7 +254,7 @@ describe("OrdersPage Component", () => {
   it("loads closed orders in the history tab", async () => {
     // Test Data
     vi.mocked(useUserData).mockReturnValue({ data: { user: { user_id: 99 } } } as never);
-    const loadOrders = vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([] as never);
+    const loadOrders = vi.spyOn(OrdersCalls, "loadOrders").mockResolvedValue([] as never);
 
     // Test Action
     renderOrders();
@@ -275,7 +275,7 @@ describe("OrdersPage Component", () => {
       is_global_order_manager: true,
     };
     vi.mocked(useUserData).mockReturnValue({ data: { user: mockManagerUser } } as never);
-    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([] as never);
+    vi.spyOn(OrdersCalls, "loadOrders").mockResolvedValue([] as never);
 
     // Test Action
     render(
@@ -319,7 +319,7 @@ describe("OrdersPage Component", () => {
 
   const renderExpandedOrder = async (locationName?: string | null, blueprintAvailable = true) => {
     vi.mocked(useUserData).mockReturnValue({ data: { user: { user_id: 1 } } } as never);
-    vi.spyOn(ApiCalls, "loadOrders").mockResolvedValue([orderWithItem(locationName, blueprintAvailable)] as never);
+    vi.spyOn(OrdersCalls, "loadOrders").mockResolvedValue([orderWithItem(locationName, blueprintAvailable)] as never);
 
     render(
       <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>

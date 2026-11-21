@@ -10,7 +10,7 @@ import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // AA bpforge
-import * as ApiCalls from "@/Api/ApiCalls";
+import * as AdministrationCalls from "@/Api/calls/administration";
 import AdministrationPage from "@/Pages/AdministrationPage";
 
 vi.mock("react-i18next", () => ({
@@ -25,7 +25,8 @@ vi.mock("aa-geuthur-react", async (importOriginal) => ({
   useUserData: vi.fn(),
 }));
 
-vi.mock("@/Api/ApiCalls", () => ({
+vi.mock("@/Api/calls/administration", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/Api/calls/administration")>()),
   deleteAdministrationOwner: vi.fn(),
   loadAdministrationGroups: vi.fn(),
   loadAdministrationSettings: vi.fn(),
@@ -84,10 +85,10 @@ describe("AdministrationPage", () => {
       order_status_group_ids: [2],
     };
 
-    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue(mockGroups);
-    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue(mockSettings);
-    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue([]);
-    vi.mocked(ApiCalls.updateAdministrationSettings).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationGroups).mockResolvedValue(mockGroups);
+    vi.mocked(AdministrationCalls.loadAdministrationSettings).mockResolvedValue(mockSettings);
+    vi.mocked(AdministrationCalls.loadAdministrationOwners).mockResolvedValue([]);
+    vi.mocked(AdministrationCalls.updateAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [1, 2],
       order_status_group_ids: [2],
     });
@@ -115,7 +116,7 @@ describe("AdministrationPage", () => {
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(ApiCalls.updateAdministrationSettings).toHaveBeenCalledWith({
+      expect(AdministrationCalls.updateAdministrationSettings).toHaveBeenCalledWith({
         order_created_group_ids: [1, 2],
         order_status_group_ids: [2],
       });
@@ -154,13 +155,13 @@ describe("AdministrationPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue(mockGroups);
-    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationGroups).mockResolvedValue(mockGroups);
+    vi.mocked(AdministrationCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.updateAdministrationOwner).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(AdministrationCalls.updateAdministrationOwner).mockResolvedValue({
       ...mockOwners[0],
       public_type: "all",
     });
@@ -185,7 +186,7 @@ describe("AdministrationPage", () => {
     await user.click(saveOwnerBtn);
 
     await waitFor(() => {
-      expect(ApiCalls.updateAdministrationOwner).toHaveBeenCalledWith(10, {
+      expect(AdministrationCalls.updateAdministrationOwner).toHaveBeenCalledWith(10, {
         is_public: true,
         public_type: "all",
         selective_bpo_enabled: true,
@@ -263,13 +264,13 @@ describe("AdministrationPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue(mockGroups);
-    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationGroups).mockResolvedValue(mockGroups);
+    vi.mocked(AdministrationCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.loadAdministrationOwnerBlueprints).mockResolvedValue(mockOwnerBlueprints);
+    vi.mocked(AdministrationCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(AdministrationCalls.loadAdministrationOwnerBlueprints).mockResolvedValue(mockOwnerBlueprints);
 
     // Test Action
     renderPage();
@@ -283,7 +284,7 @@ describe("AdministrationPage", () => {
     expect(await screen.findByText("Administration Inspection")).toBeInTheDocument();
     expect(await screen.findByText("Rifter Blueprint")).toBeInTheDocument();
     expect(screen.getByText("Breacher Blueprint")).toBeInTheDocument();
-    expect(ApiCalls.loadAdministrationOwnerBlueprints).toHaveBeenCalledWith(10);
+    expect(AdministrationCalls.loadAdministrationOwnerBlueprints).toHaveBeenCalledWith(10);
 
     const backBtn = screen.getByRole("button", { name: "Back to Administration Overview" });
     await user.click(backBtn);
@@ -314,13 +315,13 @@ describe("AdministrationPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(AdministrationCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.triggerAdministrationOwnerUpdate).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(AdministrationCalls.triggerAdministrationOwnerUpdate).mockResolvedValue({
       success: true,
       message: "Update task queued for Enterprise Industrialists (force_refresh=False).",
     });
@@ -335,7 +336,7 @@ describe("AdministrationPage", () => {
 
     // Expected Result
     await waitFor(() => {
-      expect(ApiCalls.triggerAdministrationOwnerUpdate).toHaveBeenCalledWith(10, false);
+      expect(AdministrationCalls.triggerAdministrationOwnerUpdate).toHaveBeenCalledWith(10, false);
     });
     expect(
       await screen.findByText("Update task queued for Enterprise Industrialists (force_refresh=False).")
@@ -365,14 +366,14 @@ describe("AdministrationPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(AdministrationCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(AdministrationCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
     vi.mocked(useUserData).mockReturnValue({ data: mockUserData(true) } as never);
-    vi.mocked(ApiCalls.triggerAdministrationOwnerUpdate).mockResolvedValue({
+    vi.mocked(AdministrationCalls.triggerAdministrationOwnerUpdate).mockResolvedValue({
       success: true,
       message: "Update task queued for Enterprise Industrialists (force_refresh=True).",
     });
@@ -390,7 +391,7 @@ describe("AdministrationPage", () => {
 
     // Expected Result
     await waitFor(() => {
-      expect(ApiCalls.triggerAdministrationOwnerUpdate).toHaveBeenCalledWith(10, true);
+      expect(AdministrationCalls.triggerAdministrationOwnerUpdate).toHaveBeenCalledWith(10, true);
     });
     expect(
       await screen.findByText("Update task queued for Enterprise Industrialists (force_refresh=True).")
@@ -420,13 +421,13 @@ describe("AdministrationPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(AdministrationCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
-    vi.mocked(ApiCalls.deleteAdministrationOwner).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(AdministrationCalls.deleteAdministrationOwner).mockResolvedValue({
       success: true,
       message: "Owner Enterprise Industrialists and all associated data deleted successfully.",
     });
@@ -449,7 +450,7 @@ describe("AdministrationPage", () => {
     await user.click(confirmBtn);
 
     await waitFor(() => {
-      expect(ApiCalls.deleteAdministrationOwner).toHaveBeenCalledWith(10);
+      expect(AdministrationCalls.deleteAdministrationOwner).toHaveBeenCalledWith(10);
     });
 
     expect(
@@ -504,12 +505,12 @@ describe("AdministrationPage", () => {
       },
     ];
 
-    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(AdministrationCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockMultiOwners);
+    vi.mocked(AdministrationCalls.loadAdministrationOwners).mockResolvedValue(mockMultiOwners);
 
     // Test Action
     renderPage();
@@ -537,14 +538,14 @@ describe("AdministrationPage", () => {
   it("should trigger global update tasks for superuser with force refresh", async () => {
     // Test Data
     const user = userEvent.setup();
-    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(AdministrationCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue([]);
+    vi.mocked(AdministrationCalls.loadAdministrationOwners).mockResolvedValue([]);
     vi.mocked(useUserData).mockReturnValue({ data: mockUserData(true) } as never);
-    vi.mocked(ApiCalls.triggerAdministrationGlobalUpdate).mockResolvedValue({
+    vi.mocked(AdministrationCalls.triggerAdministrationGlobalUpdate).mockResolvedValue({
       success: true,
       message: "Queued Update All Characters",
     });
@@ -568,14 +569,14 @@ describe("AdministrationPage", () => {
 
     // Expected Result 1
     await waitFor(() => {
-      expect(ApiCalls.triggerAdministrationGlobalUpdate).toHaveBeenCalledWith({
+      expect(AdministrationCalls.triggerAdministrationGlobalUpdate).toHaveBeenCalledWith({
         target: "characters",
         forceRefresh: true,
       });
     });
 
     // Click Update All Corporations
-    vi.mocked(ApiCalls.triggerAdministrationGlobalUpdate).mockResolvedValue({
+    vi.mocked(AdministrationCalls.triggerAdministrationGlobalUpdate).mockResolvedValue({
       success: true,
       message: "Queued Update All Corporations",
     });
@@ -584,7 +585,7 @@ describe("AdministrationPage", () => {
 
     // Expected Result 2
     await waitFor(() => {
-      expect(ApiCalls.triggerAdministrationGlobalUpdate).toHaveBeenCalledWith({
+      expect(AdministrationCalls.triggerAdministrationGlobalUpdate).toHaveBeenCalledWith({
         target: "corporations",
         forceRefresh: true,
       });
@@ -613,12 +614,12 @@ describe("AdministrationPage", () => {
         notify_order_status_group_ids: [],
       },
     ];
-    vi.mocked(ApiCalls.loadAdministrationGroups).mockResolvedValue([]);
-    vi.mocked(ApiCalls.loadAdministrationSettings).mockResolvedValue({
+    vi.mocked(AdministrationCalls.loadAdministrationGroups).mockResolvedValue([]);
+    vi.mocked(AdministrationCalls.loadAdministrationSettings).mockResolvedValue({
       order_created_group_ids: [],
       order_status_group_ids: [],
     });
-    vi.mocked(ApiCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
+    vi.mocked(AdministrationCalls.loadAdministrationOwners).mockResolvedValue(mockOwners);
     vi.mocked(useUserData).mockReturnValue({ data: mockUserData(false) } as never);
 
     // Test Action
