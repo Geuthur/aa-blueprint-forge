@@ -38,6 +38,8 @@ Section Order:
 
 - [ADD] The item table of an order shows the location of each blueprint to the seller and to order managers. Buyers do not see it, like in the catalog.
 
+- [ADD] Tests for `is_retryable_esi_error` and `ESI_RETRY_STATUS_CODES` (`tests/test_providers.py`), the `display_name` branches of the image helpers (`tests/test_helpers/test_eveonline.py`) and the access rules for inactive superusers and users with several characters (`tests/test_access.py`)
+
 ### Fixed
 
 - [FIX] Discord webhook: a `ValueError` or `TypeError` of `dhooks_lite` (e.g. content over 2000 characters) no longer fails the Celery task, which would attach the webhook URL to the log record

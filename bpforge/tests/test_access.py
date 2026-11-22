@@ -2,6 +2,7 @@
 
 # Third Party
 from evesde_factory.allianceauth import EveCharacterFactory, UserFactory
+from evesde_factory.utils import add_character_to_user
 
 # AA Blueprint Forge
 from bpforge.models.blueprint import Blueprint, Owner
@@ -20,6 +21,10 @@ class AccessTestCase(AuthTestCase):
             permissions__=["bpforge.basic_access", "bpforge.full_access"]
         )
         cls.no_main = UserFactory(permissions__=["bpforge.basic_access"])
+        cls.inactive_superuser = UserMainFactory()
+        cls.inactive_superuser.is_superuser = True
+        cls.inactive_superuser.is_active = False
+        cls.inactive_superuser.save()
 
         cls.own_owner = OwnerFactory(user=cls.user, is_public=False)
         cls.private_owner = OwnerFactory(is_public=False)
@@ -60,6 +65,16 @@ class TestOwnerAccess(AccessTestCase):
         # Test Action & Expected Result
         self.assertCountEqual(Owner.objects.visible_to(self.superuser), expected)
         self.assertCountEqual(Owner.objects.manage_to(self.superuser), expected)
+
+    def test_visible_to_and_manage_to_should_not_return_all_for_inactive_superuser(
+        self,
+    ):
+        # Test Action & Expected Result: an inactive superuser has no admin access
+        # and is limited like a normal user (here: no own owner, only public ones).
+        self.assertCountEqual(
+            Owner.objects.visible_to(self.inactive_superuser), [self.public_owner]
+        )
+        self.assertFalse(Owner.objects.manage_to(self.inactive_superuser).exists())
 
     def test_visible_to_and_manage_to_should_return_nothing_without_main(self):
         # Test Action & Expected Result
@@ -105,6 +120,15 @@ class TestBlueprintAccess(AccessTestCase):
         self.assertCountEqual(Blueprint.objects.visible_to(self.superuser), expected)
         self.assertCountEqual(Blueprint.objects.manage_to(self.superuser), expected)
 
+    def test_visible_to_and_manage_to_should_not_return_all_for_inactive_superuser(
+        self,
+    ):
+        # Test Action & Expected Result
+        self.assertCountEqual(
+            Blueprint.objects.visible_to(self.inactive_superuser), [self.public_bp]
+        )
+        self.assertFalse(Blueprint.objects.manage_to(self.inactive_superuser).exists())
+
     def test_visible_to_and_manage_to_should_return_nothing_without_main(self):
         # Test Action & Expected Result
         self.assertFalse(Blueprint.objects.visible_to(self.no_main).exists())
@@ -141,3 +165,27 @@ class TestVisibleEveCharacters(AccessTestCase):
     def test_should_return_nothing_without_main(self):
         # Test Action & Expected Result
         self.assertFalse(Owner.objects.visible_eve_characters(self.no_main).exists())
+
+    def test_should_return_all_own_characters(self):
+        # Test Data
+        main = self.user.profile.main_character
+        second = EveCharacterFactory()
+        add_character_to_user(user=self.user, character=second)
+        EveCharacterFactory()
+
+        # Test Action
+        result = Owner.objects.visible_eve_characters(self.user)
+
+        # Expected Result
+        self.assertCountEqual(result, [main, second])
+
+    def test_should_not_return_all_characters_for_inactive_superuser(self):
+        # Test Data
+        own = self.inactive_superuser.profile.main_character
+        EveCharacterFactory()
+
+        # Test Action
+        result = Owner.objects.visible_eve_characters(self.inactive_superuser)
+
+        # Expected Result
+        self.assertCountEqual(result, [own])
