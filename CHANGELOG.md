@@ -90,6 +90,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] NPC stations are read from the local SDE (`eve_sde` `NPCStation`) instead of the ESI route `/universe/stations/{station_id}`, which CCP removed with compatibility date 2026-11-19; only the station name still comes from `/universe/names`, because the SDE has none.
+
 - [CHANGE] The API checks access to owners through the queryset rules `visible_to` and `manage_to` and filters the catalog with the new queryset method `in_catalog()`; status codes and messages stay the same. In the search an owner with an unknown `public_type` now counts as "all", like in the catalog.
 
 - [CHANGE] CI and pre-commit run on Node 26 (LTS) instead of Node 24; npm packages updated (minor and patch, jsdom 31, @testing-library/jest-dom 8), no change in behavior.

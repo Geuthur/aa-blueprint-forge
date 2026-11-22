@@ -10,7 +10,6 @@ __app_name_useragent__ = "AA-Blueprint-Forge"
 __github_url__ = f"https://github.com/Geuthur/{__package_name__}"
 
 __operations__ = [
-    "GetUniverseStationsStationId",
     "GetUniverseStructuresStructureId",
     "GetCorporationsCorporationIdAssets",
     "GetCorporationsCorporationIdBlueprints",
