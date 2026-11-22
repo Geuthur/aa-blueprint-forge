@@ -86,6 +86,10 @@ Section Order:
 
 - [CHANGE] CI and pre-commit run on Node 26 (LTS) instead of Node 24; npm packages updated (minor and patch, jsdom 31, @testing-library/jest-dom 8), no change in behavior.
 
+- [CHANGE] stylelint 18 and stylelint-config-standard 41; the pre-commit hook points stylelint at its own environment, because stylelint 18 no longer loads shared configs from global `node_modules`.
+
+- [CHANGE] i18next 27 and react-i18next 18: when a plural form is missing or empty in a language, `t()` now shows the `_other` form of that language before falling back to English (before: English).
+
 - [CHANGE] `AccessQuerySet` and `AccessManager` live in `bpforge/managers/general.py` in the form of the template; `visible_to` and `manage_to` now filter by the real fields of `Owner` and `Blueprint` (they were unused and failed before).
 
 - [CHANGE] The whole API requires `bpforge.basic_access` centrally (`basic_access_required` around the API URLs), including `menu/` and the administration endpoints. Users with `manage_access` or `full_access` but without `basic_access` lose access to the API and the pages; grant them `basic_access` as well.
