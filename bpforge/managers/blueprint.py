@@ -54,6 +54,27 @@ class BlueprintQuerySet(AccessQuerySet):
     def visible_q(self, user) -> models.Q:
         return self.owned_by_q(user) | models.Q(owner__is_public=True)
 
+    def in_catalog(self):
+        """
+        Blueprints their owner offers in the catalog.
+
+        Follows `public_type` of the owner (an unknown value counts as "all")
+        and, with `selective_bpo_enabled`, shows only the offered BPOs. It does
+        not check who may see the owner: combine it with `is_public` or
+        `Owner.objects.visible_to`.
+        """
+        is_copy = models.Q(runs__gt=0)
+        is_original = models.Q(runs__isnull=True) | models.Q(runs=0)
+        return self.filter(
+            (models.Q(owner__public_type="bpo") & is_original)
+            | (models.Q(owner__public_type="bpc") & is_copy)
+            | ~models.Q(owner__public_type__in=["bpo", "bpc"])
+        ).filter(
+            models.Q(owner__selective_bpo_enabled=False)
+            | is_copy
+            | models.Q(is_offered=True)
+        )
+
     def with_api_relations(self):
         """Preload related objects commonly needed for API representation."""
         return self.select_related(

@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 # AA Blueprint Forge
 from bpforge import __title__
 from bpforge.api import schema
+from bpforge.api.helpers import get_owner_or_error
 from bpforge.helpers.eveonline import (
     get_character_portrait_url,
     get_corporation_logo_url,
@@ -442,8 +443,9 @@ class ApiEndpoints:
         def update_owner_setting(
             request, owner_id: int, payload: schema.OwnerSettingUpdateRequest
         ):
-            owner = (
-                Owner.objects.select_related(
+            owner, error = get_owner_or_error(
+                Owner.objects.manage_to(request.user)
+                .select_related(
                     "character__character",
                     "corporation__alliance",
                 )
@@ -463,17 +465,12 @@ class ApiEndpoints:
                         filter=Q(bpforge_blueprints__runs__gt=0),
                         distinct=True,
                     ),
-                )
-                .filter(id=owner_id)
-                .first()
+                ),
+                owner_id,
+                _("Permission Denied."),
             )
-            if owner is None:
-                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
-
-            is_owner = owner.user == request.user
-            is_admin = General.objects.has_admin_access(request.user)
-            if not (is_owner or is_admin):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+            if error:
+                return error
 
             update_fields = []
             if payload.is_public is not None:
@@ -502,13 +499,13 @@ class ApiEndpoints:
             summary="List all BPOs for an owner with their selective offering status",
         )
         def list_owner_bpos(request, owner_id: int):
-            owner = (Owner.objects).filter(id=owner_id).first()
-            if owner is None:
-                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
-            is_owner = owner.user == request.user
-            is_admin = General.objects.has_admin_access(request.user)
-            if not (is_owner or is_admin):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+            owner, error = get_owner_or_error(
+                Owner.objects.manage_to(request.user),
+                owner_id,
+                _("Permission Denied."),
+            )
+            if error:
+                return error
 
             bpos = (
                 owner.bpforge_blueprints.filter(Q(runs__isnull=True) | Q(runs=0))
@@ -546,13 +543,13 @@ class ApiEndpoints:
         def update_owner_bpos(
             request, owner_id: int, payload: schema.OwnerBpoSelectionUpdateRequest
         ):
-            owner = (Owner.objects).filter(id=owner_id).first()
-            if owner is None:
-                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
-            is_owner = owner.user == request.user
-            is_admin = General.objects.has_admin_access(request.user)
-            if not (is_owner or is_admin):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+            owner, error = get_owner_or_error(
+                Owner.objects.manage_to(request.user),
+                owner_id,
+                _("Permission Denied."),
+            )
+            if error:
+                return error
 
             offered_set = set(payload.offered_item_ids)
             bpos = owner.bpforge_blueprints.filter(Q(runs__isnull=True) | Q(runs=0))
@@ -615,17 +612,15 @@ class ApiEndpoints:
             owner_id: int,
             payload: schema.OwnerUpdateRequest | None = None,
         ):
-            owner = (
-                (Owner.objects.select_related("character__character", "corporation"))
-                .filter(id=owner_id)
-                .first()
+            owner, error = get_owner_or_error(
+                Owner.objects.manage_to(request.user).select_related(
+                    "character__character", "corporation"
+                ),
+                owner_id,
+                _("Permission Denied."),
             )
-            if owner is None:
-                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
-            is_owner = owner.user == request.user
-            is_admin = General.objects.has_admin_access(request.user)
-            if not (is_owner or is_admin):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+            if error:
+                return error
 
             force_refresh = payload.force_refresh if payload else False
             update_owner.delay(owner_pk=owner.pk, force_refresh=force_refresh)
@@ -650,17 +645,15 @@ class ApiEndpoints:
             summary="Delete owner and associated data from blueprint forge",
         )
         def delete_owner_settings(request, owner_id: int):
-            owner = (
-                (Owner.objects.select_related("character__character", "corporation"))
-                .filter(id=owner_id)
-                .first()
+            owner, error = get_owner_or_error(
+                Owner.objects.manage_to(request.user).select_related(
+                    "character__character", "corporation"
+                ),
+                owner_id,
+                _("Permission Denied."),
             )
-            if owner is None:
-                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
-            is_owner = owner.user == request.user
-            is_admin = General.objects.has_admin_access(request.user)
-            if not (is_owner or is_admin):
-                return HTTPStatus.FORBIDDEN, {"error": _("Permission Denied.")}
+            if error:
+                return error
 
             owner_name = owner.name
             owner.delete()
