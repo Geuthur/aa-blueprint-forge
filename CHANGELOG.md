@@ -84,6 +84,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] CI and pre-commit run on Node 26 (LTS) instead of Node 24; npm packages updated (minor and patch, jsdom 31, @testing-library/jest-dom 8), no change in behavior.
+
 - [CHANGE] `AccessQuerySet` and `AccessManager` live in `bpforge/managers/general.py` in the form of the template; `visible_to` and `manage_to` now filter by the real fields of `Owner` and `Blueprint` (they were unused and failed before).
 
 - [CHANGE] The whole API requires `bpforge.basic_access` centrally (`basic_access_required` around the API URLs), including `menu/` and the administration endpoints. Users with `manage_access` or `full_access` but without `basic_access` lose access to the API and the pages; grant them `basic_access` as well.
