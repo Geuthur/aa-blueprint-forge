@@ -757,14 +757,18 @@ export interface components {
             sections: components["schemas"]["OwnerStatusSectionSchema"][];
         };
         /**
+         * OwnerPublicType
+         * @enum {string}
+         */
+        OwnerPublicType: "all" | "bpo" | "bpc";
+        /**
          * OwnerSettingUpdateRequest
          * @description Payload to update visibility and settings of an owner.
          */
         OwnerSettingUpdateRequest: {
             /** Is Public */
             is_public?: boolean | null;
-            /** Public Type */
-            public_type?: string | null;
+            public_type?: components["schemas"]["OwnerPublicType"] | null;
             /** Selective Bpo Enabled */
             selective_bpo_enabled?: boolean | null;
         };
@@ -1030,8 +1034,7 @@ export interface components {
         AdministrationOwnerUpdateRequest: {
             /** Is Public */
             is_public?: boolean | null;
-            /** Public Type */
-            public_type?: string | null;
+            public_type?: components["schemas"]["OwnerPublicType"] | null;
             /** Selective Bpo Enabled */
             selective_bpo_enabled?: boolean | null;
             /** Notify Order Created Group Ids */
