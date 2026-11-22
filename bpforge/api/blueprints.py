@@ -12,8 +12,8 @@ from django.utils.translation import gettext as _
 
 # AA Blueprint Forge
 from bpforge.api import schema
+from bpforge.api.helpers import get_owner_or_error
 from bpforge.models.blueprint import Blueprint, Owner
-from bpforge.models.general import General
 
 
 class ApiEndpoints:
@@ -145,9 +145,6 @@ class ApiEndpoints:
             if not query:
                 return HTTPStatus.OK, []
 
-            bpo_filter = Q(runs__isnull=True) | Q(runs=0)
-            bpc_filter = Q(runs__gt=0)
-
             blueprint_qs = (
                 Blueprint.objects.with_api_relations()
                 .filter(owner__is_public=True)
@@ -155,23 +152,7 @@ class ApiEndpoints:
                     Q(eve_type__name__icontains=query)
                     | Q(eve_type__group__name__icontains=query)
                 )
-                .filter(
-                    (Q(owner__public_type="bpo") & bpo_filter)
-                    | (Q(owner__public_type="bpc") & bpc_filter)
-                    | (Q(owner__public_type="all") & (bpo_filter | bpc_filter))
-                )
-                .filter(
-                    ~Q(
-                        owner__selective_bpo_enabled=True,
-                        runs__isnull=True,
-                        is_offered=False,
-                    ),
-                    ~Q(
-                        owner__selective_bpo_enabled=True,
-                        runs=0,
-                        is_offered=False,
-                    ),
-                )
+                .in_catalog()
                 .order_by("eve_type__name")[:250]
             )
 
@@ -192,36 +173,23 @@ class ApiEndpoints:
             summary="List blueprints for a specific owner",
         )
         def list_owner_blueprints(request, owner_id: int):
-            owner = (
-                (Owner.objects.select_related("character__character", "corporation"))
-                .filter(id=owner_id)
-                .first()
+            owner, error = get_owner_or_error(
+                Owner.objects.visible_to(request.user).select_related(
+                    "character__character", "corporation"
+                ),
+                owner_id,
+                _("This blueprint catalog is private."),
             )
-            if owner is None:
-                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
+            if error:
+                return error
 
-            # Check visibility: public or owned by user or full_access admin
-            is_owner = owner.user == request.user
-            is_admin = General.objects.has_admin_access(request.user)
-            if not (owner.is_public or is_owner or is_admin):
-                return HTTPStatus.FORBIDDEN, {
-                    "error": _("This blueprint catalog is private.")
-                }
-
-            blueprint_qs = Blueprint.objects.with_catalog_relations().filter(
-                owner=owner
+            # The catalog follows the settings of the owner, also for the owner and admins
+            blueprints = (
+                Blueprint.objects.with_catalog_relations()
+                .filter(owner=owner)
+                .in_catalog()
+                .order_by("eve_type__name")
             )
-
-            # In the blueprint catalog, always filter by public_type & selective BPOs as configured by the owner
-            if owner.public_type == "bpo":
-                blueprint_qs = blueprint_qs.filter(Q(runs__isnull=True) | Q(runs=0))
-            elif owner.public_type == "bpc":
-                blueprint_qs = blueprint_qs.filter(runs__gt=0)
-
-            if owner.selective_bpo_enabled:
-                blueprint_qs = blueprint_qs.filter(Q(runs__gt=0) | Q(is_offered=True))
-
-            blueprints = blueprint_qs.order_by("eve_type__name")
 
             result = [
                 schema.BlueprintItemSchema.from_blueprint(bp, include_location=False)

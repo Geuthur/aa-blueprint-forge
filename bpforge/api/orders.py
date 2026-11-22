@@ -13,6 +13,7 @@ from django.utils.translation import gettext as _
 
 # AA Blueprint Forge
 from bpforge.api import schema
+from bpforge.api.helpers import get_owner_or_error
 from bpforge.helpers.notifications import (
     notify_order_created,
     notify_order_status_updated,
@@ -52,19 +53,14 @@ class ApiEndpoints:
                     "error": _("Order must contain at least one blueprint item.")
                 }
 
-            owner = (Owner.objects).filter(id=payload.owner_id).first()
-            if owner is None:
-                return HTTPStatus.NOT_FOUND, {"error": _("Owner not found.")}
-
-            # Prevent ordering from a private shop unless owned by requester or admin
-            if (
-                not owner.is_public
-                and owner.user != request.user
-                and not General.objects.has_admin_access(request.user)
-            ):
-                return HTTPStatus.FORBIDDEN, {
-                    "error": _("Cannot order from a private shop.")
-                }
+            # A private shop takes orders only from its owner and admins
+            owner, error = get_owner_or_error(
+                Owner.objects.visible_to(request.user),
+                payload.owner_id,
+                _("Cannot order from a private shop."),
+            )
+            if error:
+                return error
 
             blueprint_ids = [item.blueprint_id for item in payload.items]
             blueprints = Blueprint.objects.filter(

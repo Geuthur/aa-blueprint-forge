@@ -86,6 +86,8 @@ Section Order:
 
 ### Changed
 
+- [CHANGE] The API checks access to owners through the queryset rules `visible_to` and `manage_to` and filters the catalog with the new queryset method `in_catalog()`; status codes and messages stay the same. In the search an owner with an unknown `public_type` now counts as "all", like in the catalog.
+
 - [CHANGE] CI and pre-commit run on Node 26 (LTS) instead of Node 24; npm packages updated (minor and patch, jsdom 31, @testing-library/jest-dom 8), no change in behavior.
 
 - [CHANGE] stylelint 18 and stylelint-config-standard 41; the pre-commit hook points stylelint at its own environment, because stylelint 18 no longer loads shared configs from global `node_modules`.
