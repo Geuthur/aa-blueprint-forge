@@ -12,7 +12,7 @@ from esi.exceptions import HTTPClientError
 from esi.models import Token
 
 # Alliance Auth (External Libs)
-from eve_sde.models import ItemType, SolarSystem
+from eve_sde.models import ItemType, NPCStation, SolarSystem
 
 # AA Blueprint Forge
 from bpforge.app_settings import BPFORGE_BULK_BATCH_SIZE
@@ -392,34 +392,36 @@ class LocationManager(models.Manager["LocationContext"]):
                     f"Solar system with ID {location_id} not found."
                 ) from exc
         elif self.model.is_station_id(location_id):
-            logger.info(f"Fetching station from ESI with ID {location_id}")
-            station = esi.client.Universe.GetUniverseStationsStationId(
-                station_id=location_id
-            ).result(use_etag=False)
+            try:
+                station = NPCStation.objects.select_related(
+                    "solar_system", "item_type"
+                ).get(id=location_id)
+            except ObjectDoesNotExist as exc:
+                raise ValueError(f"Station with ID {location_id} not found.") from exc
 
-            if station.owner:
-                owner = EveEntity.objects.get_or_create_esi(entity_id=station.owner)[0]
+            if station.owner_id_raw:
+                owner = EveEntity.objects.get_or_create_esi(
+                    entity_id=station.owner_id_raw
+                )[0]
             else:
                 owner = None
 
-            try:
-                solar_system = SolarSystem.objects.get(id=station.system_id)
-            except ObjectDoesNotExist as exc:
+            solar_system = station.solar_system
+            if solar_system is None:
                 raise ValueError(
-                    f"Solar system with ID {station.system_id} not found."
-                ) from exc
+                    f"Solar system of station with ID {location_id} not found."
+                )
 
-            try:
-                eve_type = ItemType.objects.get(id=station.type_id)
-            except ObjectDoesNotExist as exc:
+            eve_type = station.item_type
+            if eve_type is None:
                 raise ValueError(
-                    f"Item type with ID {station.type_id} not found."
-                ) from exc
+                    f"Item type of station with ID {location_id} not found."
+                )
 
             location, created = self.update_or_create(
                 location_id=location_id,
                 defaults={
-                    "name": station.name,
+                    "name": station.name or self._station_name_esi(location_id),
                     "solar_system": solar_system,
                     "eve_type": eve_type,
                     "owner": owner,
@@ -431,6 +433,17 @@ class LocationManager(models.Manager["LocationContext"]):
             )
 
         return location, created
+
+    @staticmethod
+    def _station_name_esi(station_id: int) -> str:
+        """Fetch the name of a NPC station from ESI.
+
+        The SDE has no station names, they only come from `/universe/names`.
+        """
+        response = esi.client.Universe.PostUniverseNames(body=[station_id]).results(
+            use_etag=False
+        )
+        return response[0].name
 
     def structure_update_or_create_esi(
         self, structure_id: int, token: Token
