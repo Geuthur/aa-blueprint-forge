@@ -6,7 +6,7 @@ import { BellOff } from "lucide-react";
 import { Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
-// AA bpforge
+// Styles
 import styles from "@/Styles/modules/SettingsPage.module.css";
 
 interface UserSettingsCardProps {

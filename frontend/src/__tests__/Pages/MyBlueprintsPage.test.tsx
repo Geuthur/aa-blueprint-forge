@@ -7,7 +7,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 // AA bpforge
-import * as ApiCalls from "@/Api/ApiCalls";
+import * as MyBlueprintsCalls from "@/Api/calls/myBlueprints";
 import MyBlueprintsPage from "@/Pages/MyBlueprintsPage";
 
 describe("MyBlueprintsPage Component", () => {
@@ -35,7 +35,7 @@ describe("MyBlueprintsPage Component", () => {
         owner_name: "My Pilot",
       },
     ];
-    vi.spyOn(ApiCalls, "loadMyBlueprints").mockResolvedValueOnce(mockBlueprints as never);
+    vi.spyOn(MyBlueprintsCalls, "loadMyBlueprints").mockResolvedValueOnce(mockBlueprints as never);
 
     // Test Action
     render(
@@ -90,7 +90,7 @@ describe("MyBlueprintsPage Component", () => {
         owner_name: "My Pilot",
       },
     ];
-    vi.spyOn(ApiCalls, "loadMyBlueprints").mockResolvedValueOnce(mockBlueprints as never);
+    vi.spyOn(MyBlueprintsCalls, "loadMyBlueprints").mockResolvedValueOnce(mockBlueprints as never);
 
     // Test Action
     render(

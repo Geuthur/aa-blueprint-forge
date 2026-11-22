@@ -9,8 +9,10 @@ import { useTranslation } from "react-i18next";
 
 // AA bpforge
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
-import styles from "@/Styles/modules/Blueprint.module.css";
 import { imageServer } from "@/Utils/eveOnline";
+
+// Styles
+import styles from "@/Styles/modules/Blueprint.module.css";
 
 export interface CartItem {
   blueprint: BlueprintItem;

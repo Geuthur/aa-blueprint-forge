@@ -7,7 +7,7 @@ import { ShoppingCart, ArrowRight, Trash2 } from "lucide-react";
 import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
-// AA bpforge
+// Styles
 import styles from "@/Styles/modules/Blueprint.module.css";
 
 interface OrderFloatingBarProps {

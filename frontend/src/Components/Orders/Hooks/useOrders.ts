@@ -2,9 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // AA bpforge
-// AA Blueprint Forge
-import { deleteOrder, loadOrders, updateOrderStatus } from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
+import { deleteOrder, loadOrders, ordersQueryKeys, updateOrderStatus } from "@/Api/calls/orders";
 
 type OrdersScope = "buyer" | "seller" | "all" | "manage" | "history";
 
@@ -13,7 +11,7 @@ const isOpen = (status: string) => status === "Pending" || status === "Accepted"
 /** Loads the orders of the selected tab. */
 export function useOrders(tab: OrdersScope) {
   return useQuery({
-    queryKey: queryKeys.Orders(tab),
+    queryKey: ordersQueryKeys.orders(tab),
     queryFn: () => loadOrders(tab),
   });
 }
@@ -24,7 +22,7 @@ export function useOrders(tab: OrdersScope) {
  */
 export function useOpenOrderCount(scope: "seller" | "manage", enabled = true) {
   const { data = [] } = useQuery({
-    queryKey: queryKeys.Orders(scope),
+    queryKey: ordersQueryKeys.orders(scope),
     queryFn: () => loadOrders(scope),
     enabled,
     refetchInterval: 10000,
@@ -42,8 +40,8 @@ export function useOrderActions() {
       updateOrderStatus(orderId, status),
     onSuccess: async (_, variables) => {
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.Orders() }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.OrderDetail(variables.orderId) }),
+        queryClient.invalidateQueries({ queryKey: ordersQueryKeys.orders() }),
+        queryClient.invalidateQueries({ queryKey: ordersQueryKeys.order(variables.orderId) }),
       ]);
     },
   });
@@ -51,8 +49,8 @@ export function useOrderActions() {
   const deleteOrderMutation = useMutation({
     mutationFn: (orderId: number) => deleteOrder(orderId),
     onSuccess: async (_, orderId) => {
-      queryClient.removeQueries({ queryKey: queryKeys.OrderDetail(orderId) });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.Orders() });
+      queryClient.removeQueries({ queryKey: ordersQueryKeys.order(orderId) });
+      await queryClient.invalidateQueries({ queryKey: ordersQueryKeys.orders() });
     },
   });
 

@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 // AA bpforge
 import { getBlueprintColumns } from "@/Components/BlueprintTable/BlueprintTableColumns";
 import type { BlueprintItem } from "@/Components/BlueprintTable/BlueprintTableColumns";
+
+// Styles
 import styles from "@/Styles/modules/Blueprint.module.css";
 
 interface BlueprintTableProps {

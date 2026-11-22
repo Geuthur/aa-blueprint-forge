@@ -2,19 +2,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // AA bpforge
-// AA Blueprint Forge
 import {
+  catalogQueryKeys,
   createOrder,
   loadCatalogBlueprints,
   loadPublicCatalogs,
   searchPublicBlueprints,
-} from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
+} from "@/Api/calls/catalog";
+import { ordersQueryKeys } from "@/Api/calls/orders";
 
 /** Loads the public catalogs. */
 export function usePublicCatalogs() {
   return useQuery({
-    queryKey: queryKeys.PublicCatalogs,
+    queryKey: catalogQueryKeys.catalogs,
     queryFn: loadPublicCatalogs,
   });
 }
@@ -22,7 +22,7 @@ export function usePublicCatalogs() {
 /** Loads the blueprints of a catalog; stays disabled while no catalog is selected. */
 export function useCatalogBlueprints(catalogId: number | null) {
   return useQuery({
-    queryKey: catalogId ? queryKeys.CatalogBlueprints(catalogId) : ["none"],
+    queryKey: catalogId ? catalogQueryKeys.blueprints(catalogId) : ["none"],
     queryFn: () => (catalogId ? loadCatalogBlueprints(catalogId) : Promise.resolve([])),
     enabled: Boolean(catalogId),
   });
@@ -31,7 +31,7 @@ export function useCatalogBlueprints(catalogId: number | null) {
 /** Searches the blueprints of all public catalogs; only runs while `enabled` is true. */
 export function useSearchPublicBlueprints(term: string, enabled: boolean) {
   return useQuery({
-    queryKey: queryKeys.SearchPublicBlueprints(term),
+    queryKey: catalogQueryKeys.search(term),
     queryFn: () => searchPublicBlueprints(term),
     enabled,
     staleTime: 10000,
@@ -48,7 +48,7 @@ export function useCreateOrder(onCreated?: () => void) {
     mutationFn: (payload: Parameters<typeof createOrder>[0]) => createOrder(payload),
     onSuccess: () => {
       onCreated?.();
-      queryClient.invalidateQueries({ queryKey: queryKeys.Orders() });
+      queryClient.invalidateQueries({ queryKey: ordersQueryKeys.orders() });
     },
   });
 }

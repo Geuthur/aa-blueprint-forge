@@ -10,8 +10,10 @@ import { useTranslation } from "react-i18next";
 // AA bpforge
 import type { components } from "@/Api/OpenApi";
 import { useOwnerBpos, useSaveOwnerBpos } from "@/Components/Settings/Hooks";
-import styles from "@/Styles/modules/SettingsPage.module.css";
 import { imageServer } from "@/Utils/eveOnline";
+
+// Styles
+import styles from "@/Styles/modules/SettingsPage.module.css";
 
 type OwnerBpoItem = components["schemas"]["OwnerBpoItemSchema"];
 

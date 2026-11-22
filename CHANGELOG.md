@@ -23,10 +23,6 @@ Section Order:
 ### Added
 ### Fixed
 ### Changed
-
-- [CHANGE] Uniform error format of the API: every error response of an endpoint is an `ErrorSchema` (`{"error": "<text>"}`) in the OpenAPI schema, and every endpoint lists its 403. Unknown owners and orders answer 404 with `{"error": "Owner not found."}` or `{"error": "Order not found."}` instead of `{"detail": "Not Found"}`. The unreachable `basic_access` checks in the endpoints are removed, `basic_access_required` covers them. Status codes are unchanged.
-
-- [CHANGE] The frontend shows the reason the API gives for a failed action (e.g. "Permission Denied") instead of a fixed text (`apiErrorMessage` of `aa-geuthur-react`).
 ### Removed
 -->
 
@@ -44,7 +40,19 @@ Section Order:
 
 - [ADD] Optional extra `tests-allianceauth-development` (test packages plus the Alliance Auth 6 pre-release) with separate test settings in `testauth/settings/development/` for the tox environment `allianceauth-development` and `make tox-tests-development`; a non-blocking CI job "AA Development" runs it on Python 3.13 and 3.14.
 
+- [ADD] Tests for `is_retryable_esi_error` and `ESI_RETRY_STATUS_CODES` (`tests/test_providers.py`), the `display_name` branches of the image helpers (`tests/test_helpers/test_eveonline.py`) and the access rules for inactive superusers and users with several characters (`tests/test_access.py`)
+
 ### Fixed
+
+- [FIX] The owner settings endpoints (`PATCH` in General and Administration) reject an invalid `public_type` with 422 instead of saving any text; the API schema lists the valid values (`all`, `bpo`, `bpc`).
+
+- [FIX] Discord webhook: a `ValueError` or `TypeError` of `dhooks_lite` (e.g. content over 2000 characters) is no longer retried, because it is raised before any request is sent; `RequestException` and a rejected response are still retried
+
+- [FIX] Discord webhook: a `ValueError` or `TypeError` of `dhooks_lite` (e.g. content over 2000 characters) no longer fails the Celery task, which would attach the webhook URL to the log record
+
+- [FIX] React Query no longer retries 403, 404 and other 4xx answers three times, so the error shows at once instead of after about seven seconds: `Routing.tsx` uses `createQueryClient` of `aa-geuthur-react` (`^1.7.0`), which retries only network errors and 502/503/504
+
+- [FIX] The type icon HTML carries the app name `aa-bpforge` as tooltip marker instead of the template name `aa-example`. The admin owner picture uses the public Alliance Auth functions `corporation_logo_url` and `character_portrait_url` instead of a private one.
 
 - [FIX] The admin view `force-update` of an owner now requires the change permission (superuser); staff users without it get a 403 instead of queuing an update.
 
@@ -85,6 +93,18 @@ Section Order:
 - [FIX] Real translations from the stale `weblate-translation` branch are applied to `frontend/i18n/<lng>/translation.json` and to the German `django.po`. Only strings that were empty or equal to English are filled, translations already on master are kept. `frontend/i18n/cs` and `frontend/i18n/sk` are added with all keys empty. The `.po` files are updated with `make translations`.
 
 ### Changed
+
+- [CHANGE] NPC stations are read from the local SDE (`eve_sde` `NPCStation`) instead of the ESI route `/universe/stations/{station_id}`, which CCP removed with compatibility date 2026-11-19; only the station name still comes from `/universe/names`, because the SDE has none.
+
+- [CHANGE] The API checks access to owners through the queryset rules `visible_to` and `manage_to` and filters the catalog with the new queryset method `in_catalog()`; status codes and messages stay the same. In the search an owner with an unknown `public_type` now counts as "all", like in the catalog.
+
+- [CHANGE] CI and pre-commit run on Node 26 (LTS) instead of Node 24; npm packages updated (minor and patch, jsdom 31, @testing-library/jest-dom 8), no change in behavior.
+
+- [CHANGE] stylelint 18 and stylelint-config-standard 41; the pre-commit hook points stylelint at its own environment, because stylelint 18 no longer loads shared configs from global `node_modules`.
+
+- [CHANGE] i18next 27 and react-i18next 18: when a plural form is missing or empty in a language, `t()` now shows the `_other` form of that language before falling back to English (before: English).
+
+- [CHANGE] `AccessQuerySet` and `AccessManager` live in `bpforge/managers/general.py` in the form of the template; `visible_to` and `manage_to` now filter by the real fields of `Owner` and `Blueprint` (they were unused and failed before).
 
 - [CHANGE] The whole API requires `bpforge.basic_access` centrally (`basic_access_required` around the API URLs), including `menu/` and the administration endpoints. Users with `manage_access` or `full_access` but without `basic_access` lose access to the API and the pages; grant them `basic_access` as well.
 
@@ -129,6 +149,14 @@ Section Order:
 - [CHANGE] The table filter fields use Bootstrap utility classes for their layout and share a single clear button component.
 
 - [CHANGE] Frontend moved to `aa-geuthur-react` 1.5.0: owner cards, settings section, portrait, `initI18n`, `useUserSettings` and the design tokens come from the package; the local copies (owner settings, owner portrait, badges, forms, user settings calls) are removed. On the settings page the header of the owner section has rounded corners, owner cards with an error pulse, and a few German texts changed ("Wird gelöscht…", "Letzte Synchronisierung", "Update-Status wird geladen…").
+
+- [CHANGE] Internal: eslint sorts CSS imports via `@/` into the `// Styles` group after the app imports, like the template `aa-example`. The group for relative imports is removed.
+
+- [CHANGE] Internal: The frontend API calls are split by area into `Api/calls/{settings,catalog,myBlueprints,orders,administration}.ts`, each with its own query keys, replacing `Api/ApiCalls.ts` and `Api/query.ts`.
+
+- [CHANGE] Uniform error format of the API: every error response of an endpoint is an `ErrorSchema` (`{"error": "<text>"}`) in the OpenAPI schema, and every endpoint lists its 403. Unknown owners and orders answer 404 with `{"error": "Owner not found."}` or `{"error": "Order not found."}` instead of `{"detail": "Not Found"}`. The unreachable `basic_access` checks in the endpoints are removed, `basic_access_required` covers them. Status codes are unchanged.
+
+- [CHANGE] The frontend shows the reason the API gives for a failed action (e.g. "Permission Denied") instead of a fixed text (`apiErrorMessage` of `aa-geuthur-react`).
 
 ### Removed
 

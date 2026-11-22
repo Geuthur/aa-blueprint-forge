@@ -1,6 +1,9 @@
 # Third Party
 from ninja import Schema
 
+# AA Blueprint Forge
+from bpforge.models.blueprint import OwnerPublicType
+
 
 class ErrorSchema(Schema):
     """Error response of an endpoint, e.g. for 403 and 404."""
@@ -96,7 +99,7 @@ class OwnerSettingUpdateRequest(Schema):
     """Payload to update visibility and settings of an owner."""
 
     is_public: bool | None = None
-    public_type: str | None = None
+    public_type: OwnerPublicType | None = None
     selective_bpo_enabled: bool | None = None
 
 
@@ -323,7 +326,7 @@ class AdministrationOwnerUpdateRequest(Schema):
     """Payload for administrators to update owner visibility and notification groups."""
 
     is_public: bool | None = None
-    public_type: str | None = None
+    public_type: OwnerPublicType | None = None
     selective_bpo_enabled: bool | None = None
     notify_order_created_group_ids: list[int] | None = None
     notify_order_status_group_ids: list[int] | None = None

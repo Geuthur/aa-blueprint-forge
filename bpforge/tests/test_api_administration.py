@@ -208,6 +208,22 @@ class TestApiAdministration(AuthTestCase):
         self.assertIn(self.group1, self.owner.notify_order_created_groups.all())
         self.assertIn(self.group2, self.owner.notify_order_status_groups.all())
 
+    def test_administration_update_owner_should_reject_invalid_public_type(self):
+        # Test Data
+        self.client.force_login(self.admin)
+
+        # Test Action
+        response = self.client.patch(
+            f"/bpforge/api/administration/owners/{self.owner.id}/",
+            data=json.dumps({"public_type": "nonsense"}),
+            content_type="application/json",
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.UNPROCESSABLE_ENTITY)
+        self.owner.refresh_from_db()
+        self.assertEqual(self.owner.public_type, OwnerPublicType.ALL)
+
     def test_administration_list_owner_blueprints_should_return_all_blueprints_for_administrator(
         self,
     ):

@@ -5,7 +5,11 @@ from unittest.mock import patch
 
 # Third Party
 import pook
-from evesde_factory.eve_sde import ItemTypeFactory, SolarSystemFactory
+from evesde_factory.eve_sde import (
+    ItemTypeFactory,
+    NPCStationFactory,
+    SolarSystemFactory,
+)
 from evesde_factory.utils import add_new_token
 
 # Django
@@ -415,31 +419,24 @@ class LocationManagerTestCase(AuthTestCase):
     def test_update_locations_should_name_existing_station_of_blueprint_in_hangar(self):
         # Test Data
         blueprint = self._blueprint_in(STATION_ID)
-        solar_system = SolarSystemFactory()
-        self._mock_assets([self._asset(blueprint.item_id, STATION_ID, "station")])
-        pook.get(
-            f"{ESI_URL}/universe/stations/{STATION_ID}",
-            reply=200,
-            response_json={
-                "max_dockable_ship_volume": 50000000.0,
-                "name": "Test Station",
-                "office_rental_cost": 10000.0,
-                "owner": 1000035,
-                "position": {"x": 1.0, "y": 2.0, "z": 3.0},
-                "race_id": 1,
-                "reprocessing_efficiency": 0.5,
-                "reprocessing_stations_take": 0.05,
-                "services": ["factory"],
-                "station_id": STATION_ID,
-                "system_id": solar_system.id,
-                "type_id": self.item_type.id,
-            },
+        station = NPCStationFactory(
+            id=STATION_ID, name="", item_type=self.item_type, owner_id_raw=1000035
         )
+        self._mock_assets([self._asset(blueprint.item_id, STATION_ID, "station")])
         pook.post(
             f"{ESI_URL}/universe/names",
+            json=[1000035],
             reply=200,
             response_json=[
                 {"category": "corporation", "id": 1000035, "name": "Test Corp"}
+            ],
+        )
+        pook.post(
+            f"{ESI_URL}/universe/names",
+            json=[STATION_ID],
+            reply=200,
+            response_json=[
+                {"category": "station", "id": STATION_ID, "name": "Test Station"}
             ],
         )
 
@@ -449,7 +446,20 @@ class LocationManagerTestCase(AuthTestCase):
         # Expected Result
         location = Location.objects.get(location_id=STATION_ID)
         self.assertEqual(location.name, "Test Station")
-        self.assertEqual(location.solar_system, solar_system)
+        self.assertEqual(location.solar_system, station.solar_system)
+        self.assertEqual(location.eve_type, self.item_type)
+        self.assertEqual(location.owner.eve_id, 1000035)
+        self.assertEqual(location.owner.name, "Test Corp")
+
+    def test_update_or_create_esi_should_raise_when_station_is_not_in_sde(self):
+        # Test Action / Expected Result
+        with self.assertRaisesMessage(
+            ValueError, f"Station with ID {STATION_ID} not found."
+        ):
+            Location.objects.update_or_create_esi(
+                location_id=STATION_ID, token=self.owner.token
+            )
+        self.assertFalse(Location.objects.filter(location_id=STATION_ID).exists())
 
     @pook.on
     @patch(UPDATE_STRUCTURE_TASK)

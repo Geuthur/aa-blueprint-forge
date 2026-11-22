@@ -1,1 +1,5 @@
-{}
+{
+  "{{count}} Rows_one": "{{count}} riadok",
+  "{{count}} Rows_few": "{{count}} riadky",
+  "{{count}} Rows_other": "{{count}} riadkov"
+}

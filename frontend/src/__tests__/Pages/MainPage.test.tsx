@@ -8,7 +8,7 @@ import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { describe, expect, it, vi } from "vitest";
 
 // AA bpforge
-import * as ApiCalls from "@/Api/ApiCalls";
+import * as CatalogCalls from "@/Api/calls/catalog";
 import MainPage from "@/Pages/MainPage";
 
 describe("MainPage Component", () => {
@@ -59,7 +59,7 @@ describe("MainPage Component", () => {
 
   it("renders public blueprint catalog directory when no owner is selected", async () => {
     // Test Data
-    vi.spyOn(ApiCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
+    vi.spyOn(CatalogCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
     const client = createQueryClient();
 
     // Test Action
@@ -83,8 +83,8 @@ describe("MainPage Component", () => {
 
   it("opens owner blueprint catalog when clicking Browse Blueprints", async () => {
     // Test Data
-    vi.spyOn(ApiCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
-    vi.spyOn(ApiCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
+    vi.spyOn(CatalogCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
+    vi.spyOn(CatalogCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
     const client = createQueryClient();
 
     // Test Action
@@ -110,8 +110,8 @@ describe("MainPage Component", () => {
 
   it("switches catalog via the select dropdown on the right header", async () => {
     // Test Data
-    vi.spyOn(ApiCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
-    vi.spyOn(ApiCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
+    vi.spyOn(CatalogCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
+    vi.spyOn(CatalogCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
     const client = createQueryClient();
 
     // Test Action
@@ -135,8 +135,8 @@ describe("MainPage Component", () => {
 
   it("loads catalog directly when URL has catalog search param", async () => {
     // Test Data
-    vi.spyOn(ApiCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
-    vi.spyOn(ApiCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
+    vi.spyOn(CatalogCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
+    vi.spyOn(CatalogCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
     const client = createQueryClient();
 
     // Test Action
@@ -158,8 +158,8 @@ describe("MainPage Component", () => {
 
   it("supports backward-compatible ?shop search param", async () => {
     // Test Data
-    vi.spyOn(ApiCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
-    vi.spyOn(ApiCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
+    vi.spyOn(CatalogCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
+    vi.spyOn(CatalogCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
     const client = createQueryClient();
 
     // Test Action
@@ -181,8 +181,8 @@ describe("MainPage Component", () => {
 
   it("renders top Review Order button next to Type filter when an item is selected", async () => {
     // Test Data
-    vi.spyOn(ApiCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
-    vi.spyOn(ApiCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
+    vi.spyOn(CatalogCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
+    vi.spyOn(CatalogCalls, "loadCatalogBlueprints").mockResolvedValueOnce(mockBlueprints as never);
     const client = createQueryClient();
 
     // Test Action
@@ -212,8 +212,8 @@ describe("MainPage Component", () => {
 
   it("allows selecting catalog and initial filter type via clicking Total, BPO, or BPC on OwnerCard", async () => {
     // Test Data
-    vi.spyOn(ApiCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
-    vi.spyOn(ApiCalls, "loadCatalogBlueprints").mockResolvedValue(mockBlueprints as never);
+    vi.spyOn(CatalogCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
+    vi.spyOn(CatalogCalls, "loadCatalogBlueprints").mockResolvedValue(mockBlueprints as never);
     const client = createQueryClient();
 
     // Test Action
@@ -243,8 +243,8 @@ describe("MainPage Component", () => {
 
   it("searches public blueprints when typing into the overview search input", async () => {
     // Test Data
-    vi.spyOn(ApiCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
-    vi.spyOn(ApiCalls, "searchPublicBlueprints").mockResolvedValueOnce(mockBlueprints as never);
+    vi.spyOn(CatalogCalls, "loadPublicCatalogs").mockResolvedValueOnce(mockShops as never);
+    vi.spyOn(CatalogCalls, "searchPublicBlueprints").mockResolvedValueOnce(mockBlueprints as never);
     const client = createQueryClient();
 
     // Test Action
@@ -265,6 +265,6 @@ describe("MainPage Component", () => {
     expect(await screen.findByText("Test Corp Blueprints")).toBeInTheDocument();
     expect(await screen.findByText("Matching Blueprints (1)")).toBeInTheDocument();
     expect(screen.getByText("Rifter Blueprint")).toBeInTheDocument();
-    expect(ApiCalls.searchPublicBlueprints).toHaveBeenCalledWith("Rifter");
+    expect(CatalogCalls.searchPublicBlueprints).toHaveBeenCalledWith("Rifter");
   });
 });

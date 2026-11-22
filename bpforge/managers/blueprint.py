@@ -1,6 +1,6 @@
 # Standard Library
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Generic, TypeVar, Union
+from typing import TYPE_CHECKING, Union
 
 # Django
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,21 +8,18 @@ from django.db import models
 from django.utils import timezone
 
 # Alliance Auth
-from allianceauth.eveonline.models import EveCharacter
 from esi.exceptions import HTTPClientError
 from esi.models import Token
 
 # Alliance Auth (External Libs)
-from eve_sde.models import ItemType, SolarSystem
+from eve_sde.models import ItemType, NPCStation, SolarSystem
 
 # AA Blueprint Forge
 from bpforge.app_settings import BPFORGE_BULK_BATCH_SIZE
-from bpforge.managers.general import GeneralManager
+from bpforge.managers.general import AccessManager, AccessQuerySet
 from bpforge.models.helpers.core import LocationFlag
 from bpforge.models.helpers.update_manager import OwnerUpdateSection
 from bpforge.providers import esi, logger
-
-T = TypeVar("T", bound=models.Model)
 
 if TYPE_CHECKING:
     # Alliance Auth
@@ -39,104 +36,8 @@ if TYPE_CHECKING:
     from bpforge.models.blueprint import Owner as OwnerContext
 
 
-class AccessQuerySet(models.QuerySet[T], Generic[T]):
-    """
-    A QuerySet with access control methods for the whole Application.
-
-    Methods:
-        visible_to(user): Returns objects visible to the given user.
-        manage_to(user): Returns objects the given user can manage.
-    """
-
-    def visible_to(self, user):
-        """Get all objects visible to the user."""
-        if GeneralManager.has_admin_access(user):
-            logger.debug("Returning all objects for admin user %s.", user)
-            return self
-
-        try:
-            char = user.profile.main_character
-            assert char
-            queries = [models.Q(owner=user)]
-            queries.append(models.Q(is_public=True))
-
-            logger.debug("%s queries for user %s visible.", len(queries), user)
-
-            query = queries.pop()
-            for q in queries:
-                query |= q
-            return self.filter(query)
-        except AssertionError:
-            logger.debug("User %s has no main character. Nothing visible.", user)
-            return self.none()
-
-    def manage_to(self, user):
-        """Get QuerySet of objects that the user can manage."""
-        if GeneralManager.has_admin_access(user):
-            logger.debug("Returning all manageable queries for admin user %s.", user)
-            return self
-
-        try:
-            char = user.profile.main_character
-            assert char
-            queries = [models.Q(owner=user)]
-
-            logger.debug("%s queries for user %s manageable.", len(queries), user)
-
-            query = queries.pop()
-            for q in queries:
-                query |= q
-            return self.filter(query)
-        except AssertionError:
-            logger.debug("User %s has no main character. Nothing manageable.", user)
-            return self.none()
-
-
-class AccessManager(models.Manager[T], Generic[T]):
-    """
-    A Manager with access control methods for the whole Application
-
-    This manager provides methods to filter querysets based on user permissions,
-    such as `visible_to` and `manage_to`, ensuring that users only see or manage
-    the objects they are allowed to.
-    """
-
-    def get_queryset(self) -> AccessQuerySet[T]:
-        return AccessQuerySet(self.model, using=self._db)
-
-    def visible_to(self, user):
-        return self.get_queryset().visible_to(user)
-
-    def manage_to(self, user):
-        return self.get_queryset().manage_to(user)
-
-    @staticmethod
-    def visible_eve_characters(user):
-        qs = EveCharacter.objects.get_queryset()
-        if GeneralManager.has_admin_access(user):
-            logger.debug("Returning all characters for %s.", user)
-            return qs.all()
-
-        try:
-            char = user.profile.main_character
-            assert char
-            queries = [models.Q(character_ownership__user=user)]
-
-            logger.debug(
-                "%s queries for user %s visible chracters.", len(queries), user
-            )
-
-            query = queries.pop()
-            for q in queries:
-                query |= q
-            return qs.filter(query)
-        except AssertionError:
-            logger.debug("User %s has no main character. Nothing visible.", user)
-            return qs.none()
-
-
 class OwnerQuerySet(AccessQuerySet):
-    pass
+    """Owners use the default rules of `AccessQuerySet`."""
 
 
 class OwnerManager(AccessManager["OwnerContext"]):
@@ -145,6 +46,35 @@ class OwnerManager(AccessManager["OwnerContext"]):
 
 
 class BlueprintQuerySet(AccessQuerySet):
+    """Blueprints follow the rules of their owner."""
+
+    def owned_by_q(self, user) -> models.Q:
+        return models.Q(owner__user=user)
+
+    def visible_q(self, user) -> models.Q:
+        return self.owned_by_q(user) | models.Q(owner__is_public=True)
+
+    def in_catalog(self):
+        """
+        Blueprints their owner offers in the catalog.
+
+        Follows `public_type` of the owner (an unknown value counts as "all")
+        and, with `selective_bpo_enabled`, shows only the offered BPOs. It does
+        not check who may see the owner: combine it with `is_public` or
+        `Owner.objects.visible_to`.
+        """
+        is_copy = models.Q(runs__gt=0)
+        is_original = models.Q(runs__isnull=True) | models.Q(runs=0)
+        return self.filter(
+            (models.Q(owner__public_type="bpo") & is_original)
+            | (models.Q(owner__public_type="bpc") & is_copy)
+            | ~models.Q(owner__public_type__in=["bpo", "bpc"])
+        ).filter(
+            models.Q(owner__selective_bpo_enabled=False)
+            | is_copy
+            | models.Q(is_offered=True)
+        )
+
     def with_api_relations(self):
         """Preload related objects commonly needed for API representation."""
         return self.select_related(
@@ -294,8 +224,8 @@ class BlueprintManager(AccessManager["BlueprintContext"]):
             self.filter(owner=owner, item_id__in=to_delete_item_ids).delete()
 
 
-class LocationQuerySet(AccessQuerySet):
-    pass
+class LocationQuerySet(models.QuerySet):
+    """Locations belong to no user, so they carry no access rules."""
 
 
 class LocationManager(models.Manager["LocationContext"]):
@@ -462,34 +392,36 @@ class LocationManager(models.Manager["LocationContext"]):
                     f"Solar system with ID {location_id} not found."
                 ) from exc
         elif self.model.is_station_id(location_id):
-            logger.info(f"Fetching station from ESI with ID {location_id}")
-            station = esi.client.Universe.GetUniverseStationsStationId(
-                station_id=location_id
-            ).result(use_etag=False)
+            try:
+                station = NPCStation.objects.select_related(
+                    "solar_system", "item_type"
+                ).get(id=location_id)
+            except ObjectDoesNotExist as exc:
+                raise ValueError(f"Station with ID {location_id} not found.") from exc
 
-            if station.owner:
-                owner = EveEntity.objects.get_or_create_esi(entity_id=station.owner)[0]
+            if station.owner_id_raw:
+                owner = EveEntity.objects.get_or_create_esi(
+                    entity_id=station.owner_id_raw
+                )[0]
             else:
                 owner = None
 
-            try:
-                solar_system = SolarSystem.objects.get(id=station.system_id)
-            except ObjectDoesNotExist as exc:
+            solar_system = station.solar_system
+            if solar_system is None:
                 raise ValueError(
-                    f"Solar system with ID {station.system_id} not found."
-                ) from exc
+                    f"Solar system of station with ID {location_id} not found."
+                )
 
-            try:
-                eve_type = ItemType.objects.get(id=station.type_id)
-            except ObjectDoesNotExist as exc:
+            eve_type = station.item_type
+            if eve_type is None:
                 raise ValueError(
-                    f"Item type with ID {station.type_id} not found."
-                ) from exc
+                    f"Item type of station with ID {location_id} not found."
+                )
 
             location, created = self.update_or_create(
                 location_id=location_id,
                 defaults={
-                    "name": station.name,
+                    "name": station.name or self._station_name_esi(location_id),
                     "solar_system": solar_system,
                     "eve_type": eve_type,
                     "owner": owner,
@@ -501,6 +433,17 @@ class LocationManager(models.Manager["LocationContext"]):
             )
 
         return location, created
+
+    @staticmethod
+    def _station_name_esi(station_id: int) -> str:
+        """Fetch the name of a NPC station from ESI.
+
+        The SDE has no station names, they only come from `/universe/names`.
+        """
+        response = esi.client.Universe.PostUniverseNames(body=[station_id]).results(
+            use_etag=False
+        )
+        return response[0].name
 
     def structure_update_or_create_esi(
         self, structure_id: int, token: Token

@@ -7,23 +7,23 @@ import { useCooldown, useOwnerCooldowns, useFeedback } from "aa-geuthur-react";
 import { useTranslation } from "react-i18next";
 
 // AA bpforge
-// AA Blueprint Forge
+import { catalogQueryKeys } from "@/Api/calls/catalog";
 import {
   deleteOwner,
   loadOwnerBpos,
   loadUserOwners,
+  settingsQueryKeys,
   triggerOwnerUpdate,
   triggerUpdateAllUserOwners,
   updateOwnerBpos,
   updateOwnerSetting,
-} from "@/Api/ApiCalls";
-import { queryKeys } from "@/Api/query";
+} from "@/Api/calls/settings";
 import type { OwnerSettingSchema } from "@/Api/schema";
 
 /** Loads the owners of the current user. */
 export function useUserOwners() {
   return useQuery({
-    queryKey: queryKeys.UserOwners,
+    queryKey: settingsQueryKeys.owners,
     queryFn: loadUserOwners,
   });
 }
@@ -34,9 +34,9 @@ export function useUpdateOwnerSetting() {
   return useMutation({
     mutationFn: updateOwnerSetting,
     onMutate: async ({ ownerId, payload }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.UserOwners });
-      const previous = queryClient.getQueryData<OwnerSettingSchema[]>(queryKeys.UserOwners);
-      queryClient.setQueryData<OwnerSettingSchema[]>(queryKeys.UserOwners, (old) =>
+      await queryClient.cancelQueries({ queryKey: settingsQueryKeys.owners });
+      const previous = queryClient.getQueryData<OwnerSettingSchema[]>(settingsQueryKeys.owners);
+      queryClient.setQueryData<OwnerSettingSchema[]>(settingsQueryKeys.owners, (old) =>
         old?.map((owner) =>
           owner.id === ownerId
             ? {
@@ -59,14 +59,14 @@ export function useUpdateOwnerSetting() {
     },
     onError: (_error, _variables, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(queryKeys.UserOwners, context.previous);
+        queryClient.setQueryData(settingsQueryKeys.owners, context.previous);
       }
     },
     onSuccess: (updatedOwner) => {
-      queryClient.setQueryData<OwnerSettingSchema[]>(queryKeys.UserOwners, (old) =>
+      queryClient.setQueryData<OwnerSettingSchema[]>(settingsQueryKeys.owners, (old) =>
         old?.map((owner) => (owner.id === updatedOwner.id ? updatedOwner : owner)),
       );
-      queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
+      queryClient.invalidateQueries({ queryKey: catalogQueryKeys.catalogs });
     },
   });
 }
@@ -84,9 +84,9 @@ export function useOwnerActions() {
   const [updatingOwnerId, setUpdatingOwnerId] = useState<number | null>(null);
 
   const invalidateOwnerQueries = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
-    queryClient.invalidateQueries({ queryKey: queryKeys.UserCharacterStatuses });
-    queryClient.invalidateQueries({ queryKey: queryKeys.PublicCatalogs });
+    queryClient.invalidateQueries({ queryKey: settingsQueryKeys.owners });
+    queryClient.invalidateQueries({ queryKey: settingsQueryKeys.characterStatuses });
+    queryClient.invalidateQueries({ queryKey: catalogQueryKeys.catalogs });
   };
 
   const updateAllMutation = useMutation({
@@ -155,7 +155,7 @@ export function useOwnerActions() {
 /** Loads the BPOs of an owner for the selection dialog; only runs while the dialog is open. */
 export function useOwnerBpos(ownerId: number, enabled: boolean) {
   return useQuery({
-    queryKey: queryKeys.OwnerBpos(ownerId),
+    queryKey: settingsQueryKeys.ownerBpos(ownerId),
     queryFn: () => loadOwnerBpos(ownerId),
     enabled: enabled && ownerId > 0,
   });
@@ -174,10 +174,10 @@ export function useSaveOwnerBpos(
   return useMutation({
     mutationFn: (ids: number[]) => updateOwnerBpos(ownerId, ids),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.OwnerBpos(ownerId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.UserOwners });
-      queryClient.invalidateQueries({ queryKey: queryKeys.PublicShops });
-      queryClient.invalidateQueries({ queryKey: queryKeys.ShopBlueprints(ownerId) });
+      queryClient.invalidateQueries({ queryKey: settingsQueryKeys.ownerBpos(ownerId) });
+      queryClient.invalidateQueries({ queryKey: settingsQueryKeys.owners });
+      queryClient.invalidateQueries({ queryKey: catalogQueryKeys.catalogs });
+      queryClient.invalidateQueries({ queryKey: catalogQueryKeys.blueprints(ownerId) });
       callbacks.onSaved?.();
     },
     onError: (err: unknown) => {
