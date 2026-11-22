@@ -2327,6 +2327,15 @@
         "title": "UserCharacterStatusSchema",
         "type": "object"
       },
+      "OwnerPublicType": {
+        "enum": [
+          "all",
+          "bpo",
+          "bpc"
+        ],
+        "title": "OwnerPublicType",
+        "type": "string"
+      },
       "OwnerSettingUpdateRequest": {
         "description": "Payload to update visibility and settings of an owner.",
         "properties": {
@@ -2344,13 +2353,12 @@
           "public_type": {
             "anyOf": [
               {
-                "type": "string"
+                "$ref": "#/components/schemas/OwnerPublicType"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Public Type"
+            ]
           },
           "selective_bpo_enabled": {
             "anyOf": [
@@ -2953,13 +2961,12 @@
           "public_type": {
             "anyOf": [
               {
-                "type": "string"
+                "$ref": "#/components/schemas/OwnerPublicType"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Public Type"
+            ]
           },
           "selective_bpo_enabled": {
             "anyOf": [

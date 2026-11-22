@@ -192,6 +192,23 @@ class TestApiGeneral(AuthTestCase):
         self.assertEqual(owner.public_type, "bpo")
         self.assertTrue(owner.selective_bpo_enabled)
 
+    def test_update_owner_setting_should_reject_invalid_public_type(self):
+        # Test Data
+        self.client.force_login(self.user)
+        owner = OwnerFactory(user=self.user, is_public=True, public_type="bpc")
+
+        # Test Action
+        response = self.client.patch(
+            f"/bpforge/api/settings/owners/{owner.id}/",
+            data=json.dumps({"public_type": "nonsense"}),
+            content_type="application/json",
+        )
+
+        # Expected Result
+        self.assertEqual(response.status_code, HTTPStatus.UNPROCESSABLE_ENTITY)
+        owner.refresh_from_db()
+        self.assertEqual(owner.public_type, "bpc")
+
     def test_get_and_update_owner_bpos_should_return_and_set_offered_status(self):
         # Test Data
         self.client.force_login(self.user)

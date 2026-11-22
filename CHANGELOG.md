@@ -42,6 +42,8 @@ Section Order:
 
 ### Fixed
 
+- [FIX] The owner settings endpoints (`PATCH` in General and Administration) reject an invalid `public_type` with 422 instead of saving any text; the API schema lists the valid values (`all`, `bpo`, `bpc`).
+
 - [FIX] Discord webhook: a `ValueError` or `TypeError` of `dhooks_lite` (e.g. content over 2000 characters) is no longer retried, because it is raised before any request is sent; `RequestException` and a rejected response are still retried
 
 - [FIX] Discord webhook: a `ValueError` or `TypeError` of `dhooks_lite` (e.g. content over 2000 characters) no longer fails the Celery task, which would attach the webhook URL to the log record

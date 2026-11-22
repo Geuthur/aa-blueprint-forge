@@ -104,7 +104,7 @@ describe('Administration API calls', () => {
 
         it('updateAdministrationOwner submits owner patch via PATCH', async () => {
             // Test Data
-            const payload = { is_public: true, public_type: 'bpo' };
+            const payload = { is_public: true, public_type: 'bpo' as const };
             const mockOwner = { id: 1, name: 'Pilot 1', is_public: true, public_type: 'bpo' };
             vi.spyOn(apiClient, 'PATCH').mockResolvedValueOnce({
                 data: mockOwner,
