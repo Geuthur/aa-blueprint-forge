@@ -1,5 +1,12 @@
 {
   "{{count}} Rows_one": "{{count}} řádek",
   "{{count}} Rows_few": "{{count}} řádky",
-  "{{count}} Rows_other": "{{count}} řádků"
+  "{{count}} Rows_other": "{{count}} řádků",
+  "Confirm": "Potvrdit",
+  "Data Loaded: {{date}}": "Data načtena: {{date}}",
+  "Location": "Poloha",
+  "Something went wrong.": "Něco se pokazilo.",
+  "True": "Ano",
+  "Range…": "Rozsah…",
+  "Clear": "Vymazat"
 }

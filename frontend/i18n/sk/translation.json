@@ -1,5 +1,12 @@
 {
   "{{count}} Rows_one": "{{count}} riadok",
   "{{count}} Rows_few": "{{count}} riadky",
-  "{{count}} Rows_other": "{{count}} riadkov"
+  "{{count}} Rows_other": "{{count}} riadkov",
+  "Confirm": "Potvrdiť",
+  "Data Loaded: {{date}}": "Údaje načítané: {{date}}",
+  "Location": "Poloha",
+  "Something went wrong.": "Niečo sa pokazilo.",
+  "True": "Áno",
+  "Range…": "Rozsah…",
+  "Clear": "Vymazať"
 }

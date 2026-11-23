@@ -18,5 +18,9 @@
   "Done": "Готово",
   "Range…": "Діапазон…",
   "Filter…": "Фільтр…",
-  "No matching options": "Немає відповідних варіантів"
+  "No matching options": "Немає відповідних варіантів",
+  "Confirm": "Підтвердити",
+  "Location": "Розташування",
+  "Something went wrong.": "Щось пішло не так.",
+  "Clear": "Скинути"
 }
