@@ -310,8 +310,6 @@
   "{{name}} is not registered in {{app}}.": "{{name}} is not registered in {{app}}.",
   "Add to {{app}}": "Add to {{app}}",
   "Search by blueprint, group, or location…": "Search by blueprint, group, or location…",
-  "Matching Blueprints ({{count}})_one": "Matching Blueprints ({{count}})",
-  "Matching Blueprints ({{count}})_other": "Matching Blueprints ({{count}})",
   "+{{count}} more_one": "+{{count}} more",
   "+{{count}} more_other": "+{{count}} more",
   "Back to all catalogs": "Back to all catalogs",
@@ -374,5 +372,6 @@
   "History": "History",
   "Failed to load": "Failed to load",
   "No fetch yet": "No fetch yet",
-  "Order Management (Manager)": "Order Management (Manager)"
+  "Order Management (Manager)": "Order Management (Manager)",
+  "Matching Blueprints ({{total}})": "Matching Blueprints ({{total}})"
 }
