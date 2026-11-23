@@ -16,5 +16,9 @@
   "Done": "완료",
   "Range…": "범위…",
   "Filter…": "필터…",
-  "No matching options": "일치하는 옵션 없음"
+  "No matching options": "일치하는 옵션 없음",
+  "Confirm": "확인",
+  "Location": "위치",
+  "Something went wrong.": "문제가 발생했습니다.",
+  "Clear": "초기화"
 }

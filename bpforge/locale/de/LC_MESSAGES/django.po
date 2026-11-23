@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: AA Blueprint Forge\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-19 16:22+0000\n"
-"PO-Revision-Date: 2026-10-25 13:06+0000\n"
+"PO-Revision-Date: 2026-11-23 12:03+0000\n"
 "Last-Translator: Geuthur <devgeuthur@gmail.com>\n"
 "Language-Team: German <https://weblate.geuthur.de/projects/allianceauth/aa-"
 "blueprint-forge/de/>\n"
@@ -17,22 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 2026.11.2\n"
 
 msgid "Success"
-msgstr ""
+msgstr "Erfolg"
 
 msgid "Token OK"
-msgstr ""
+msgstr "Token OK"
 
 msgid "Owner Name"
-msgstr ""
+msgstr "Eigentümer-Name"
 
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 msgid "Corporation"
-msgstr ""
+msgstr "Corporation"
 
 msgid "Character"
 msgstr "Charakter"
@@ -41,43 +41,43 @@ msgid "Blueprints"
 msgstr "Blaupausen"
 
 msgid "Last Update"
-msgstr ""
+msgstr "Letztes Update"
 
 msgid "Force update selected owners (bypass cache)"
-msgstr ""
+msgstr "Aktualisierung für ausgewählte Eigentümer erzwingen (Cache umgehen)"
 
 #, python-format
 msgid "Force update queued for %(count)d owner(s)."
-msgstr ""
+msgstr "Erzwungene Aktualisierung für %(count)d Eigentümer eingereiht."
 
 msgid "Update selected owners (cached)"
-msgstr ""
+msgstr "Ausgewählte Eigentümer aktualisieren (mit Cache)"
 
 #, python-format
 msgid "Update queued for %(count)d owner(s)."
-msgstr ""
+msgstr "Aktualisierung für %(count)d Eigentümer eingereiht."
 
 #, python-format
 msgid "Force update queued for %(name)s."
-msgstr ""
+msgstr "Erzwungene Aktualisierung für %(name)s eingereiht."
 
 msgid "Administration permission required."
-msgstr ""
+msgstr "Verwaltungsberechtigung erforderlich."
 
 msgid "Superuser permission required."
 msgstr "Superuser-Berechtigung erforderlich."
 
 msgid "Queued Update All Characters"
-msgstr ""
+msgstr "Aktualisierung aller Charaktere eingereiht"
 
 msgid "Queued Update All Corporations"
-msgstr ""
+msgstr "Aktualisierung aller Corporations eingereiht"
 
 msgid "Queued Update All Owners"
-msgstr ""
+msgstr "Aktualisierung aller Eigentümer eingereiht"
 
 msgid "Permission Denied"
-msgstr ""
+msgstr "Zugriff verweigert"
 
 msgid "Permission Denied."
 msgstr "Zugriff verweigert."
@@ -104,15 +104,15 @@ msgid "Add Corporation"
 msgstr "Corporation hinzufügen"
 
 msgid "Administration"
-msgstr ""
+msgstr "Verwaltung"
 
 #, python-format
 msgid "Queued updates for %(count)d owner(s)."
-msgstr ""
+msgstr "Aktualisierungen für %(count)d Eigentümer eingereiht."
 
 #, python-format
 msgid "Owner %(name)s and associated data deleted."
-msgstr ""
+msgstr "Eigentümer %(name)s und zugehörige Daten gelöscht."
 
 msgid "Order must contain at least one blueprint item."
 msgstr "Die Bestellung muss mindestens eine Blaupause enthalten."
@@ -136,6 +136,8 @@ msgstr ""
 
 msgid "This order is closed because its shop or buyer was deleted."
 msgstr ""
+"Diese Bestellung ist geschlossen, weil ihr Katalog oder Käufer gelöscht "
+"wurde."
 
 msgid "You are not authorized to set this order status."
 msgstr "Sie sind nicht berechtigt, diesen Bestellstatus zu setzen."
@@ -144,7 +146,7 @@ msgid "You are not authorized to delete this order."
 msgstr "Sie sind nicht berechtigt, diese Bestellung zu löschen."
 
 msgid "Only closed orders can be deleted."
-msgstr ""
+msgstr "Nur geschlossene Bestellungen können gelöscht werden."
 
 msgid "Order has been deleted successfully."
 msgstr "Die Bestellung wurde erfolgreich gelöscht."
@@ -159,10 +161,10 @@ msgid "Only Copies (BPC)"
 msgstr "Nur Kopien (BPC)"
 
 msgid "Owner"
-msgstr ""
+msgstr "Eigentümer"
 
 msgid "Owners"
-msgstr ""
+msgstr "Eigentümer"
 
 msgid "The character that owns this blueprint."
 msgstr "Der Charakter, dem diese Blaupause gehört."
@@ -275,10 +277,10 @@ msgid "Auto Fit"
 msgstr "Auto-Fit"
 
 msgid "Bonus"
-msgstr ""
+msgstr "Bonus"
 
 msgid "Booster"
-msgstr ""
+msgstr "Booster"
 
 msgid "Booster Hold"
 msgstr "Booster-Frachtraum"
@@ -353,7 +355,7 @@ msgid "Frigate escape bay Hangar"
 msgstr "Fregatten-Fluchthangar"
 
 msgid "Hangar"
-msgstr ""
+msgstr "Hangar"
 
 msgid "Hangar All"
 msgstr "Gesamter Hangar"
@@ -455,7 +457,7 @@ msgid "Office Folder"
 msgstr "Büroordner"
 
 msgid "Pilot"
-msgstr ""
+msgstr "Pilot"
 
 msgid "Planet Surface"
 msgstr "Planetenoberfläche"
@@ -527,7 +529,7 @@ msgid "Ship Offline"
 msgstr "Schiff offline"
 
 msgid "Skill"
-msgstr ""
+msgstr "Skill"
 
 msgid "Skill In Training"
 msgstr "Skill im Training"
@@ -617,7 +619,7 @@ msgid "Unlocked item, can be moved"
 msgstr "Entsperrter Gegenstand, kann verschoben werden"
 
 msgid "Wallet"
-msgstr ""
+msgstr "Wallet"
 
 msgid "Wardrobe"
 msgstr "Garderobe"
@@ -644,13 +646,13 @@ msgid "Disabled"
 msgstr "Deaktiviert"
 
 msgid "Token Error"
-msgstr "Token Fehler"
+msgstr "Token-Fehler"
 
 msgid "Error"
 msgstr "Fehler"
 
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 msgid "Incomplete"
 msgstr "unvollständig"
@@ -668,16 +670,16 @@ msgid "The user who placed the order."
 msgstr "Der Benutzer, der die Bestellung aufgegeben hat."
 
 msgid "The name of the shop/owner when the order was placed."
-msgstr ""
+msgstr "Der Name des Katalogs/Eigentümers zum Zeitpunkt der Bestellung."
 
 msgid "The name of the buyer when the order was placed."
-msgstr ""
+msgstr "Der Name des Käufers zum Zeitpunkt der Bestellung."
 
 msgid "The user who owned the shop when the order was placed."
-msgstr ""
+msgstr "Der Benutzer, dem der Katalog zum Zeitpunkt der Bestellung gehörte."
 
 msgid "The corporation ID of the shop when the order was placed."
-msgstr ""
+msgstr "Die Corporation-ID des Katalogs zum Zeitpunkt der Bestellung."
 
 msgid "The status of this order."
 msgstr "Der Status dieser Bestellung."
@@ -701,22 +703,22 @@ msgid "The blueprint being requested."
 msgstr "Die angefragte Blaupause."
 
 msgid "The Eve ID of the blueprint when it was ordered."
-msgstr ""
+msgstr "Die Eve-ID der Blaupause zum Zeitpunkt der Bestellung."
 
 msgid "The Eve type ID of the blueprint when it was ordered."
-msgstr ""
+msgstr "Die Eve-Typ-ID der Blaupause zum Zeitpunkt der Bestellung."
 
 msgid "The Eve type name of the blueprint when it was ordered."
-msgstr ""
+msgstr "Der Eve-Typname der Blaupause zum Zeitpunkt der Bestellung."
 
 msgid "The material efficiency of the blueprint when it was ordered."
-msgstr ""
+msgstr "Die Materialeffizienz der Blaupause zum Zeitpunkt der Bestellung."
 
 msgid "The time efficiency of the blueprint when it was ordered."
-msgstr ""
+msgstr "Die Zeiteffizienz der Blaupause zum Zeitpunkt der Bestellung."
 
 msgid "The location name of the blueprint when it was ordered."
-msgstr ""
+msgstr "Der Standortname der Blaupause zum Zeitpunkt der Bestellung."
 
 msgid "The user who made this request."
 msgstr "Der Benutzer, der diese Anfrage gestellt hat."

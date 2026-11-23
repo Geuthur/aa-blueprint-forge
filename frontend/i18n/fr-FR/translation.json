@@ -16,5 +16,8 @@
   "Done": "Terminé",
   "Range…": "Plage…",
   "Filter…": "Filtrer…",
-  "No matching options": "Aucune option correspondante"
+  "No matching options": "Aucune option correspondante",
+  "Confirm": "Confirmer",
+  "Location": "Localisation",
+  "Something went wrong.": "Une erreur s'est produite."
 }
