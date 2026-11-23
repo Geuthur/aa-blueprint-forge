@@ -164,6 +164,8 @@ Section Order:
 
 - [REMOVED] Unused `BaseModalQuery` mutation hooks.
 
+- [REMOVED] Unused German keys ("Fehler", "Fehler beim Laden", "Kein Fetch", "Lädt…") from the English translation file.
+
 <!-- Your changes go here -->
 
 ## [1.1.0] - 2026-10-25
