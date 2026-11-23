@@ -136,7 +136,7 @@ export const OwnerCard: React.FC<OwnerCardProps> = ({ owner, matchingBlueprints,
           <div className="mt-3 pt-2 border-top border-secondary">
             <div className="d-flex align-items-center justify-content-between mb-2">
               <span className="small text-light fw-semibold">
-                {t("Matching Blueprints ({{count}})", { count: matchingBlueprints.length })}
+                {t("Matching Blueprints ({{total}})", { total: matchingBlueprints.length })}
               </span>
             </div>
             <div
