@@ -16,5 +16,9 @@
   "Done": "完了",
   "Range…": "範囲…",
   "Filter…": "フィルター…",
-  "No matching options": "一致するオプションがありません"
+  "No matching options": "一致するオプションがありません",
+  "Confirm": "確認",
+  "Location": "場所",
+  "Something went wrong.": "問題が発生しました。",
+  "Clear": "クリア"
 }
