@@ -26,6 +26,10 @@ Section Order:
 ### Removed
 -->
 
+### Changed
+
+- [CHANGE] The model graph `aa-blueprint-forge-models.png` shows the current models (order history, copied blueprint values); it was still on the state of 1.1.0.
+
 <!-- Your changes go here -->
 
 ## [2.0.0] - 2026-11-24
