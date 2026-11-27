@@ -26,6 +26,18 @@ Section Order:
 ### Removed
 -->
 
+### Changed
+
+- [CHANGE] The model graph `aa-blueprint-forge-models.png` shows the current models (order history, copied blueprint values); it was still on the state of 1.1.0.
+
+<!-- Your changes go here -->
+
+## [2.0.0] - 2026-11-24
+
+> [!IMPORTANT]
+> The whole app (pages and API) now requires `bpforge.basic_access`. Users with only `manage_access` or `full_access` need `basic_access` as well.
+> Run `python manage.py migrate` after the update.
+
 ### Added
 
 - [ADD] Reusable frontend components `OwnerPortrait` and `FilterButtonGroup`, replacing several inline copies.
@@ -46,9 +58,7 @@ Section Order:
 
 - [FIX] The owner settings endpoints (`PATCH` in General and Administration) reject an invalid `public_type` with 422 instead of saving any text; the API schema lists the valid values (`all`, `bpo`, `bpc`).
 
-- [FIX] Discord webhook: a `ValueError` or `TypeError` of `dhooks_lite` (e.g. content over 2000 characters) is no longer retried, because it is raised before any request is sent; `RequestException` and a rejected response are still retried
-
-- [FIX] Discord webhook: a `ValueError` or `TypeError` of `dhooks_lite` (e.g. content over 2000 characters) no longer fails the Celery task, which would attach the webhook URL to the log record
+- [FIX] Discord webhook: a `ValueError` or `TypeError` of `dhooks_lite` (e.g. content over 2000 characters) no longer fails the Celery task (which would attach the webhook URL to the log record) and is not retried, because it is raised before any request is sent; `RequestException` and a rejected response are still retried.
 
 - [FIX] React Query no longer retries 403, 404 and other 4xx answers three times, so the error shows at once instead of after about seven seconds: `Routing.tsx` uses `createQueryClient` of `aa-geuthur-react` (`^1.7.0`), which retries only network errors and 502/503/504
 
@@ -88,11 +98,17 @@ Section Order:
 
 - [FIX] BPOs directly in the hangar of a station or structure, without a container or office of the owner, stayed under "Unknown location". The location update now also resolves the name of these locations. Structures the owner has no access to stay under "Unknown location".
 
-- Fixed `make coverage` exiting with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
+- [FIX] `make coverage` exited with 0 when tests failed. The reports are still created, and the target now exits with the status of the test run, or with the status of `coverage report` if the tests passed.
 
 - [FIX] Real translations from the stale `weblate-translation` branch are applied to `frontend/i18n/<lng>/translation.json` and to the German `django.po`. Only strings that were empty or equal to English are filled, translations already on master are kept. `frontend/i18n/cs` and `frontend/i18n/sk` are added with all keys empty. The `.po` files are updated with `make translations`.
 
 ### Changed
+
+- [CHANGE] Tables use TanStack Table v9; frontend packages raised to apexcharts 8, lucide-react 1 and jsdom 30.
+
+- [CHANGE] Dev: vitest and `@vitest/coverage-v8` 5.0.5 (includes the security fix in `@vitest/mocker`); Dependabot also updates `/frontend`, collects npm major updates in their own group and leaves pre-commit to pre-commit.ci.
+
+- [CHANGE] The label "Matching Blueprints ({{total}})" no longer uses i18next plural keys, because its words do not change with the number; translators fill in one form instead of one per plural category.
 
 - [CHANGE] NPC stations are read from the local SDE (`eve_sde` `NPCStation`) instead of the ESI route `/universe/stations/{station_id}`, which CCP removed with compatibility date 2026-11-19; only the station name still comes from `/universe/names`, because the SDE has none.
 
@@ -166,7 +182,9 @@ Section Order:
 
 - [REMOVED] Unused `BaseModalQuery` mutation hooks.
 
-<!-- Your changes go here -->
+- [REMOVED] Unused German keys ("Fehler", "Fehler beim Laden", "Kein Fetch", "Lädt…") from the English translation file.
+
+- [REMOVED] CI: obsolete `libbz2-dev` install step.
 
 ## [1.1.0] - 2026-10-25
 
@@ -285,4 +303,5 @@ Section Order:
 [1.0.1]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.0...v1.0.1 "v1.0.1"
 [1.0.2]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.1...v1.0.2 "v1.0.2"
 [1.1.0]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.0.2...v1.1.0 "v1.1.0"
-[in development]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.1.0...HEAD "In Development"
+[2.0.0]: https://github.com/Geuthur/aa-blueprint-forge/compare/v1.1.0...v2.0.0 "v2.0.0"
+[in development]: https://github.com/Geuthur/aa-blueprint-forge/compare/v2.0.0...HEAD "In Development"

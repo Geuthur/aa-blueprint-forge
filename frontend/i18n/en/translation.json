@@ -93,8 +93,6 @@
   "Failed to update global notification settings.": "Failed to update global notification settings.",
   "Failed to update owner.": "Failed to update owner.",
   "False": "False",
-  "Fehler": "Fehler",
-  "Fehler beim Laden": "Fehler beim Laden",
   "Filter": "Filter",
   "Filter to show only Copies (BPC)": "Filter to show only Copies (BPC)",
   "Filter to show only Originals (BPO)": "Filter to show only Originals (BPO)",
@@ -110,7 +108,6 @@
   "Inspect All Blueprints": "Inspect All Blueprints",
   "Item Status": "Item Status",
   "Items": "Items",
-  "Kein Fetch": "Kein Fetch",
   "Last Fetch": "Last Fetch",
   "Last Page": "Last Page",
   "Last sync": "Last sync",
@@ -125,7 +122,6 @@
   "Loading your blueprints…": "Loading your blueprints…",
   "Loading…": "Loading…",
   "Location": "Location",
-  "Lädt…": "Lädt…",
   "ME": "ME",
   "ME / TE": "ME / TE",
   "Manage your Blueprint Shop preferences and owner visibility.": "Manage your Blueprint Shop preferences and owner visibility.",
@@ -310,8 +306,6 @@
   "{{name}} is not registered in {{app}}.": "{{name}} is not registered in {{app}}.",
   "Add to {{app}}": "Add to {{app}}",
   "Search by blueprint, group, or location…": "Search by blueprint, group, or location…",
-  "Matching Blueprints ({{count}})_one": "Matching Blueprints ({{count}})",
-  "Matching Blueprints ({{count}})_other": "Matching Blueprints ({{count}})",
   "+{{count}} more_one": "+{{count}} more",
   "+{{count}} more_other": "+{{count}} more",
   "Back to all catalogs": "Back to all catalogs",
@@ -374,5 +368,6 @@
   "History": "History",
   "Failed to load": "Failed to load",
   "No fetch yet": "No fetch yet",
-  "Order Management (Manager)": "Order Management (Manager)"
+  "Order Management (Manager)": "Order Management (Manager)",
+  "Matching Blueprints ({{total}})": "Matching Blueprints ({{total}})"
 }
