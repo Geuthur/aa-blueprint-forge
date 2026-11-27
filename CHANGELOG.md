@@ -29,6 +29,7 @@ Section Order:
 ### Changed
 
 - [CHANGE] The model graph `aa-blueprint-forge-models.png` shows the current models (order history, copied blueprint values); it was still on the state of 1.1.0.
+- [CHANGE] `GeneralManager.has_admin_access` is renamed to `has_full_access`, as in the app template. Permissions and behaviour are unchanged.
 
 <!-- Your changes go here -->
 

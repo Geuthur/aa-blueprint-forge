@@ -56,7 +56,7 @@ class General(models.Model):
         """Check if user has global management rights over all orders."""
         if not user or not user.is_authenticated:
             return False
-        if cls.objects.has_admin_access(user):
+        if cls.objects.has_full_access(user):
             return True
         settings_obj = GeneralNotificationSettings.get_solo()
         user_group_ids = set(user.groups.values_list("id", flat=True))

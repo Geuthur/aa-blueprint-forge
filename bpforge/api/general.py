@@ -256,7 +256,7 @@ class ApiEndpoints:
                 )
             )
 
-            if General.objects.has_admin_access(request.user):
+            if General.objects.has_full_access(request.user):
                 right_menu.append(
                     schema.MenuLink(
                         name=_("Administration"),
@@ -303,7 +303,7 @@ class ApiEndpoints:
                 else None
             )
 
-            is_admin = bool(General.objects.has_admin_access(request.user))
+            is_admin = bool(General.objects.has_full_access(request.user))
             can_manage = General.can_manage_orders(request.user)
             is_global_mgr = General.is_global_order_manager(request.user)
 

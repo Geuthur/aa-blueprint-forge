@@ -36,7 +36,7 @@ class GeneralManager(models.Manager):
         return bool(user.has_perm("bpforge.manage_access"))
 
     @staticmethod
-    def has_admin_access(user) -> bool:
+    def has_full_access(user) -> bool:
         """Superusers and users with `full_access` have administration access."""
         return bool(user.has_perm("bpforge.full_access"))
 
@@ -68,7 +68,7 @@ class AccessQuerySet(models.QuerySet[T], Generic[T]):
         return self.owned_by_q(user)
 
     def _restricted_to(self, user, query: models.Q, what: str):
-        if GeneralManager.has_admin_access(user):
+        if GeneralManager.has_full_access(user):
             logger.debug("Returning all %s objects for %s.", what, user)
             return self
 
@@ -109,7 +109,7 @@ class AccessManager(models.Manager[T], Generic[T]):
     def visible_eve_characters(user):
         """EveCharacters a user may pick, e.g. when adding an owner."""
         qs = EveCharacter.objects.get_queryset()
-        if GeneralManager.has_admin_access(user):
+        if GeneralManager.has_full_access(user):
             logger.debug("Returning all characters for %s.", user)
             return qs.all()
 
