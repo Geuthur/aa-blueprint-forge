@@ -7,8 +7,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AA Blueprint Forge\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 16:22+0000\n"
+"Report-Msgid-Bugs-To: https://weblate.geuthur.de/projects/alliance-auth/aa-"
+"blueprint-forge/\n"
+"POT-Creation-Date: 2026-11-24 10:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,7 +66,18 @@ msgstr ""
 msgid "Administration permission required."
 msgstr ""
 
+msgid "Owner not found."
+msgstr ""
+
 msgid "Superuser permission required."
+msgstr ""
+
+#, python-brace-format
+msgid "Update task queued for {owner_name} (force_refresh={force_refresh})."
+msgstr ""
+
+#, python-brace-format
+msgid "Owner {owner_name} and all associated data deleted successfully."
 msgstr ""
 
 msgid "Queued Update All Characters"
@@ -78,9 +90,6 @@ msgid "Queued Update All Owners"
 msgstr ""
 
 msgid "Permission Denied"
-msgstr ""
-
-msgid "Permission Denied."
 msgstr ""
 
 msgid "This blueprint catalog is private."
@@ -107,6 +116,9 @@ msgstr ""
 msgid "Administration"
 msgstr ""
 
+msgid "Permission Denied."
+msgstr ""
+
 #, python-format
 msgid "Queued updates for %(count)d owner(s)."
 msgstr ""
@@ -131,6 +143,13 @@ msgid "This shop only offers blueprint copies (BPC)."
 msgstr ""
 
 msgid "One or more selected BPOs are not offered by this shop."
+msgstr ""
+
+msgid "Order not found."
+msgstr ""
+
+#, python-brace-format
+msgid "Invalid status. Must be one of: {valid_statuses}"
 msgstr ""
 
 msgid "This order is closed because its shop or buyer was deleted."
@@ -728,4 +747,17 @@ msgid "The time this request was closed."
 msgstr ""
 
 msgid "Cannot add NPC Corporation to Blueprint Forge"
+msgstr ""
+
+#, python-brace-format
+msgid "{character_name} is not linked to your account"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"{corporation_name} has been added with {character_name} as sync character."
+msgstr ""
+
+#, python-brace-format
+msgid "{character_name} has been added as personal owner."
 msgstr ""
