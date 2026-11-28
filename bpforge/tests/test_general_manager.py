@@ -34,14 +34,14 @@ class TestGeneralManager(AuthTestCase):
         with self.subTest("superuser"):
             self.assertTrue(General.objects.has_management_access(self.superuser))
 
-    def test_has_admin_access_should_follow_full_access(self):
+    def test_has_full_access_should_follow_full_access(self):
         with self.subTest("with permission"):
             user = UserMainFactory(permissions__=["bpforge.full_access"])
-            self.assertTrue(General.objects.has_admin_access(user))
+            self.assertTrue(General.objects.has_full_access(user))
         with self.subTest("without permission"):
             user = UserMainFactory(permissions__=["bpforge.manage_access"])
-            self.assertFalse(General.objects.has_admin_access(user))
+            self.assertFalse(General.objects.has_full_access(user))
         with self.subTest("anonymous"):
-            self.assertFalse(General.objects.has_admin_access(AnonymousUser()))
+            self.assertFalse(General.objects.has_full_access(AnonymousUser()))
         with self.subTest("superuser"):
-            self.assertTrue(General.objects.has_admin_access(self.superuser))
+            self.assertTrue(General.objects.has_full_access(self.superuser))

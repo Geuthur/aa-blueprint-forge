@@ -77,7 +77,7 @@ class ApiEndpoints:
 
             if not (
                 owner.user == request.user
-                or General.objects.has_admin_access(request.user)
+                or General.objects.has_full_access(request.user)
             ):
                 if owner.public_type == "bpo" and any(
                     bp.runs and bp.runs > 0 for bp in blueprints
